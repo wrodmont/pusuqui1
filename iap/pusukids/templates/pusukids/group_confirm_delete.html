@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+
+{% block body %}
+    <h2>¿Seguro que quieres borrar "{{ group.name }}"?</h2>
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit">Sí, borrar</button>
+        <a href="{% url 'group_list' %}">Cancelar</a>
+    </form>
+{% endblock %}

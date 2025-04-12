@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block body %}
+    <h2>Lista de Grupos</h2>
+    <a href="{% url 'pusukids:group_create' %}">Crear Nuevo Grupo</a>
+    <ul>
+        {% for group in groups %}
+            <li>
+                {{ group.name }} - {{ group.description }}
+                <a href="{% url 'pusukids:group_update' group.pk %}">Editar</a>
+                <a href="{% url 'pusukids:group_delete' group.pk %}">Borrar</a>
+            </li>
+        {% endfor %}
+    </ul>
+{% endblock %}

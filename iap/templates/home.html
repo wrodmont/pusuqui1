@@ -1,0 +1,152 @@
+{% extends "base.html" %}
+
+{% block title %}IAP - Iglesia Alianza Pusuqui{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+  <div class="text-center mb-5">
+    <h1>Sistema de gestion ministerial</h1>
+    <p class="lead">Gestión de informacion ministerial</p>
+  </div>
+
+  <!-- SECCIÓN: DATOS MAESTROS -->
+  <div class="card mb-5 border-primary">
+    <div class="card-header bg-primary text-white">
+      <h3 class="mb-0"><i class="fas fa-database me-2"></i>Datos Maestros</h3>
+    </div>
+    <div class="card-body">
+      <p class="card-text mb-4">Administre la información principal de los ministerios.</p>
+      
+      <div class="row row-cols-1 row-cols-md-3 g-4">
+        <!-- Adultos -->
+        <div class="col">
+          <div class="card h-100 border-primary">
+            <div class="card-header bg-light">
+              <h5 class="card-title mb-0"><i class="fas fa-cookie me-2"></i>Adultos</h5>
+            </div>
+            <div class="card-body">
+              <p class="card-text">Gestione la informacion de la Academia Biblica.</p>
+              <a href="{% url 'pusukids:coordinator_list' %}" class="btn btn-outline-primary">Administrar asistencia</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Jovenes -->
+        <div class="col">
+          <div class="card h-100 border-primary">
+            <div class="card-header bg-light">
+              <h5 class="card-title mb-0"><i class="fas fa-cubes me-2"></i>Jovenes</h5>
+            </div>
+            <div class="card-body">
+              <p class="card-text">Administre la informacion del Ministerio Infantil.</p>
+              <a href="{% url 'pusukids:coordinator_list' %}" class="btn btn-outline-primary">Administrar asistencia</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- kids -->
+        <div class="col">
+          <div class="card h-100 border-primary">
+            <div class="card-header bg-light">
+              <h5 class="card-title mb-0"><i class="fas fa-box me-2"></i>Kids</h5>
+            </div>
+            <div class="card-body">
+              <p class="card-text">Gestione la informacion del Ministerio de Jovenes.</p>
+              <a href="{% url 'pusukids:coordinator_list' %}" class="btn btn-outline-primary">Administrar asistencia</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECCIÓN: ACTIVIDADES -->
+  <div class="card mb-5 border-success">
+    <div class="card-header bg-success text-white">
+      <h3 class="mb-0"><i class="fas fa-tools me-2"></i>Actividades</h3>
+    </div>
+    <div class="card-body">
+      <p class="card-text mb-4">Administre los equipos utilizados en el proceso de producción.</p>
+      
+      <div class="row row-cols-1 row-cols-md-3 g-4">
+        <!-- Embutidora -->
+        <div class="col">
+          <div class="card h-100 border-success">
+            <div class="card-header bg-light">
+              <h5 class="card-title mb-0"><i class="fas fa-cogs me-2"></i>Embutidoras</h5>
+            </div>
+            <div class="card-body">
+              <p class="card-text">Consulte y administre la información de las embutidoras.</p>
+              <a href="{% url 'pusukids:coordinator_list' %}" class="btn btn-outline-success">Administrar Embutidoras</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Empacadoras -->
+        <div class="col">
+          <div class="card h-100 border-success">
+            <div class="card-header bg-light">
+              <h5 class="card-title mb-0"><i class="fas fa-box-open me-2"></i>Empacadoras</h5>
+            </div>
+            <div class="card-body">
+              <p class="card-text">Gestione las máquinas empacadoras del proceso.</p>
+              <a href="{% url 'pusukids:coordinator_list' %}" class="btn btn-outline-success">Administrar Empacadoras</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tombler -->
+        <div class="col">
+          <div class="card h-100 border-success">
+            <div class="card-header bg-light">
+              <h5 class="card-title mb-0"><i class="fas fa-sync me-2"></i>Tomblers</h5>
+            </div>
+            <div class="card-body">
+              <p class="card-text">Administre los equipos Tombler usados en el proceso.</p>
+              <a href="{% url 'pusukids:coordinator_list' %}" class="btn btn-outline-success">Administrar Tomblers</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECCIÓN: PLANIFICACIÓN -->
+  <div class="card mb-5 border-info">
+    <div class="card-header bg-info text-white">
+      <h3 class="mb-0"><i class="fas fa-calendar-alt me-2"></i>Planificación</h3>
+    </div>
+    <div class="card-body">
+      <p class="card-text mb-4">Gestione los periodos y capacidades para la planificación de producción.</p>
+      
+      <div class="row row-cols-1 row-cols-md-2 g-4">
+        <!-- Periodo Pedido -->
+        <div class="col">
+          <div class="card h-100 border-info">
+            <div class="card-header bg-light">
+              <h5 class="card-title mb-0"><i class="far fa-calendar me-2"></i>Periodos de Pedido</h5>
+            </div>
+            <div class="card-body">
+              <p class="card-text">Revise y configure los periodos de pedido para la planificación.</p>
+              <a href="{% url 'pusukids:coordinator_list' %}" class="btn btn-outline-info">Administrar Periodos</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Capacidad -->
+        <div class="col">
+          <div class="card h-100 border-info">
+            <div class="card-header bg-light">
+              <h5 class="card-title mb-0"><i class="fas fa-tachometer-alt me-2"></i>Capacidades</h5>
+            </div>
+            <div class="card-body">
+              <p class="card-text">Consulte y gestione las capacidades de empaque y producción.</p>
+              <a href="{% url 'pusukids:coordinator_list' %}" class="btn btn-outline-info">Administrar Capacidades</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
