@@ -80,3 +80,10 @@ target/
 _pycache_/
 local_settings.py
 env
+# Ignorar pycache y archivos compilados
+_pycache_/
+*.py[cod]
+
+# Ignorar entorno virtual
+venv/
+git rm --cached -r venv/
