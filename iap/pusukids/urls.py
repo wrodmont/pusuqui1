@@ -18,4 +18,12 @@ urlpatterns = [
     path('group_form/<int:pk>/', views.group_update, name='group_update'),
     path('group_confirm_delete/<int:pk>/', views.group_delete, name='group_delete'),
 
+    # --- URLs para Server ---
+    path('servers/', views.ServerListView.as_view(), name='server_list'),
+    path('servers/<int:pk>/', views.ServerDetailView.as_view(), name='server_detail'),
+    path('servers/new/', views.ServerCreateView.as_view(), name='server_create'),
+    path('servers/<int:pk>/edit/', views.ServerUpdateView.as_view(), name='server_update'),
+    path('servers/<int:pk>/delete/', views.ServerDeleteView.as_view(), name='server_delete'),
+
+
 ]
