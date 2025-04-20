@@ -1,0 +1,49 @@
+/* Fondo general de toda la página */
+body {
+  background-color: #e0f7fa; /* celeste clarito */
+  color: #00363a; /* texto general en azul oscuro para contraste */
+}
+
+/* Navbar blanca */
+.navbar {
+  background-color: #ffffff !important; /* blanco */
+  border-bottom: 2px solid #00acc1; /* línea inferior celeste */
+}
+
+/* Texto de los enlaces del navbar */
+.navbar .nav-link {
+  color: #007c91 !important;
+  font-weight: 500;
+}
+
+/* Hover en los enlaces del navbar */
+.navbar .nav-link:hover {
+  color: #004d60 !important;
+  background-color: #b2ebf2 !important;
+  border-radius: 5px;
+}
+
+/* Menú desplegable blanco */
+.dropdown-menu {
+  background-color: #ffffff;
+  border: 1px solid #00acc1;
+}
+
+/* Items del dropdown */
+.dropdown-item {
+  color: #007c91;
+}
+
+/* Hover en dropdown */
+.dropdown-item:hover {
+  background-color: #e0f7fa;
+  color: #004d60;
+}
+
+/* Contenedor principal (opcional si usas cards u otros elementos) */
+.container {
+  background-color: #ffffff;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
