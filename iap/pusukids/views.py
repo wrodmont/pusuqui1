@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse
-from .models import coordinator, group, server
-from .forms import CoordinatorForm, GroupForm, ServerForm
+from .models import coordinator, group, server, groupage
+from .forms import CoordinatorForm, GroupForm, ServerForm, GroupageForm
 from django.urls import reverse, reverse_lazy
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 
@@ -87,22 +87,22 @@ def group_create(request):
     return render(request, 'pusukids/group_form.html', {'form': form})
 
 def group_update(request, pk):
-    group = get_object_or_404(group, pk=pk) # Obtener el grupo o devolver 404
+    group_obj = get_object_or_404(group, pk=pk) 
     if request.method == 'POST':
-        form = GroupForm(request.POST, instance=group)
+        form = GroupForm(request.POST, instance=group_obj)
         if form.is_valid():
             form.save()
             return redirect('pusukids:group_list')
     else:
-        form = GroupForm(instance=group)
+        form = GroupForm(instance=group_obj)
     return render(request, 'pusukids/group_form.html', {'form': form})
 
 def group_delete(request, pk):
-    group = get_object_or_404(group, pk=pk)
+    group_obj = get_object_or_404(group, pk=pk)
     if request.method == 'POST':
-        group.delete()
+        group_obj.delete()
         return redirect('pusukids:group_list')
-    return render(request, 'pusukids/group_confirm_delete.html', {'group': group})
+    return render(request, 'pusukids/group_confirm_delete.html', {'group': group_obj})
 
 class ServerListView(ListView):
     model = server
@@ -146,5 +146,36 @@ class ServerDeleteView(DeleteView):
     context_object_name = 'server'
     success_url = reverse_lazy('pusukids:server_list') # Redirige a la lista después de borrar
 
-# --- Asegúrate de tener también las vistas para otros modelos si las necesitas ---
-# ... (tus otras vistas existentes)
+# Vistas generadas con Gemini para el CRUD de GroupAge
+
+def groupage_list(request):
+    groupages = groupage.objects.all()
+    return render(request, 'pusukids/groupage_list.html', {'groupages': groupages})
+
+def groupage_create(request):
+    if request.method == 'POST':
+        form = GroupageForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('pusukids:groupage_list')
+    else:
+        form = GroupageForm()
+    return render(request, 'pusukids/groupage_form.html', {'form': form, 'action': 'Crear'})
+
+def groupage_update(request, pk):
+    groupage_obj = get_object_or_404(groupage, pk=pk)
+    if request.method == 'POST':
+        form = GroupageForm(request.POST, instance=groupage_obj)
+        if form.is_valid():
+            form.save()
+            return redirect('pusukids:groupage_list')
+    else:
+        form = GroupageForm(instance=groupage_obj)
+    return render(request, 'pusukids/groupage_form.html', {'form': form, 'action': 'Editar'})
+
+def groupage_delete(request, pk):
+    groupage_obj = get_object_or_404(groupage, pk=pk)
+    if request.method == 'POST':
+        groupage_obj.delete()
+        return redirect('pusukids:groupage_list')
+    return render(request, 'pusukids/groupage_confirm_delete.html', {'groupage': groupage_obj})

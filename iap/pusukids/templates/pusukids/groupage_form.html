@@ -1,9 +1,9 @@
 {% extends 'base.html' %}
 
-{% block title %}{{ form_title|default:"Formulario de Grupos" }}{% endblock %}
+{% block title %}{{ form_title|default:"Grupos de Edad" }}{% endblock %}
 
 {% block body %}
-<h1>{{ form_title|default:"Formulario de Grupos" }}</h1>
+<h1>{{ form_title|default:"Formulario de Grupos de Edad" }}</h1>
 
 <form method="post">
     {% csrf_token %} {# ¡Importante para seguridad! #}
@@ -25,6 +25,6 @@
     #}
 
     <button type="submit" class="btn btn-success">{{ submit_button_text|default:"Guardar" }}</button>
-    <a href="{% url 'pusukids:group_list' %}" class="btn btn-secondary">Cancelar</a>
+    <a href="{% url 'pusukids:groupage_list' %}" class="btn btn-secondary">Cancelar</a>
 </form>
 {% endblock %}

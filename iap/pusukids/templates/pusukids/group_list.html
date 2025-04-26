@@ -1,15 +1,33 @@
 {% extends 'base.html' %}
 
+{% block title %}Grupos{% endblock %}
+
 {% block body %}
-    <h2>Lista de Grupos</h2>
-    <a href="{% url 'pusukids:group_create' %}">Crear Nuevo Grupo</a>
-    <ul>
-        {% for group in groups %}
-            <li>
-                {{ group.name }} - {{ group.description }}
-                <a href="{% url 'pusukids:group_update' group.pk %}">Editar</a>
-                <a href="{% url 'pusukids:group_delete' group.pk %}">Borrar</a>
-            </li>
-        {% endfor %}
-    </ul>
+<h1>Lista de Grupos</h1>
+<a href="{% url 'pusukids:group_create' %}" class="btn btn-primary mb-3">Registrar Nuevo Grupo</a>
+
+{% if groups %}
+    <table class="table table-striped table-hover">
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Descripcion</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for group in groups %}
+            <tr>
+                <td>{{ group.name }}</td>
+                <td>{{ group.description }}</td>
+                <td>
+                    <a href="{% url 'pusukids:group_update' group.pk %}" class="btn btn-warning btn-sm">Editar</a>
+                    <a href="{% url 'pusukids:group_delete' group.pk %}" class="btn btn-danger btn-sm">Eliminar</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% else %}
+    <p>No hay grupos retistrados.</p>
+{% endif %}
 {% endblock %}

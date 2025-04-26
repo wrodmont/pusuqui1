@@ -1,6 +1,6 @@
 # c:\Proyectos\pusuqui\iap\pusukids\forms.py
 from django import forms
-from .models import coordinator, group, server
+from .models import coordinator, group, server, groupage
 
 class CoordinatorForm(forms.ModelForm):
     class Meta:
@@ -39,7 +39,14 @@ class ServerForm(forms.ModelForm):
             'group': 'Grupo',
         }
         # Opcional: Añadir widgets si necesitas más control (ej. selects más bonitos)
-        # widgets = {
-        #     'coordinator': forms.Select(attrs={'class': 'form-control'}),
-        #     'group': forms.Select(attrs={'class': 'form-control'}),
-        # }
+        widgets = {
+             'coordinator': forms.Select(attrs={'class': 'form-control'}),
+             'group': forms.Select(attrs={'class': 'form-control'}),
+        }
+
+class GroupageForm(forms.ModelForm):
+    class Meta:
+        model = groupage
+        fields = ['name', 'description']
+
+    
