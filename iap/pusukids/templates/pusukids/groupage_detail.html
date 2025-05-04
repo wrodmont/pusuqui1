@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <h1>Detalle de Agrupación</h1>
+  <p><strong>Nombre:</strong> {{ groupage.name }}</p>
+  <p><strong>Descripción:</strong> {{ groupage.description|default:"Sin descripción" }}</p>
+  <a href="{% url 'groupage_update' groupage.pk %}">Editar</a>
+  <a href="{% url 'groupage_delete' groupage.pk %}">Eliminar</a>
+  <a href="{% url 'groupage_list' %}">Volver al listado</a>
+{% endblock %}

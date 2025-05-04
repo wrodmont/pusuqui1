@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block title %}Grupos de Edad{% endblock %}
+
+{% block body %}
+<h1>Lista de Grupos de Edad</h1>
+<a href="{% url 'pusukids:groupage_create' %}" class="btn btn-primary mb-3">Registrar Nuevo Grupo Edad</a>
+
+{% if groupages %}
+    <table class="table table-striped table-hover">
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Descripcion</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for groupage in groupages %}
+            <tr>
+                <td>{{ groupage.name }}</td>
+                <td>{{ groupage.description }}</td>
+                <td>
+                    <a href="{% url 'pusukids:groupage_update' groupage.pk %}" class="btn btn-warning btn-sm">Editar</a>
+                    <a href="{% url 'pusukids:groupage_delete' groupage.pk %}" class="btn btn-danger btn-sm">Eliminar</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% else %}
+    <p>No hay grupos de edad retistrados.</p>
+{% endif %}
+{% endblock %}
