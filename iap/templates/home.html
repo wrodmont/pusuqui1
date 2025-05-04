@@ -5,54 +5,60 @@
 {% block body %}
 <div class="container mt-4">
   <div class="text-center mb-5">
-    <h1>Sistema de gestion ministerial</h1>
-    <p class="lead">Gestión de informacion ministerial</p>
+    <h1 class="display-4 fw-bold section-title">Sistema de Gestión Ministerial</h1>
+    <p class="lead text-muted">Gestión de información ministerial para la Iglesia Alianza Pusuqui</p>
   </div>
 
   <!-- SECCIÓN: DATOS MAESTROS -->
-  <div class="card mb-5 border-primary">
-    <div class="card-header bg-primary text-white">
-      <h3 class="mb-0"><i class="fas fa-database me-2"></i>Datos Maestros</h3>
+  <div class="card mb-5 border-primary shadow">
+    <div class="card-header bg-primary text-white py-3">
+      <h3 class="mb-0"><i class="fas fa-database me-2"></i> Datos Maestros</h3>
     </div>
     <div class="card-body">
-      <p class="card-text mb-4">Administre la información principal de los ministerios.</p>
+      <p class="card-text mb-4 fs-5">Administre la información principal de los ministerios.</p>
       
       <div class="row row-cols-1 row-cols-md-3 g-4">
         <!-- Adultos -->
         <div class="col">
-          <div class="card h-100 border-primary">
+          <div class="card h-100 border-primary shadow-sm">
             <div class="card-header bg-light">
-              <h5 class="card-title mb-0"><i class="fas fa-cookie me-2"></i>Adultos</h5>
+              <h5 class="card-title mb-0"><i class="fas fa-user-friends me-2"></i> Adultos</h5>
             </div>
-            <div class="card-body">
-              <p class="card-text">Gestione la informacion de la Academia Biblica.</p>
-              <a href="{% url 'pusukids:coordinator_list' %}" class="btn btn-outline-primary">Administrar asistencia</a>
+            <div class="card-body d-flex flex-column">
+              <p class="card-text flex-grow-1">Gestione la información de la Academia Bíblica.</p>
+              <a href="{% url 'pusukids:coordinator_list' %}" class="btn btn-outline-primary mt-auto">
+                <i class="fas fa-clipboard-check me-1"></i> Administrar asistencia
+              </a>
             </div>
           </div>
         </div>
 
-        <!-- Jovenes -->
+        <!-- Jóvenes -->
         <div class="col">
-          <div class="card h-100 border-primary">
+          <div class="card h-100 border-primary shadow-sm">
             <div class="card-header bg-light">
-              <h5 class="card-title mb-0"><i class="fas fa-cubes me-2"></i>Jovenes</h5>
+              <h5 class="card-title mb-0"><i class="fas fa-user-graduate me-2"></i> Jóvenes</h5>
             </div>
-            <div class="card-body">
-              <p class="card-text">Administre la informacion del Ministerio Infantil.</p>
-              <a href="{% url 'pusukids:coordinator_list' %}" class="btn btn-outline-primary">Administrar asistencia</a>
+            <div class="card-body d-flex flex-column">
+              <p class="card-text flex-grow-1">Administre la información del Ministerio Juvenil.</p>
+              <a href="{% url 'pusukids:coordinator_list' %}" class="btn btn-outline-primary mt-auto">
+                <i class="fas fa-clipboard-check me-1"></i> Administrar asistencia
+              </a>
             </div>
           </div>
         </div>
 
-        <!-- kids -->
+        <!-- Niños -->
         <div class="col">
-          <div class="card h-100 border-primary">
+          <div class="card h-100 border-primary shadow-sm">
             <div class="card-header bg-light">
-              <h5 class="card-title mb-0"><i class="fas fa-box me-2"></i>Kids</h5>
+              <h5 class="card-title mb-0"><i class="fas fa-child me-2"></i> Niños</h5>
             </div>
-            <div class="card-body">
-              <p class="card-text">Gestione la informacion del Ministerio de Jovenes.</p>
-              <a href="{% url 'pusukids:coordinator_list' %}" class="btn btn-outline-primary">Administrar asistencia</a>
+            <div class="card-body d-flex flex-column">
+              <p class="card-text flex-grow-1">Gestione la información del Ministerio de Niños.</p>
+              <a href="{% url 'pusukids:coordinator_list' %}" class="btn btn-outline-primary mt-auto">
+                <i class="fas fa-clipboard-check me-1"></i> Administrar asistencia
+              </a>
             </div>
           </div>
         </div>
@@ -60,50 +66,56 @@
     </div>
   </div>
 
-  <!-- SECCIÓN: ACTIVIDADES -->
-  <div class="card mb-5 border-success">
-    <div class="card-header bg-success text-white">
-      <h3 class="mb-0"><i class="fas fa-tools me-2"></i>Actividades</h3>
+  <!-- SECCIÓN: MINISTERIOS -->
+  <div class="card mb-5 border-ministerio shadow">
+    <div class="card-header bg-ministerio text-white py-3">
+      <h3 class="mb-0"><i class="fas fa-church me-2"></i> Ministerios</h3>
     </div>
     <div class="card-body">
-      <p class="card-text mb-4">Administre los equipos utilizados en el proceso de producción.</p>
+      <p class="card-text mb-4 fs-5">Administre los diferentes ministerios y actividades de la iglesia.</p>
       
       <div class="row row-cols-1 row-cols-md-3 g-4">
-        <!-- Embutidora -->
+        <!-- Alabanza -->
         <div class="col">
-          <div class="card h-100 border-success">
+          <div class="card h-100 border-ministerio shadow-sm">
             <div class="card-header bg-light">
-              <h5 class="card-title mb-0"><i class="fas fa-cogs me-2"></i>Embutidoras</h5>
+              <h5 class="card-title mb-0"><i class="fas fa-music me-2"></i> Alabanza</h5>
             </div>
-            <div class="card-body">
-              <p class="card-text">Consulte y administre la información de las embutidoras.</p>
-              <a href="{% url 'pusukids:coordinator_list' %}" class="btn btn-outline-success">Administrar Embutidoras</a>
+            <div class="card-body d-flex flex-column">
+              <p class="card-text flex-grow-1">Gestione el ministerio de alabanza y adoración.</p>
+              <a href="{% url 'pusukids:coordinator_list' %}" class="btn btn-outline-ministerio mt-auto">
+                <i class="fas fa-clipboard-check me-1"></i> Administrar Alabanza
+              </a>
             </div>
           </div>
         </div>
 
-        <!-- Empacadoras -->
+        <!-- Hospitalidad -->
         <div class="col">
-          <div class="card h-100 border-success">
+          <div class="card h-100 border-ministerio shadow-sm">
             <div class="card-header bg-light">
-              <h5 class="card-title mb-0"><i class="fas fa-box-open me-2"></i>Empacadoras</h5>
+              <h5 class="card-title mb-0"><i class="fas fa-hands-helping me-2"></i> Hospitalidad</h5>
             </div>
-            <div class="card-body">
-              <p class="card-text">Gestione las máquinas empacadoras del proceso.</p>
-              <a href="{% url 'pusukids:coordinator_list' %}" class="btn btn-outline-success">Administrar Empacadoras</a>
+            <div class="card-body d-flex flex-column">
+              <p class="card-text flex-grow-1">Organice el equipo de bienvenida y hospitalidad.</p>
+              <a href="{% url 'pusukids:coordinator_list' %}" class="btn btn-outline-ministerio mt-auto">
+                <i class="fas fa-clipboard-check me-1"></i> Administrar Hospitalidad
+              </a>
             </div>
           </div>
         </div>
 
-        <!-- Tombler -->
+        <!-- Grupos Pequeños -->
         <div class="col">
-          <div class="card h-100 border-success">
+          <div class="card h-100 border-ministerio shadow-sm">
             <div class="card-header bg-light">
-              <h5 class="card-title mb-0"><i class="fas fa-sync me-2"></i>Tomblers</h5>
+              <h5 class="card-title mb-0"><i class="fas fa-users me-2"></i> Grupos Pequeños</h5>
             </div>
-            <div class="card-body">
-              <p class="card-text">Administre los equipos Tombler usados en el proceso.</p>
-              <a href="{% url 'pusukids:coordinator_list' %}" class="btn btn-outline-success">Administrar Tomblers</a>
+            <div class="card-body d-flex flex-column">
+              <p class="card-text flex-grow-1">Administre los grupos pequeños y células de la iglesia.</p>
+              <a href="{% url 'pusukids:coordinator_list' %}" class="btn btn-outline-ministerio mt-auto">
+                <i class="fas fa-clipboard-check me-1"></i> Administrar Grupos
+              </a>
             </div>
           </div>
         </div>
@@ -112,36 +124,40 @@
   </div>
 
   <!-- SECCIÓN: PLANIFICACIÓN -->
-  <div class="card mb-5 border-info">
-    <div class="card-header bg-info text-white">
-      <h3 class="mb-0"><i class="fas fa-calendar-alt me-2"></i>Planificación</h3>
+  <div class="card mb-5 border-info shadow">
+    <div class="card-header bg-info text-white py-3">
+      <h3 class="mb-0"><i class="fas fa-calendar-alt me-2"></i> Planificación</h3>
     </div>
     <div class="card-body">
-      <p class="card-text mb-4">Gestione los periodos y capacidades para la planificación de producción.</p>
+      <p class="card-text mb-4 fs-5">Gestione los eventos y recursos para la planificación ministerial.</p>
       
       <div class="row row-cols-1 row-cols-md-2 g-4">
-        <!-- Periodo Pedido -->
+        <!-- Eventos -->
         <div class="col">
-          <div class="card h-100 border-info">
+          <div class="card h-100 border-info shadow-sm">
             <div class="card-header bg-light">
-              <h5 class="card-title mb-0"><i class="far fa-calendar me-2"></i>Periodos de Pedido</h5>
+              <h5 class="card-title mb-0"><i class="far fa-calendar-alt me-2"></i> Eventos</h5>
             </div>
-            <div class="card-body">
-              <p class="card-text">Revise y configure los periodos de pedido para la planificación.</p>
-              <a href="{% url 'pusukids:coordinator_list' %}" class="btn btn-outline-info">Administrar Periodos</a>
+            <div class="card-body d-flex flex-column">
+              <p class="card-text flex-grow-1">Revise y configure los eventos y actividades de la iglesia.</p>
+              <a href="{% url 'pusukids:coordinator_list' %}" class="btn btn-outline-info mt-auto">
+                <i class="fas fa-clipboard-check me-1"></i> Administrar Eventos
+              </a>
             </div>
           </div>
         </div>
 
-        <!-- Capacidad -->
+        <!-- Recursos -->
         <div class="col">
-          <div class="card h-100 border-info">
+          <div class="card h-100 border-info shadow-sm">
             <div class="card-header bg-light">
-              <h5 class="card-title mb-0"><i class="fas fa-tachometer-alt me-2"></i>Capacidades</h5>
+              <h5 class="card-title mb-0"><i class="fas fa-clipboard-list me-2"></i> Recursos</h5>
             </div>
-            <div class="card-body">
-              <p class="card-text">Consulte y gestione las capacidades de empaque y producción.</p>
-              <a href="{% url 'pusukids:coordinator_list' %}" class="btn btn-outline-info">Administrar Capacidades</a>
+            <div class="card-body d-flex flex-column">
+              <p class="card-text flex-grow-1">Consulte y gestione los recursos disponibles para las actividades.</p>
+              <a href="{% url 'pusukids:coordinator_list' %}" class="btn btn-outline-info mt-auto">
+                <i class="fas fa-clipboard-check me-1"></i> Administrar Recursos
+              </a>
             </div>
           </div>
         </div>
