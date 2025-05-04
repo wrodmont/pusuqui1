@@ -4,7 +4,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>{% block title %}Provaplan{% endblock %}</title>
+    <title>{% block title %}IAP - Iglesia Alianza Pusuqui{% endblock %}</title>
 
     <!-- Bootstrap (CDN) -->
     <link
@@ -16,7 +16,111 @@
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
     />
-    <!-- Tus CSS (opcional) -->
+    <!-- Estilos personalizados -->
+    <style>
+      :root {
+        --primary-color: #3c6e71;
+        --secondary-color: #284b63;
+        --accent-color: #d9d9d9;
+        --light-bg: #f8f9fa;
+        --border-radius: 8px;
+      }
+      
+      body {
+        background-color: var(--light-bg);
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      }
+      
+      .navbar {
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      }
+      
+      .navbar-brand img {
+        transition: transform 0.3s ease;
+      }
+      
+      .navbar-brand:hover img {
+        transform: scale(1.05);
+      }
+      
+      .nav-link {
+        font-weight: 500;
+        transition: all 0.3s ease;
+        border-radius: 4px;
+      }
+      
+      .nav-link:hover {
+        background-color: rgba(0,0,0,0.05);
+      }
+      
+      .card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        margin-bottom: 20px;
+        border-radius: var(--border-radius);
+        overflow: hidden;
+      }
+      
+      .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+      }
+      
+      .card-header {
+        font-weight: 600;
+      }
+      
+      .btn {
+        border-radius: 5px;
+        padding: 8px 15px;
+        transition: all 0.3s ease;
+      }
+      
+      .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 10px rgba(0,0,0,0.1);
+      }
+      
+      .btn-outline-primary:hover {
+        background-color: var(--primary-color);
+      }
+      
+      .section-title {
+        position: relative;
+        padding-bottom: 15px;
+        margin-bottom: 30px;
+      }
+      
+      .section-title:after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 50px;
+        height: 3px;
+        background-color: var(--primary-color);
+      }
+      
+      /* Colores personalizados */
+      .bg-ministerio {
+        background-color: #6a994e !important;
+      }
+      
+      .border-ministerio {
+        border-color: #6a994e !important;
+      }
+      
+      .btn-outline-ministerio {
+        color: #6a994e;
+        border-color: #6a994e;
+      }
+      
+      .btn-outline-ministerio:hover {
+        color: white;
+        background-color: #6a994e;
+      }
+    </style>
+    <!-- Tus CSS adicionales -->
     <link rel="stylesheet" href="{% static 'css/style.css' %}" />
   </head>
   <body>
@@ -29,12 +133,12 @@
           class="navbar-brand d-flex align-items-center"
           href="{% url 'home' %}"
         >
-        <img
-        src="{% static 'img/logo1.png' %}"
-        alt="Logo Pronaca"
-        style="height: 80px; padding-left: 16px"
-        class="me-2"
-      />
+          <img
+            src="{% static 'img/logo1.png' %}"
+            alt="Logo Pusuqui"
+            style="height: 80px; padding-left: 16px"
+            class="me-2"
+          />
         </a>
 
         <!-- Botón para colapsar el menú en pantallas pequeñas -->
@@ -60,7 +164,7 @@
               </a>
             </li>
 
-            <!-- NUEVA SECCIÓN: Datos Maestros -->
+            <!-- SECCIÓN: Datos Maestros -->
             <li class="nav-item dropdown">
               <a
                 class="nav-link dropdown-toggle"
@@ -76,9 +180,9 @@
                 <li>
                   <a
                     class="dropdown-item"
-                    href="{% url 'pusukids:coordinator_list"
+                    href="{% url 'pusukids:coordinator_list' %}"
                   >
-                    <i class="fas fa-cookie"></i> Masas
+                    <i class="fas fa-user-friends"></i> Adultos
                   </a>
                 </li>
                 <li>
@@ -86,7 +190,7 @@
                     class="dropdown-item"
                     href="{% url 'pusukids:coordinator_list' %}"
                   >
-                    <i class="fas fa-cubes"></i> Intermedios
+                    <i class="fas fa-user-graduate"></i> Jóvenes
                   </a>
                 </li>
                 <li>
@@ -94,40 +198,31 @@
                     class="dropdown-item"
                     href="{% url 'pusukids:coordinator_list' %}"
                   >
-                    <i class="fas fa-box"></i> Productos
-                  </a>
-                </li>
-                <li><hr class="dropdown-divider" /></li>
-                <li>
-                  <a
-                    class="dropdown-item"
-                    href="{% url 'pusukids:coordinator_list' %}"
-                  >
-                    <i class="fas fa-percentage"></i> Mermas
+                    <i class="fas fa-child"></i> Niños
                   </a>
                 </li>
               </ul>
             </li>
 
-            <!-- Equipamiento -->
+            <!-- Ministerios (reemplazando Equipamiento) -->
             <li class="nav-item dropdown">
               <a
                 class="nav-link dropdown-toggle"
                 href="#"
-                id="dropdownEquipamiento"
+                id="dropdownMinisterios"
                 role="button"
                 data-bs-toggle="dropdown"
                 aria-expanded="false"
               >
-                <i class="fas fa-tools"></i> Equipamiento
+                <i class="fas fa-church"></i> Ministerios
               </a>
-              <ul class="dropdown-menu" aria-labelledby="dropdownEquipamiento">
+              <ul class="dropdown-menu" aria-labelledby="dropdownMinisterios">
                 <li>
                   <a
                     class="dropdown-item"
                     href="{% url 'pusukids:coordinator_list' %}"
                   >
-                    <i class="fas fa-cogs"></i> Embutidoras
+                    <i class="fas fa-music"></i> Alabanza
                   </a>
                 </li>
                 <li>
@@ -135,7 +230,7 @@
                     class="dropdown-item"
                     href="{% url 'pusukids:coordinator_list' %}"
                   >
-                    <i class="fas fa-box-open"></i> Empacadoras
+                    <i class="fas fa-hands-helping"></i> Hospitalidad
                   </a>
                 </li>
                 <li>
@@ -143,7 +238,7 @@
                     class="dropdown-item"
                     href="{% url 'pusukids:coordinator_list' %}"
                   >
-                    <i class="fas fa-sync"></i> Tomblers
+                    <i class="fas fa-users"></i> Grupos Pequeños
                   </a>
                 </li>
               </ul>
@@ -167,7 +262,7 @@
                     class="dropdown-item"
                     href="{% url 'pusukids:coordinator_list' %}"
                   >
-                    <i class="far fa-calendar"></i> Periodos de Pedido
+                    <i class="far fa-calendar-alt"></i> Eventos
                   </a>
                 </li>
                 <li>
@@ -175,10 +270,9 @@
                     class="dropdown-item"
                     href="{% url 'pusukids:coordinator_list' %}"
                   >
-                    <i class="fas fa-tachometer-alt"></i> Capacidades
+                    <i class="fas fa-clipboard-list"></i> Recursos
                   </a>
                 </li>
-                <!-- Se pueden agregar más elementos según se necesite -->
               </ul>
             </li>
 
