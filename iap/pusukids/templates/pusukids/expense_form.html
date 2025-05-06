@@ -1,0 +1,17 @@
+{% extends "base.html" %} {# Ajusta si tienes un base.html diferente #}
+
+{% block title %}{{ action_title|default:"Registrar Gasto" }}{% endblock %}
+
+{% block body %}
+<h2>{{ action_title|default:"Registrar Nuevo Gasto" }}</h2>
+
+<form method="post">
+    {% csrf_token %}
+    
+    {{ form.as_p }} {# Renderiza el formulario como párrafos, puedes personalizarlo si prefieres #}
+
+    <button type="submit" class="btn btn-success">{{ action|default:"Registrar" }}</button>
+    <a href="{% url 'pusukids:expense_list' %}" class="btn btn-secondary">Cancelar</a>
+</form>
+
+{% endblock %}

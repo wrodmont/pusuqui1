@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block title %}Información Semanal{% endblock %}
+
+{% block body %}
+<h1>Información Semanal</h1>
+<a href="{% url 'pusukids:weekinfo_create' %}" class="btn btn-primary mb-3">Registrar Nueva Semana</a>
+
+{% if weekinfos %}
+<table class="table table-striped table-hover table-sm">
+    <thead>
+        <tr>
+            <th>Fecha</th>
+            <th>Grupo</th>
+            <th>Coordinador(a)</th>
+            <th>Total Niños</th>
+            <th>Total Servidores</th>
+            <th>Dinero Recolectado</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for w in weekinfos %}
+        <tr>
+            <td>{{ w.fecha.date|date:"Y-m-d" }}</td>
+            <td>{{ w.group.name }}</td>
+            <td>{{ w.coordinator.name }} {{ w.coordinator.surname }}</td>
+            <td>{{ w.total_kids }}</td>
+            <td>{{ w.total_servers }}</td>
+            <td>{{ w.money_collected|floatformat:2 }}</td> {# floatformat para mostrar 2 decimales #}
+            <td>
+                <a href="{% url 'pusukids:weekinfo_update' w.pk %}" class="btn btn-sm btn-warning">Editar</a>
+                <a href="{% url 'pusukids:weekinfo_delete' w.pk %}" class="btn btn-sm btn-danger">Eliminar</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<p>No hay información semanal registrada.</p>
+{% endif %}
+{% endblock %}

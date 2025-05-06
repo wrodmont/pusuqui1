@@ -1,0 +1,42 @@
+{% extends "base.html" %} {# Ajusta si tienes un base.html diferente #}
+
+{% block title %}Lista de Gastos{% endblock %}
+
+{% block body %}
+<h2>Lista de Gastos</h2>
+
+<a href="{% url 'pusukids:expense_create' %}" class="btn btn-primary mb-3">Registrar Nuevo Gasto</a>
+
+{% if expenses %}
+<table class="table table-striped table-hover">
+    <thead>
+        <tr>
+            <th>Descripción</th>
+            <th>Monto</th>
+            <th>Fecha (Semana)</th>
+            <th>Referencia</th>
+            <th>Fecha Transacción</th> 
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for expense in expenses %}
+        <tr>
+            <td>{{ expense.description }}</td>
+            <td>{{ expense.amount|floatformat:2 }}</td> {# Formatear a 2 decimales #}
+            <td>{{ expense.fecha.date|date:"Y-m-d" }}</td>
+            <td>{{ expense.reference|default:"N/A" }}</td>
+            <td>{{ expense.transdate|date:"Y-m-d"|default:"--" }}</td>
+            <td>
+                <a href="{% url 'pusukids:expense_update' expense.pk %}" class="btn btn-sm btn-warning">Editar</a>
+                <a href="{% url 'pusukids:expense_delete' expense.pk %}" class="btn btn-sm btn-danger">Eliminar</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<p>No hay gastos registrados todavía.</p>
+{% endif %}
+
+{% endblock %}

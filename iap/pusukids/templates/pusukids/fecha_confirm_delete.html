@@ -1,0 +1,20 @@
+{% extends "base.html" %} {# Ajusta si tu base.html está en otro lugar #}
+
+{% block title %}Confirmar Eliminación de Fecha{% endblock %}
+
+{% block body %}
+<h2>Confirmar Eliminación</h2>
+
+{% if error %}
+    <div class="alert alert-danger">{{ error }}</div>
+{% endif %}
+
+<p>¿Estás seguro de que quieres eliminar la fecha <strong>{{ fecha.date|date:"Y-m-d" }}</strong>?</p>
+
+<form method="post">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-danger" {% if error %}disabled{% endif %}>Sí, eliminar</button> {# Deshabilitar si hay error #}
+    <a href="{% url 'pusukids:fecha_list' %}" class="btn btn-secondary">Cancelar</a>
+</form>
+
+{% endblock %}

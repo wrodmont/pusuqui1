@@ -1,0 +1,17 @@
+{% extends "base.html" %} {# Ajusta si tu base.html está en otro lugar #}
+
+{% block title %}{{ action_title|default:"Registrar Fecha" }}{% endblock %}
+
+{% block body %}
+<h2>{{ action_title|default:"Registrar Nueva Fecha (Semana)" }}</h2>
+
+<form method="post">
+    {% csrf_token %}
+
+    {{ form.as_p }} {# Renderiza el formulario como párrafos #}
+
+    <button type="submit" class="btn btn-success">{{ action|default:"Registrar" }}</button>
+    <a href="{% url 'pusukids:fecha_list' %}" class="btn btn-secondary">Cancelar</a>
+</form>
+
+{% endblock %}
