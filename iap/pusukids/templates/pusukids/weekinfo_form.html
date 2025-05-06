@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ action_title|default:action }} Información Semanal{% endblock %}
+
+{% block body %}
+<h1>{{ action_title|default:action }} Información Semanal</h1>
+
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn btn-success">{{ action }}</button>
+    <a href="{% url 'pusukids:weekinfo_list' %}" class="btn btn-secondary">Cancelar</a>
+</form>
+{% endblock %}

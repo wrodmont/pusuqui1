@@ -30,4 +30,34 @@ urlpatterns = [
     path('groupages/create/', views.groupage_create, name='groupage_create'),
     path('groupages/<int:pk>/update/', views.groupage_update, name='groupage_update'),
     path('groupages/<int:pk>/delete/', views.groupage_delete, name='groupage_delete'),
+
+    # --- URLs para Child --- (Actualizadas)
+    path('children/', views.child_list, name='child_list'), # <-- Cambiado
+    path('children/new/', views.child_create, name='child_create'), # <-- Cambiado
+    path('children/<int:pk>/edit/', views.child_update, name='child_update'), # <-- Cambiado
+    path('children/<int:pk>/delete/', views.child_delete, name='child_delete'), # <-- Cambiado
+
+    # --- URLs para Assistance --- NUEVAS RUTAS ---
+    path('assistances/', views.assistance_list, name='assistance_list'),
+    path('assistances/new/', views.assistance_create, name='assistance_create'),
+    path('assistances/<int:pk>/edit/', views.assistance_update, name='assistance_update'),
+    path('assistances/<int:pk>/delete/', views.assistance_delete, name='assistance_delete'),
+
+    # --- URLs para Weekinfo ---
+    path('weekinfos/', views.weekinfo_list, name='weekinfo_list'),
+    path('weekinfos/new/', views.weekinfo_create, name='weekinfo_create'),
+    path('weekinfos/<int:pk>/edit/', views.weekinfo_update, name='weekinfo_update'),
+    path('weekinfos/<int:pk>/delete/', views.weekinfo_delete, name='weekinfo_delete'),
+
+    # --- URLs para Expense ---
+    path('expenses/', views.expense_list, name='expense_list'),
+    path('expenses/new/', views.expense_create, name='expense_create'),
+    path('expenses/<int:pk>/edit/', views.expense_update, name='expense_update'),
+    path('expenses/<int:pk>/delete/', views.expense_delete, name='expense_delete'),
+
+    # --- URLs para Fecha ---
+    path('fechas/', views.fecha_list, name='fecha_list'),
+    path('fechas/new/', views.fecha_create, name='fecha_create'),
+    path('fechas/<int:pk>/edit/', views.fecha_update, name='fecha_update'),
+    path('fechas/<int:pk>/delete/', views.fecha_delete, name='fecha_delete'),
 ]
