@@ -1,17 +1,16 @@
+# academia/views.py
 from django.shortcuts import render
-from django.http import HttpResponse
-
-# Create your views here.
 
 def index(request):
     """
     Vista para la página principal de la aplicación Academia.
-
-    Args:
-        request: El objeto HttpRequest.
-
-    Returns:
-        HttpResponse: La respuesta HTTP con el contenido de la página.
     """
-    return render(request, 'academia/index.html')
+    return render(request, 'academia/index.html')  # Renderizamos academia/index.html
+
+def cursos(request):
+    """
+    Vista para la página de cursos.
+    """
+    return render(request, 'academia/cursos.html')  # Necesitamos crear esta plantilla
+
 
