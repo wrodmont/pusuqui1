@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block page_title %}{% trans "Confirmar Eliminación de Profesor" %}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card border-danger">
+                <div class="card-header bg-danger text-white">
+                    <h1 class="card-title">{% trans "Eliminar Profesor" %}: {{ teacher.name }} {{ teacher.surname }}</h1>
+                </div>
+                <div class="card-body">
+                    <p>{% blocktrans with name=teacher.name surname=teacher.surname %}Está a punto de eliminar al profesor <strong>{{ name }} {{ surname }}</strong>.{% endblocktrans %}</p>
+                    <p class="text-danger"><strong>{% trans "¡Esta acción no se puede deshacer!" %}</strong></p>
+                    <p>{% trans "¿Está seguro de que desea continuar?" %}</p>
+                    
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                            <a href="{% url 'academia:teacher-detail' teacher.pk %}" class="btn btn-secondary">{% trans "Cancelar" %}</a>
+                            <button type="submit" class="btn btn-danger">{% trans "Sí, eliminar profesor" %}</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

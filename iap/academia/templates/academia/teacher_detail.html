@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block page_title %}{% trans "Detalle del Profesor" %}: {{ teacher.name }} {{ teacher.surname }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="card">
+        <div class="card-header">
+            <h1 class="card-title">{% trans "Detalle del Profesor" %}: {{ teacher.name }} {{ teacher.surname }}</h1>
+        </div>
+        <div class="card-body">
+            <p><strong>{% trans "Nombre" %}:</strong> {{ teacher.name }}</p>
+            <p><strong>{% trans "Apellido" %}:</strong> {{ teacher.surname }}</p>
+            <p><strong>{% trans "Email" %}:</strong> {{ teacher.email|default:"No proporcionado" }}</p>
+            <p><strong>{% trans "Teléfono" %}:</strong> {{ teacher.phone_number|default:"No proporcionado" }}</p>
+            <!-- Aquí podrías agregar más información, como cursos asignados, etc. -->
+        </div>
+        <div class="card-footer text-end">
+            <a href="{% url 'academia:teacher-update' teacher.pk %}" class="btn btn-warning">{% trans "Editar" %}</a>
+            <a href="{% url 'academia:teacher-delete' teacher.pk %}" class="btn btn-danger">{% trans "Eliminar" %}</a>
+            <a href="{% url 'academia:teacher-list' %}" class="btn btn-secondary">{% trans "Volver al Listado" %}</a>
+        </div>
+    </div>
+</div>
+{% endblock %}
