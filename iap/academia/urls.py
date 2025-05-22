@@ -14,6 +14,13 @@ urlpatterns = [
     path('teachers/<int:pk>/edit/', views.TeacherUpdateView.as_view(), name='teacher-update'),
     path('teachers/<int:pk>/delete/', views.TeacherDeleteView.as_view(), name='teacher-delete'),
 
+    # URLs para Student
+    path('students/', views.StudentListView.as_view(), name='student-list'),
+    path('students/new/', views.StudentCreateView.as_view(), name='student-create'),
+    path('students/<int:pk>/', views.StudentDetailView.as_view(), name='student-detail'),
+    path('students/<int:pk>/edit/', views.StudentUpdateView.as_view(), name='student-update'),
+    path('students/<int:pk>/delete/', views.StudentDeleteView.as_view(), name='student-delete'),
+
     path('cursos/', views.cursos, name='cursos'),  # Ruta para la página de cursos
     # ... puedes agregar otras rutas aquí ...
 ]

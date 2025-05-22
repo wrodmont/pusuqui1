@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <h2>{{ page_title }}</h2>
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">{{ student.name }} {{ student.surname }}</h5>
+            <p class="card-text"><strong>Email:</strong> {{ student.email|default:"No especificado" }}</p>
+            <p class="card-text"><strong>Teléfono:</strong> {{ student.phone_number|default:"No especificado" }}</p>
+            <p class="card-text"><strong>Fecha de Nacimiento:</strong> {{ student.date_of_birth|date:"Y-m-d"|default:"No especificada" }}</p>
+            <p class="card-text"><strong>Edad:</strong> {{ student.age|default:"N/A" }}</p>
+            
+            <hr>
+            <h6 class="card-subtitle mb-2 text-muted">Cursos Matriculados:</h6>
+            {% if student.enrollments.all %}
+                <ul>
+                    {% for enrollment in student.enrollments.all %}
+                        <li>
+                            {{ enrollment.course.subject.name }} ({{ enrollment.course.academic_period }}) - Estado: {{ enrollment.get_status_display }}
+                        </li>
+                    {% empty %}
+                        <li>No está matriculado en ningún curso.</li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                 <p>No está matriculado en ningún curso.</p>
+            {% endif %}
+
+        </div>
+        <div class="card-footer">
+            <a href="{% url 'academia:student-list' %}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Volver al Listado
+            </a>
+            <a href="{% url 'academia:student-update' student.pk %}" class="btn btn-warning">
+                <i class="fas fa-edit"></i> Editar
+            </a>
+            <a href="{% url 'academia:student-delete' student.pk %}" class="btn btn-danger">
+                <i class="fas fa-trash-alt"></i> Eliminar
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

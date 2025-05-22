@@ -6,8 +6,8 @@ from django.views.generic import ListView, DetailView, CreateView, UpdateView, D
 
 # Create your views here.
 
-from .models import Teacher
-from .forms import TeacherForm
+from .models import Teacher, Student
+from .forms import TeacherForm, StudentForm
 
 def index(request):
     """
@@ -91,4 +91,68 @@ class TeacherDeleteView(DeleteView):
         context = super().get_context_data(**kwargs)
         context['active_page'] = 'teachers'
         context['page_title'] = f"Eliminar Profesor: {self.object.name} {self.object.surname}"
+        return context
+
+# Vistas para Student
+class StudentListView(ListView):
+    model = Student
+    template_name = 'academia/student_list.html'
+    context_object_name = 'students'
+    paginate_by = 10
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['active_page'] = 'students'
+        context['page_title'] = 'Listado de Estudiantes'
+        return context
+
+class StudentDetailView(DetailView):
+    model = Student
+    template_name = 'academia/student_detail.html'
+    context_object_name = 'student'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['active_page'] = 'students'
+        context['page_title'] = f"Detalle de Estudiante: {self.object.name} {self.object.surname}"
+        return context
+
+class StudentCreateView(CreateView):
+    model = Student
+    form_class = StudentForm
+    template_name = 'academia/student_form.html' # Podemos reutilizar o crear uno específico
+    success_url = reverse_lazy('academia:student-list')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['active_page'] = 'students'
+        context['page_title'] = 'Registrar Nuevo Estudiante'
+        context['form_title'] = 'Formulario de Nuevo Estudiante'
+        context['submit_button_text'] = 'Guardar Estudiante'
+        return context
+
+class StudentUpdateView(UpdateView):
+    model = Student
+    form_class = StudentForm
+    template_name = 'academia/student_form.html' # Reutilizamos
+    success_url = reverse_lazy('academia:student-list')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['active_page'] = 'students'
+        context['page_title'] = f"Actualizar Estudiante: {self.object.name} {self.object.surname}"
+        context['form_title'] = 'Formulario de Actualización de Estudiante'
+        context['submit_button_text'] = 'Actualizar Estudiante'
+        return context
+
+class StudentDeleteView(DeleteView):
+    model = Student
+    template_name = 'academia/student_confirm_delete.html' # Podemos reutilizar o crear uno específico
+    success_url = reverse_lazy('academia:student-list')
+    context_object_name = 'student'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['active_page'] = 'students'
+        context['page_title'] = f"Eliminar Estudiante: {self.object.name} {self.object.surname}"
         return context

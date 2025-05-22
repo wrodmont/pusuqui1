@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %} <!-- Si estás usando crispy_forms -->
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <h2>{{ page_title }}</h2>
+    <div class="card">
+        <div class="card-header">
+            {{ form_title }}
+        </div>
+        <div class="card-body">
+            <form method="post" novalidate>
+                {% csrf_token %}
+                
+                <!-- Si no usas crispy_forms, renderiza los campos manualmente o con {{ form.as_p }} -->
+                {{ form|crispy }} 
+                <!-- O, sin crispy:
+                {% for field in form %}
+                    <div class="form-group">
+                        {{ field.label_tag }}
+                        {{ field }}
+                        {% if field.help_text %}
+                            <small class="form-text text-muted">{{ field.help_text }}</small>
+                        {% endif %}
+                        {% for error in field.errors %}
+                            <div class="alert alert-danger">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                {% endfor %}
+                -->
+                
+                <button type="submit" class="btn btn-success">
+                    <i class="fas fa-save"></i> {{ submit_button_text|default:"Guardar" }}
+                </button>
+                <a href="{% url 'academia:student-list' %}" class="btn btn-secondary">
+                    <i class="fas fa-times"></i> Cancelar
+                </a>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
