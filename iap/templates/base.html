@@ -19,8 +19,8 @@
     <!-- Estilos personalizados -->
     <style>
       :root {
-        --primary-color: #3c6e71;
-        --secondary-color: #284b63;
+        --primary-color: #72cdd1;
+        --secondary-color: #65a7d3;
         --accent-color: #d9d9d9;
         --light-bg: #f8f9fa;
         --border-radius: 8px;
@@ -204,7 +204,7 @@
               </ul>
             </li>
 
-            <!-- Ministerios (reemplazando Equipamiento) -->
+            <!-- Ministerios -->
             <li class="nav-item dropdown">
               <a
                 class="nav-link dropdown-toggle"
@@ -220,7 +220,7 @@
                 <li>
                   <a
                     class="dropdown-item"
-                    href="{% url 'pusukids:coordinator_list' %}"
+                    href="{% url 'alabanza:index' %}"
                   >
                     <i class="fas fa-music"></i> Alabanza
                   </a>
@@ -228,17 +228,17 @@
                 <li>
                   <a
                     class="dropdown-item"
-                    href="{% url 'pusukids:coordinator_list' %}"
+                    href="{% url 'anfitriones:index' %}"
                   >
-                    <i class="fas fa-hands-helping"></i> Hospitalidad
+                    <i class="fas fa-hands-helping"></i> Anfitriones
                   </a>
                 </li>
                 <li>
                   <a
                     class="dropdown-item"
-                    href="{% url 'pusukids:coordinator_list' %}"
+                    href="{% url 'discipulado:index' %}"
                   >
-                    <i class="fas fa-users"></i> Grupos Pequeños
+                    <i class="fas fa-users"></i> Discipulado
                   </a>
                 </li>
               </ul>

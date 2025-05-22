@@ -1,3 +1,4 @@
+# academia/views.py
 from django.shortcuts import render
 # from django.http import HttpResponse # Ya no es necesaria para el index si usamos render
 from django.urls import reverse_lazy
@@ -18,7 +19,14 @@ def index(request):
     Returns:
         HttpResponse: La respuesta HTTP con el contenido de la página.
     """
-    return render(request, 'academia/index.html', {'active_page': 'index'})
+    return render(request, 'academia/index.html', {'active_page': 'index'})  # Renderizamos academia/index.html
+
+def cursos(request):
+    """
+    Vista para la página de cursos.
+    """
+    return render(request, 'academia/cursos.html')  # Necesitamos crear esta plantilla
+
 
 
 # Vistas para Teacher
