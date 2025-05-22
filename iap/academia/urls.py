@@ -21,8 +21,21 @@ urlpatterns = [
     path('students/<int:pk>/edit/', views.StudentUpdateView.as_view(), name='student-update'),
     path('students/<int:pk>/delete/', views.StudentDeleteView.as_view(), name='student-delete'),
 
-    path('cursos/', views.cursos, name='cursos'),  # Ruta para la página de cursos
-    # ... puedes agregar otras rutas aquí ...
+    # URLs para Subject
+    path('subjects/', views.SubjectListView.as_view(), name='subject-list'),
+    path('subjects/new/', views.SubjectCreateView.as_view(), name='subject-create'),
+    path('subjects/<int:pk>/', views.SubjectDetailView.as_view(), name='subject-detail'),
+    path('subjects/<int:pk>/edit/', views.SubjectUpdateView.as_view(), name='subject-update'),
+    path('subjects/<int:pk>/delete/', views.SubjectDeleteView.as_view(), name='subject-delete'),
+
+    # URLs para Course
+    path('courses/', views.CourseListView.as_view(), name='course-list'),
+    path('courses/new/', views.CourseCreateView.as_view(), name='course-create'),
+    path('courses/<int:pk>/', views.CourseDetailView.as_view(), name='course-detail'),
+    path('courses/<int:pk>/edit/', views.CourseUpdateView.as_view(), name='course-update'),
+    path('courses/<int:pk>/delete/', views.CourseDeleteView.as_view(), name='course-delete'),
+
+
 ]
 
  

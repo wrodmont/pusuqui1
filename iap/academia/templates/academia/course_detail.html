@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h2 class="mb-0">{{ page_title }}</h2>
+            <div>
+                <a href="{% url 'academia:course-update' course.pk %}" class="btn btn-warning btn-sm" title="Editar Curso">
+                    <i class="fas fa-edit"></i> Editar
+                </a>
+                <a href="{% url 'academia:course-delete' course.pk %}" class="btn btn-danger btn-sm" title="Eliminar Curso">
+                    <i class="fas fa-trash-alt"></i> Eliminar
+                </a>
+            </div>
+        </div>
+        <div class="card-body">
+            <dl class="row">
+                <dt class="col-sm-3">Asignatura:</dt>
+                <dd class="col-sm-9"><a href="{% url 'academia:subject-detail' course.subject.pk %}">{{ course.subject.name }}</a></dd>
+
+                <dt class="col-sm-3">Profesor:</dt>
+                <dd class="col-sm-9"><a href="{% url 'academia:teacher-detail' course.teacher.pk %}">{{ course.teacher }}</a></dd>
+
+                <dt class="col-sm-3">Periodo Académico:</dt>
+                <dd class="col-sm-9">{{ course.academic_period }}</dd>
+
+                <dt class="col-sm-3">Día de la Semana:</dt>
+                <dd class="col-sm-9">{{ course.get_day_of_week_display }}</dd>
+
+                <dt class="col-sm-3">Hora de Inicio:</dt>
+                <dd class="col-sm-9">{{ course.start_time|time:"H:i" }}</dd>
+
+                <dt class="col-sm-3">Fecha de Inicio:</dt>
+                <dd class="col-sm-9">{{ course.start_date|date:"Y-m-d" }}</dd>
+
+                <dt class="col-sm-3">Fecha de Fin:</dt>
+                <dd class="col-sm-9">{{ course.end_date|date:"Y-m-d"|default:"No especificada (se calcula automáticamente)" }}</dd>
+
+                <dt class="col-sm-3">Número de Lecciones (de la asignatura):</dt>
+                <dd class="col-sm-9">{{ course.subject.number_of_lessons }}</dd>
+
+                <dt class="col-sm-3">Activo:</dt>
+                <dd class="col-sm-9">
+                    {% if course.is_active %}Sí <i class="fas fa-check-circle text-success"></i>
+                    {% else %}No <i class="fas fa-times-circle text-danger"></i>{% endif %}
+                </dd>
+            </dl>
+        </div>
+        <div class="card-footer">
+            <a href="{% url 'academia:course-list' %}" class="btn btn-secondary"><i class="fas fa-arrow-left"></i> Volver al Listado</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,23 @@
+{% extends "academia/base.html" %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="card border-danger">
+        <div class="card-header bg-danger text-white">
+            <h2>{{ page_title }}</h2>
+        </div>
+        <div class="card-body">
+            <p>¿Estás seguro de que quieres eliminar la asignatura <strong>"{{ subject.name }}"</strong>?</p>
+            <p>Esta acción no se puede deshacer.</p>
+            
+            <form method="post">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger"><i class="fas fa-trash-alt"></i> Sí, eliminar</button>
+                <a href="{% url 'academia:subject-detail' subject.pk %}" class="btn btn-secondary">Cancelar</a>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %} {# O renderiza el form manualmente #}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block head_extra %}
+{{ form.media }} {# Para widgets como Select2 si se usa django-select2 o similar #}
+<style>
+    /* Asegurar que el checkbox de 'is_active' se alinee mejor si no se usa crispy-forms */
+    .form-check-input {
+        margin-left: 0.25rem; /* Ajusta según sea necesario */
+    }
+    .form-check-label {
+        margin-left: 1.5rem; /* Ajusta para dar espacio al input */
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <div class="card">
+        <div class="card-header">
+            <h2>{{ form_title }}</h2>
+        </div>
+        <div class="card-body">
+            <form method="post" novalidate>
+                {% csrf_token %}
+                
+                {{ form|crispy }}
+                
+                <button type="submit" class="btn btn-success mt-3"><i class="fas fa-save"></i> {{ submit_button_text }}</button>
+                <a href="{% if object %}{% url 'academia:course-detail' object.pk %}{% else %}{% url 'academia:course-list' %}{% endif %}" class="btn btn-secondary mt-3">Cancelar</a>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

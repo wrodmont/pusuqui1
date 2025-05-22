@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <div class="card border-danger">
+        <div class="card-header bg-danger text-white">
+            <h2>{{ page_title }}</h2>
+        </div>
+        <div class="card-body">
+            <p>¿Estás seguro de que quieres eliminar el curso <strong>"{{ course }}"</strong>?</p>
+            <p>Esta acción no se puede deshacer. Se eliminarán también todas las matrículas y registros de asistencia asociados a este curso.</p>
+            
+            <form method="post">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger"><i class="fas fa-trash-alt"></i> Sí, eliminar</button>
+                <a href="{% url 'academia:course-detail' course.pk %}" class="btn btn-secondary">Cancelar</a>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
