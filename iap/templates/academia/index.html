@@ -3,9 +3,57 @@
 {% block title %}Academia Bíblica{% endblock %}
 
 {% block body %}
-<div class="container mt-4 text-center">
-  <h1 class="display-4 fw-bold section-title">Academia Bíblica</h1>
-  <p class="lead text-muted">Gestión del ministerio Academia Bíblica.</p>
-  <!-- Puedes agregar aquí enlaces o información relevante -->
+<div class="container mt-4">
+    <!-- Encabezado de la página -->
+    <div class="text-center mb-5">
+        <h1 class="display-4 fw-bold section-title">Academia Bíblica</h1>
+        <p class="lead text-muted">Gestión del ministerio Academia Bíblica</p>
+        <p class="text-muted">Bienvenido al sistema de gestión de la academia bíblica, donde puedes gestionar profesores, estudiantes, asignaturas y cursos.</p>
+    </div>
+
+    <!-- Card que contiene los enlaces a las secciones -->
+    <div class="row">
+        <div class="col-12 col-md-6 col-lg-3 mb-4">
+            <div class="card shadow-lg">
+                <div class="card-body text-center">
+                    <h4 class="card-title text-primary">Profesores</h4>
+                    <p class="card-text">Gestiona a los profesores de la academia. Agrega, edita o elimina sus datos.</p>
+                    <a href="{% url 'academia:teacher-list' %}" class="btn btn-primary">Ver Profesores</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-md-6 col-lg-3 mb-4">
+            <div class="card shadow-lg">
+                <div class="card-body text-center">
+                    <h4 class="card-title text-success">Estudiantes</h4>
+                    <p class="card-text">Gestiona los estudiantes. Visualiza sus datos, inscripciones y más.</p>
+                    <a href="{% url 'academia:student-list' %}" class="btn btn-success">Ver Estudiantes</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-md-6 col-lg-3 mb-4">
+            <div class="card shadow-lg">
+                <div class="card-body text-center">
+                    <h4 class="card-title text-warning">Asignaturas</h4>
+                    <p class="card-text">Organiza y administra las asignaturas del curso. Crea y edita asignaturas fácilmente.</p>
+                    <a href="{% url 'academia:subject-list' %}" class="btn btn-warning">Ver Asignaturas</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-md-6 col-lg-3 mb-4">
+            <div class="card shadow-lg">
+                <div class="card-body text-center">
+                    <h4 class="card-title text-info">Cursos</h4>
+                    <p class="card-text">Gestiona los cursos y asigna profesores y estudiantes a ellos. Todo desde un solo lugar.</p>
+                    <a href="{% url 'academia:course-list' %}" class="btn btn-info">Ver Cursos</a>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 {% endblock %}
+
+
