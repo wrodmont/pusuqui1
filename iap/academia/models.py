@@ -204,7 +204,7 @@ class Enrollment(models.Model):
 class AttendanceLog(models.Model):
     enrollment = models.ForeignKey(
         Enrollment,
-        on_delete=models.CASCADE,
+        on_delete=models.PROTECT,
         related_name='attendance_logs',
         verbose_name=_("enrollment")
     )
