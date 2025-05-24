@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <h2>{{ page_title }}</h2>
+    <div class="card">
+        <div class="card-header">
+            {% translate "Enrollment Details" %}
+        </div>
+        <div class="card-body">
+            <dl class="row">
+                <dt class="col-sm-3">{% translate "Student" %}:</dt>
+                <dd class="col-sm-9"><a href="{% url 'academia:student-detail' enrollment.student.pk %}">{{ enrollment.student }}</a></dd>
+
+                <dt class="col-sm-3">{% translate "Course" %}:</dt>
+                <dd class="col-sm-9"><a href="{% url 'academia:course-detail' enrollment.course.pk %}">{{ enrollment.course }}</a></dd>
+
+                <dt class="col-sm-3">{% translate "Enrollment Date" %}:</dt>
+                <dd class="col-sm-9">{{ enrollment.enrollment_date|date:"Y-m-d" }}</dd>
+
+                <dt class="col-sm-3">{% translate "Status" %}:</dt>
+                <dd class="col-sm-9">{{ enrollment.get_status_display }}</dd>
+
+                <dt class="col-sm-3">{% translate "Homework Score" %}:</dt>
+                <dd class="col-sm-9">{{ enrollment.homework_score|default:"N/A" }}</dd>
+
+                <dt class="col-sm-3">{% translate "Exam Score" %}:</dt>
+                <dd class="col-sm-9">{{ enrollment.exam_score|default:"N/A" }}</dd>
+
+                <dt class="col-sm-3">{% translate "Attendance Score" %}:</dt>
+                <dd class="col-sm-9">
+                    {% if enrollment.attendance_score is not None %}
+                        {{ enrollment.attendance_score|floatformat:2 }}%
+                    {% else %}
+                        N/A
+                    {% endif %}
+                </dd>
+
+                <dt class="col-sm-3">{% translate "Final Grade" %}:</dt>
+                <dd class="col-sm-9">
+                    {% if enrollment.final_grade is not None %}
+                        {{ enrollment.final_grade|floatformat:2 }}
+                    {% else %}
+                        N/A
+                    {% endif %}
+                </dd>
+            </dl>
+
+            <h4 class="mt-4">{% translate "Attendance Logs" %}</h4>
+            {% if enrollment.attendance_logs.all %}
+            <ul class="list-group">
+                {% for log in enrollment.attendance_logs.all %}
+                <li class="list-group-item">
+                    {% translate "Lesson" %} {{ log.lesson_number }} ({{ log.lesson_date|date:"Y-m-d" }}): 
+                    <strong>{% if log.is_present %}{% translate "Present" %}{% else %}{% translate "Absent" %}{% endif %}</strong>
+                    {% if log.notes %} - <em>{{ log.notes }}</em>{% endif %}
+                </li>
+                {% endfor %}
+            </ul>
+            {% else %}
+            <p>{% translate "No attendance logs recorded for this enrollment yet." %}</p>
+            {% endif %}
+
+        </div>
+        <div class="card-footer">
+            <a href="{% url 'academia:enrollment-list' %}" class="btn btn-secondary">{% translate "Back to List" %}</a>
+            <a href="{% url 'academia:enrollment-update' enrollment.pk %}" class="btn btn-warning">{% translate "Edit" %}</a>
+            <a href="{% url 'academia:enrollment-delete' enrollment.pk %}" class="btn btn-danger">{% translate "Delete" %}</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

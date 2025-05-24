@@ -1,5 +1,7 @@
 from django import forms
-from .models import Teacher, Student, Subject, Course
+from .models import Teacher, Student, Subject, Course, Enrollment, AttendanceLog
+from django.utils.translation import gettext_lazy as _
+from datetime import date
 
 class TeacherForm(forms.ModelForm):
     class Meta:
@@ -80,10 +82,121 @@ class CourseForm(forms.ModelForm):
             'is_active': '¿Está Activo?',
         }
         help_texts = {
-            'end_date': model._meta.get_field('end_date').help_text # Heredar help_text del modelo
+            'end_date': Course._meta.get_field('end_date').help_text # Heredar help_text del modelo
         }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         # El campo end_date no es obligatorio en el formulario ya que el modelo puede calcularlo.
         self.fields['end_date'].required = False
+
+class EnrollmentForm(forms.ModelForm):
+    class Meta:
+        model = Enrollment
+        fields = ['student', 'course', 'enrollment_date', 'status', 'homework_score', 'exam_score']
+        widgets = {
+            'student': forms.Select(attrs={'class': 'form-control select2'}),
+            'course': forms.Select(attrs={'class': 'form-control select2'}),
+            'enrollment_date': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
+            'status': forms.Select(attrs={'class': 'form-control'}),
+            'homework_score': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01'}),
+            'exam_score': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01'}),
+        }
+        labels = {
+            'student': _('Student'),
+            'course': _('Course'),
+            'enrollment_date': _('Enrollment Date'),
+            'status': _('Status'),
+            'homework_score': _('Homework Score'),
+            'exam_score': _('Exam Score'),
+        }
+        help_texts = {
+            'enrollment_date': _('Defaults to today if not specified.'),
+            'homework_score': Enrollment._meta.get_field('homework_score').help_text,
+            'exam_score': Enrollment._meta.get_field('exam_score').help_text,
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # El ModelForm ya debería usar el 'default' del modelo para 'initial'
+        # cuando se crea un nuevo formulario.
+        # Si necesitas establecer explícitamente el atributo 'value' del widget:
+        default_enrollment_date_callable = Enrollment._meta.get_field('enrollment_date').default
+        if callable(default_enrollment_date_callable):
+            actual_default_value = default_enrollment_date_callable()
+            # El widget DateInput(type='date') puede manejar un objeto date directamente.
+            self.fields['enrollment_date'].widget.attrs.setdefault('value', actual_default_value.strftime('%Y-%m-%d'))
+
+class AttendanceLogForm(forms.ModelForm):
+    class Meta:
+        model = AttendanceLog
+        fields = ['enrollment', 'lesson_date', 'lesson_number', 'is_present', 'notes']
+        widgets = {
+            'enrollment': forms.Select(attrs={'class': 'form-control select2'}),
+            'lesson_date': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
+            'lesson_number': forms.NumberInput(attrs={'class': 'form-control'}),
+            'is_present': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+            'notes': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
+        }
+        labels = {
+            'enrollment': _('Enrollment (Student - Course)'),
+            'lesson_date': _('Lesson Date'),
+            'lesson_number': _('Lesson Number'),
+            'is_present': _('Was Present?'),
+            'notes': _('Notes'),
+        }
+        help_texts = {
+            'lesson_number': AttendanceLog._meta.get_field('lesson_number').help_text,
+            'notes': AttendanceLog._meta.get_field('notes').help_text,
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Establecer la fecha de hoy como valor por defecto para lesson_date si es un formulario nuevo
+        if not self.instance.pk and 'initial' not in kwargs: # Solo para creación y si no se provee initial
+             self.fields['lesson_date'].widget.attrs.setdefault('value', AttendanceLog._meta.get_field('lesson_date').validators[0].__self__.today().strftime('%Y-%m-%d') if hasattr(AttendanceLog._meta.get_field('lesson_date').validators[0], '__self__') and hasattr(AttendanceLog._meta.get_field('lesson_date').validators[0].__self__, 'today') else date.today().strftime('%Y-%m-%d'))
+
+    def clean_lesson_number(self):
+        lesson_number = self.cleaned_data.get('lesson_number')
+        enrollment = self.cleaned_data.get('enrollment')
+        if enrollment and lesson_number > enrollment.course.subject.number_of_lessons:
+            raise forms.ValidationError(_("Lesson number cannot exceed the total number of lessons for the course's subject (%(max_lessons)s).") % {'max_lessons': enrollment.course.subject.number_of_lessons})
+        return lesson_number
+
+
+class AttendanceTakingSelectionForm(forms.Form):
+    course = forms.ModelChoiceField(
+        queryset=Course.objects.select_related('subject').order_by('-academic_period', 'subject__name'),
+        label=_("Course"),
+        widget=forms.Select(attrs={'class': 'form-control select2'})
+    )
+    lesson_date = forms.DateField(
+        label=_("Lesson Date"),
+        widget=forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
+        initial=date.today
+    )
+    lesson_number = forms.IntegerField(
+        label=_("Lesson Number"),
+        widget=forms.NumberInput(attrs={'class': 'form-control'}),
+        min_value=1
+    )
+
+    def clean(self):
+        cleaned_data = super().clean()
+        course = cleaned_data.get("course")
+        lesson_number = cleaned_data.get("lesson_number")
+
+        if course and lesson_number:
+            if lesson_number > course.subject.number_of_lessons:
+                self.add_error('lesson_number', forms.ValidationError(
+                    _("Lesson number (%(lesson_num)s) cannot exceed the total number of lessons (%(max_lessons)s) for this course's subject.") % {
+                        'lesson_num': lesson_number,
+                        'max_lessons': course.subject.number_of_lessons
+                    }
+                ))
+        return cleaned_data
+
+class StudentAttendanceForm(forms.Form):
+    enrollment_id = forms.IntegerField(widget=forms.HiddenInput())
+    is_present = forms.BooleanField(label=_("P"), required=False, widget=forms.CheckboxInput(attrs={'class': 'form-check-input ms-2 me-1'})) # P for Present
+    notes = forms.CharField(label="", required=False, widget=forms.TextInput(attrs={'class': 'form-control form-control-sm', 'placeholder': _('Optional notes')}))

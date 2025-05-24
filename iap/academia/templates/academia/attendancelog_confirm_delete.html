@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <h2>{{ page_title }}</h2>
+    <div class="alert alert-danger" role="alert">
+        <p>{% blocktranslate with student_name=attendancelog.enrollment.student course_name=attendancelog.enrollment.course.subject.name lesson_number=attendancelog.lesson_number lesson_date=attendancelog.lesson_date|date:"Y-m-d" %}
+        Are you sure you want to delete the attendance log for student <strong>{{ student_name }}</strong> in course <strong>{{ course_name }}</strong>, for lesson <strong>#{{ lesson_number }}</strong> on <strong>{{ lesson_date }}</strong>?
+        {% endblocktranslate %}</p>
+        <p><strong>{% translate "Enrollment" %}:</strong> {{ attendancelog.enrollment }}</p>
+        <p><strong>{% translate "Status" %}:</strong> {% if attendancelog.is_present %}{% translate "Present" %}{% else %}{% translate "Absent" %}{% endif %}</p>
+    </div>
+    
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">{% translate "Yes, delete" %}</button>
+        <a href="{% url 'academia:attendancelog-detail' attendancelog.pk %}" class="btn btn-secondary">{% translate "Cancel" %}</a>
+    </form>
+</div>
+{% endblock %}

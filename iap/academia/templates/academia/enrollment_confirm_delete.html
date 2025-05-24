@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <h2>{{ page_title }}</h2>
+    <div class="alert alert-danger" role="alert">
+        <p>{% blocktranslate with student_name=enrollment.student course_name=enrollment.course.subject.name %}
+        Are you sure you want to delete the enrollment for student <strong>{{ student_name }}</strong> in the course <strong>{{ course_name }}</strong> ({{ enrollment.course.academic_period }})?
+        {% endblocktranslate %}</p>
+    </div>
+    
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">{% translate "Yes, delete" %}</button>
+        <a href="{% url 'academia:enrollment-detail' enrollment.pk %}" class="btn btn-secondary">{% translate "Cancel" %}</a>
+    </form>
+</div>
+{% endblock %}

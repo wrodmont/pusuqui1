@@ -35,7 +35,20 @@ urlpatterns = [
     path('courses/<int:pk>/edit/', views.CourseUpdateView.as_view(), name='course-update'),
     path('courses/<int:pk>/delete/', views.CourseDeleteView.as_view(), name='course-delete'),
 
+    # URLs para Enrollment
+    path('enrollments/', views.EnrollmentListView.as_view(), name='enrollment-list'),
+    path('enrollments/new/', views.EnrollmentCreateView.as_view(), name='enrollment-create'),
+    path('enrollments/<int:pk>/', views.EnrollmentDetailView.as_view(), name='enrollment-detail'),
+    path('enrollments/<int:pk>/edit/', views.EnrollmentUpdateView.as_view(), name='enrollment-update'),
+    path('enrollments/<int:pk>/delete/', views.EnrollmentDeleteView.as_view(), name='enrollment-delete'),
 
+    # URLs para AttendanceLog
+    path('attendancelogs/take/', views.TakeAttendanceView.as_view(), name='take-attendance'), # Nueva URL para tomar asistencia masiva
+    path('attendancelogs/', views.AttendanceLogListView.as_view(), name='attendancelog-list'),
+    path('attendancelogs/new/', views.AttendanceLogCreateView.as_view(), name='attendancelog-create'),
+    path('attendancelogs/<int:pk>/', views.AttendanceLogDetailView.as_view(), name='attendancelog-detail'),
+    path('attendancelogs/<int:pk>/edit/', views.AttendanceLogUpdateView.as_view(), name='attendancelog-update'),
+    path('attendancelogs/<int:pk>/delete/', views.AttendanceLogDeleteView.as_view(), name='attendancelog-delete'),
 ]
 
  

@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <h2>{{ page_title }}</h2>
+    <div class="card">
+        <div class="card-header">
+            {% translate "Attendance Log Details" %}
+        </div>
+        <div class="card-body">
+            <dl class="row">
+                <dt class="col-sm-3">{% translate "Enrollment" %}:</dt>
+                <dd class="col-sm-9"><a href="{% url 'academia:enrollment-detail' attendancelog.enrollment.pk %}">{{ attendancelog.enrollment }}</a></dd>
+
+                <dt class="col-sm-3">{% translate "Student" %}:</dt>
+                <dd class="col-sm-9"><a href="{% url 'academia:student-detail' attendancelog.enrollment.student.pk %}">{{ attendancelog.enrollment.student }}</a></dd>
+
+                <dt class="col-sm-3">{% translate "Course" %}:</dt>
+                <dd class="col-sm-9"><a href="{% url 'academia:course-detail' attendancelog.enrollment.course.pk %}">{{ attendancelog.enrollment.course }}</a></dd>
+
+                <dt class="col-sm-3">{% translate "Lesson Date" %}:</dt>
+                <dd class="col-sm-9">{{ attendancelog.lesson_date|date:"Y-m-d" }}</dd>
+
+                <dt class="col-sm-3">{% translate "Lesson Number" %}:</dt>
+                <dd class="col-sm-9">{{ attendancelog.lesson_number }}</dd>
+
+                <dt class="col-sm-3">{% translate "Status" %}:</dt>
+                <dd class="col-sm-9">
+                    {% if attendancelog.is_present %}
+                        <span class="badge bg-success">{% translate "Present" %}</span>
+                    {% else %}
+                        <span class="badge bg-danger">{% translate "Absent" %}</span>
+                    {% endif %}
+                </dd>
+
+                <dt class="col-sm-3">{% translate "Notes" %}:</dt>
+                <dd class="col-sm-9">{{ attendancelog.notes|default:_("N/A")|linebreaksbr }}</dd>
+            </dl>
+        </div>
+        <div class="card-footer">
+            <a href="{% url 'academia:attendancelog-list' %}" class="btn btn-secondary">{% translate "Back to List" %}</a>
+            <a href="{% url 'academia:attendancelog-update' attendancelog.pk %}" class="btn btn-warning">{% translate "Edit" %}</a>
+            <a href="{% url 'academia:attendancelog-delete' attendancelog.pk %}" class="btn btn-danger">{% translate "Delete" %}</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

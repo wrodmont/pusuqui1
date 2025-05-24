@@ -3,11 +3,17 @@ from django.shortcuts import render
 # from django.http import HttpResponse # Ya no es necesaria para el index si usamos render
 from django.urls import reverse_lazy
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
+from django.views import View # Import View
+from django.shortcuts import redirect, get_object_or_404
+from django.forms import formset_factory
+from django.contrib import messages
+from django.utils.translation import gettext_lazy as _
+from datetime import date
 
 # Create your views here.
-
-from .models import Teacher, Student, Subject, Course
-from .forms import TeacherForm, StudentForm, SubjectForm, CourseForm
+from .models import Teacher, Student, Subject, Course, Enrollment, AttendanceLog # Models
+from .forms import (TeacherForm, StudentForm, SubjectForm, CourseForm, EnrollmentForm, AttendanceLogForm, # Existing Forms
+                    AttendanceTakingSelectionForm, StudentAttendanceForm) # New Forms for bulk attendance
 
 def index(request):
     """
@@ -292,3 +298,303 @@ class CourseDeleteView(DeleteView):
         context['active_page'] = 'courses'
         context['page_title'] = f"Eliminar Curso: {self.object}"
         return context
+
+# Vistas para Enrollment
+class EnrollmentListView(ListView):
+    model = Enrollment
+    template_name = 'academia/enrollment_list.html'
+    context_object_name = 'enrollments'
+    paginate_by = 10
+
+    def get_queryset(self):
+        # Optimizar la consulta para incluir datos relacionados
+        return Enrollment.objects.select_related(
+            'student', 'course', 'course__subject', 'course__teacher'
+        ).order_by('-course__academic_period', 'course__subject__name', 'student__surname')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['active_page'] = 'enrollments'
+        context['page_title'] = 'Listado de Inscripciones'
+        return context
+
+class EnrollmentDetailView(DetailView):
+    model = Enrollment
+    template_name = 'academia/enrollment_detail.html'
+    context_object_name = 'enrollment'
+
+    def get_queryset(self):
+        return Enrollment.objects.select_related(
+            'student', 'course', 'course__subject', 'course__teacher'
+        ).prefetch_related('attendance_logs') # Para mostrar los logs de asistencia
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['active_page'] = 'enrollments'
+        context['page_title'] = f"Detalle de Inscripción: {self.object.student} - {self.object.course.subject}"
+        # Los logs de asistencia ya están disponibles a través de prefetch_related
+        # context['attendance_logs'] = self.object.attendance_logs.all().order_by('lesson_number') # Opcional si no se usa prefetch
+        return context
+
+class EnrollmentCreateView(CreateView):
+    model = Enrollment
+    form_class = EnrollmentForm
+    template_name = 'academia/enrollment_form.html' # Reutilizar un template de formulario genérico
+    success_url = reverse_lazy('academia:enrollment-list')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['active_page'] = 'enrollments'
+        context['page_title'] = 'Registrar Nueva Inscripción'
+        context['form_title'] = 'Formulario de Nueva Inscripción'
+        context['submit_button_text'] = 'Guardar Inscripción'
+        return context
+
+class EnrollmentUpdateView(UpdateView):
+    model = Enrollment
+    form_class = EnrollmentForm
+    template_name = 'academia/enrollment_form.html' # Reutilizar
+    success_url = reverse_lazy('academia:enrollment-list')
+
+    def get_queryset(self):
+        # Es buena práctica incluir select_related aquí también si el formulario
+        # o el template de alguna manera se benefician de ello (aunque para el form no es común)
+        return Enrollment.objects.select_related(
+            'student', 'course', 'course__subject', 'course__teacher'
+        )
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['active_page'] = 'enrollments'
+        context['page_title'] = f"Actualizar Inscripción: {self.object.student} - {self.object.course.subject}"
+        context['form_title'] = 'Formulario de Actualización de Inscripción'
+        context['submit_button_text'] = 'Actualizar Inscripción'
+        return context
+
+class EnrollmentDeleteView(DeleteView):
+    model = Enrollment
+    template_name = 'academia/enrollment_confirm_delete.html' # Reutilizar o crear específico
+    success_url = reverse_lazy('academia:enrollment-list')
+    context_object_name = 'enrollment'
+
+    def get_queryset(self):
+        return Enrollment.objects.select_related(
+            'student', 'course', 'course__subject'
+        )
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['active_page'] = 'enrollments'
+        context['page_title'] = f"Eliminar Inscripción: {self.object.student} - {self.object.course.subject}"
+        return context
+
+# Vistas para AttendanceLog
+class AttendanceLogListView(ListView):
+    model = AttendanceLog
+    template_name = 'academia/attendancelog_list.html'
+    context_object_name = 'attendancelogs'
+    paginate_by = 15
+
+    def get_queryset(self):
+        return AttendanceLog.objects.select_related(
+            'enrollment__student',
+            'enrollment__course__subject',
+            'enrollment__course__teacher'
+        ).order_by('-lesson_date', 'enrollment__course__subject__name', 'enrollment__student__surname', 'lesson_number')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['active_page'] = 'attendancelogs' # Podrías crear una nueva sección o anidarla
+        context['page_title'] = 'Listado de Registros de Asistencia'
+        return context
+
+class AttendanceLogDetailView(DetailView):
+    model = AttendanceLog
+    template_name = 'academia/attendancelog_detail.html'
+    context_object_name = 'attendancelog'
+
+    def get_queryset(self):
+        return AttendanceLog.objects.select_related(
+            'enrollment__student',
+            'enrollment__course__subject',
+            'enrollment__course__teacher'
+        )
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['active_page'] = 'attendancelogs'
+        context['page_title'] = f"Detalle de Asistencia: {self.object.enrollment.student} - L{self.object.lesson_number}"
+        return context
+
+class AttendanceLogCreateView(CreateView):
+    model = AttendanceLog
+    form_class = AttendanceLogForm
+    template_name = 'academia/attendancelog_form.html' # Reutilizar un template de formulario genérico
+    success_url = reverse_lazy('academia:attendancelog-list')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['active_page'] = 'attendancelogs'
+        context['page_title'] = 'Registrar Nueva Asistencia'
+        context['form_title'] = 'Formulario de Nuevo Registro de Asistencia'
+        context['submit_button_text'] = 'Guardar Registro'
+        return context
+
+class AttendanceLogUpdateView(UpdateView):
+    model = AttendanceLog
+    form_class = AttendanceLogForm
+    template_name = 'academia/attendancelog_form.html' # Reutilizar
+    success_url = reverse_lazy('academia:attendancelog-list')
+
+    def get_queryset(self):
+        return AttendanceLog.objects.select_related(
+            'enrollment__student',
+            'enrollment__course__subject'
+        )
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['active_page'] = 'attendancelogs'
+        context['page_title'] = f"Actualizar Asistencia: {self.object.enrollment.student} - L{self.object.lesson_number}"
+        context['form_title'] = 'Formulario de Actualización de Asistencia'
+        context['submit_button_text'] = 'Actualizar Registro'
+        return context
+
+class AttendanceLogDeleteView(DeleteView):
+    model = AttendanceLog
+    template_name = 'academia/attendancelog_confirm_delete.html'
+    success_url = reverse_lazy('academia:attendancelog-list')
+    context_object_name = 'attendancelog'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['active_page'] = 'attendancelogs'
+        context['page_title'] = f"Eliminar Registro de Asistencia: {self.object.enrollment.student} - L{self.object.lesson_number}"
+        return context
+    
+class TakeAttendanceView(View):
+    template_name = 'academia/take_attendance_form.html'
+    selection_form_class = AttendanceTakingSelectionForm
+    student_form_class = StudentAttendanceForm
+
+    def get(self, request, *args, **kwargs):
+        selection_form = self.selection_form_class(request.GET or None)
+        student_formset = None
+        enrollments_with_forms = [] # Usaremos esto para pasar (enrollment, form) al template
+        course_obj = None # Renombrado para evitar conflicto con el nombre del campo del formulario
+
+        if selection_form.is_valid() and 'course' in request.GET:
+            course_id = selection_form.cleaned_data['course'].id
+            course_obj = get_object_or_404(Course.objects.select_related('subject'), pk=course_id)
+            lesson_date_val = selection_form.cleaned_data['lesson_date']
+            lesson_number_val = selection_form.cleaned_data['lesson_number']
+
+            enrollments = Enrollment.objects.filter(course=course_obj).select_related('student').order_by('student__surname', 'student__name')
+            
+            StudentAttendanceFormSet = formset_factory(self.student_form_class, extra=0)
+            initial_data_for_formset = []
+            for enrollment in enrollments:
+                try:
+                    log = AttendanceLog.objects.get(enrollment=enrollment, lesson_number=lesson_number_val)
+                    initial_data_for_formset.append({
+                        'enrollment_id': enrollment.id,
+                        'is_present': log.is_present,
+                        'notes': log.notes
+                    })
+                except AttendanceLog.DoesNotExist:
+                    initial_data_for_formset.append({
+                        'enrollment_id': enrollment.id,
+                        'is_present': True, # Default a presente
+                        'notes': ''
+                    })
+            student_formset = StudentAttendanceFormSet(initial=initial_data_for_formset, prefix='students')
+
+            for i, enrollment in enumerate(enrollments):
+                if i < len(student_formset.forms):
+                    enrollments_with_forms.append((enrollment, student_formset.forms[i]))
+            
+            # Re-inicializar el formulario de selección para mantener los valores
+            selection_form = self.selection_form_class(initial={
+                'course': course_obj,
+                'lesson_date': lesson_date_val,
+                'lesson_number': lesson_number_val
+            })
+
+        context = {
+            'selection_form': selection_form,
+            'student_formset': student_formset, # Para el management_form
+            'enrollments_with_forms': enrollments_with_forms,
+            'course': course_obj, # El objeto curso seleccionado
+            'page_title': _('Take Attendance'),
+            'form_title': _('Take Attendance for Course'),
+            'active_page': 'attendancelogs',
+        }
+        return render(request, self.template_name, context)
+
+    def post(self, request, *args, **kwargs):
+        # Los datos del curso, fecha y lección deben venir del formulario
+        # Se envían como campos ocultos o se reconstruyen.
+        # Aquí asumimos que se envían como campos ocultos.
+        course_id = request.POST.get('course_id_hidden')
+        lesson_date_str = request.POST.get('lesson_date_hidden')
+        lesson_number_str = request.POST.get('lesson_number_hidden')
+
+        if not all([course_id, lesson_date_str, lesson_number_str]):
+            messages.error(request, _("Missing course, date, or lesson number for submission."))
+            return redirect(reverse_lazy('academia:take-attendance'))
+
+        try:
+            course_obj = get_object_or_404(Course.objects.select_related('subject'), pk=course_id)
+            lesson_date_val = date.fromisoformat(lesson_date_str)
+            lesson_number_val = int(lesson_number_str)
+        except (Course.DoesNotExist, ValueError, TypeError) as e:
+            messages.error(request, _("Invalid course, date, or lesson number data: %(error)s") % {'error': str(e)})
+            return redirect(reverse_lazy('academia:take-attendance'))
+
+        StudentAttendanceFormSet = formset_factory(self.student_form_class, extra=0)
+        student_formset = StudentAttendanceFormSet(request.POST, prefix='students')
+
+        if student_formset.is_valid():
+            processed_count = 0
+            for form_data in student_formset.cleaned_data:
+                enrollment_id = form_data.get('enrollment_id')
+                is_present = form_data.get('is_present', False)
+                notes = form_data.get('notes', '')
+
+                if enrollment_id:
+                    try:
+                        enrollment = Enrollment.objects.get(pk=enrollment_id, course=course_obj) # Asegurar que el enrollment pertenece al curso
+                        
+                        if lesson_number_val > enrollment.course.subject.number_of_lessons:
+                            messages.warning(request, _("Lesson number %(lesson_num)s for student %(student)s exceeds total lessons (%(total_lessons)s). Skipped.") % {
+                                'lesson_num': lesson_number_val, 'student': enrollment.student, 'total_lessons': enrollment.course.subject.number_of_lessons})
+                            continue
+
+                        AttendanceLog.objects.update_or_create(
+                            enrollment=enrollment,
+                            lesson_number=lesson_number_val,
+                            defaults={
+                                'lesson_date': lesson_date_val,
+                                'is_present': is_present,
+                                'notes': notes
+                            }
+                        )
+                        processed_count += 1
+                    except Enrollment.DoesNotExist:
+                        messages.error(request, _("Enrollment with ID %(id)s not found for this course.") % {'id': enrollment_id})
+                    except Exception as e:
+                        messages.error(request, _("Error processing attendance for enrollment ID %(id)s: %(error)s") % {'id': enrollment_id, 'error': str(e)})
+            
+            messages.success(request, _("%(count)d attendance records processed for course '%(course)s' on %(date)s, lesson #%(number)s.") % {
+                'count': processed_count, 'course': course_obj.subject.name, 'date': lesson_date_val.strftime('%Y-%m-%d'), 'number': lesson_number_val
+            })
+            return redirect(reverse_lazy('academia:attendancelog-list'))
+        else:
+            # Si el formset no es válido, reconstruir el contexto GET con los errores
+            # Esto es simplificado; idealmente, pasarías los datos POST de vuelta al formset para rellenar
+            messages.error(request, _("There were errors in the submitted attendance data. Please review."))
+            # Re-renderizar la página con los errores (requiere pasar los datos GET originales o reconstruir el estado)
+            # Para simplificar, redirigimos al GET vacío, el usuario tendrá que re-seleccionar.
+            # Una implementación más robusta guardaría la selección del curso/fecha/lección.
+            return redirect(f"{reverse_lazy('academia:take-attendance')}?course={course_id}&lesson_date={lesson_date_str}&lesson_number={lesson_number_str}")
+    
