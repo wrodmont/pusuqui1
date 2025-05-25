@@ -50,5 +50,3 @@ urlpatterns = [
     path('attendancelogs/<int:pk>/edit/', views.AttendanceLogUpdateView.as_view(), name='attendancelog-update'),
     path('attendancelogs/<int:pk>/delete/', views.AttendanceLogDeleteView.as_view(), name='attendancelog-delete'),
 ]
-
- 

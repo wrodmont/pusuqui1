@@ -11,8 +11,9 @@
         <p class="text-muted">Bienvenido al sistema de gestión de la academia bíblica, donde puedes gestionar profesores, estudiantes, asignaturas y cursos.</p>
     </div>
 
-    <!-- Card que contiene los enlaces a las secciones -->
+    <!-- Tarjetas con enlaces a las secciones -->
     <div class="row">
+        <!-- Profesores -->
         <div class="col-12 col-md-6 col-lg-3 mb-4">
             <div class="card shadow-lg">
                 <div class="card-body text-center">
@@ -23,6 +24,7 @@
             </div>
         </div>
 
+        <!-- Estudiantes -->
         <div class="col-12 col-md-6 col-lg-3 mb-4">
             <div class="card shadow-lg">
                 <div class="card-body text-center">
@@ -33,6 +35,7 @@
             </div>
         </div>
 
+        <!-- Asignaturas -->
         <div class="col-12 col-md-6 col-lg-3 mb-4">
             <div class="card shadow-lg">
                 <div class="card-body text-center">
@@ -43,6 +46,7 @@
             </div>
         </div>
 
+        <!-- Cursos -->
         <div class="col-12 col-md-6 col-lg-3 mb-4">
             <div class="card shadow-lg">
                 <div class="card-body text-center">
@@ -52,8 +56,29 @@
                 </div>
             </div>
         </div>
+
+        <!-- Matrículas -->
+        <div class="col-12 col-md-6 col-lg-3 mb-4">
+            <div class="card shadow-lg border-success">
+                <div class="card-body text-center">
+                    <h4 class="card-title text-success">Matrículas</h4>
+                    <p class="card-text">Gestiona las matrículas de los estudiantes. Agrega, edita o elimina registros.</p>
+                    <a href="{% url 'academia:enrollment-list' %}" class="btn btn-success">Ver Matrículas</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Asistencia -->
+        <div class="col-12 col-md-6 col-lg-3 mb-4">
+            <div class="card shadow-lg border-primary">
+                <div class="card-body text-center">
+                    <h4 class="card-title text-primary">Asistencia</h4>
+                    <p class="card-text">Registra la asistencia masiva de los estudiantes de forma rápida y sencilla.</p>
+                    <a href="{% url 'academia:take-attendance' %}" class="btn btn-primary">Tomar Asistencia</a>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 {% endblock %}
-
 

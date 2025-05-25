@@ -1,46 +1,46 @@
 # academia/views.py
-from django.shortcuts import render
-# from django.http import HttpResponse # Ya no es necesaria para el index si usamos render
+from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse_lazy
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
-from django.views import View # Import View
-from django.shortcuts import redirect, get_object_or_404
+from django.views import View
 from django.forms import formset_factory
 from django.contrib import messages
 from django.utils.translation import gettext_lazy as _
 from datetime import date
 
-# Create your views here.
-from .models import Teacher, Student, Subject, Course, Enrollment, AttendanceLog # Models
-from .forms import (TeacherForm, StudentForm, SubjectForm, CourseForm, EnrollmentForm, AttendanceLogForm, # Existing Forms
-                    AttendanceTakingSelectionForm, StudentAttendanceForm) # New Forms for bulk attendance
+from .models import Teacher, Student, Subject, Course, Enrollment, AttendanceLog
+from .forms import (
+    TeacherForm, StudentForm, SubjectForm, CourseForm, EnrollmentForm, AttendanceLogForm,
+    AttendanceTakingSelectionForm, StudentAttendanceForm
+)
 
 def index(request):
     """
-    Vista para la página principal de la aplicación Academia.
-
-    Args:
-        request: El objeto HttpRequest.
-
-    Returns:
-        HttpResponse: La respuesta HTTP con el contenido de la página.
+    Vista para la página principal de la aplicación Academia,
+    mostrando un resumen con conteo de profesores, estudiantes,
+    asignaturas y cursos.
     """
-    return render(request, 'academia/index.html', {'active_page': 'index'})  # Renderizamos academia/index.html
+    context = {
+        'total_teachers': Teacher.objects.count(),
+        'total_students': Student.objects.count(),
+        'total_subjects': Subject.objects.count(),
+        'total_courses': Course.objects.count(),
+        'active_page': 'index',
+    }
+    return render(request, 'academia/index.html', context)
 
 def cursos(request):
     """
     Vista para la página de cursos.
     """
-    return render(request, 'academia/cursos.html')  # Necesitamos crear esta plantilla
-
-
+    return render(request, 'academia/cursos.html')  # Crear plantilla si no existe
 
 # Vistas para Teacher
 class TeacherListView(ListView):
     model = Teacher
-    template_name = 'academia/teacher_list.html' # Especificamos la plantilla
-    context_object_name = 'teachers' # Nombre del objeto en el contexto de la plantilla
-    paginate_by = 10 # Opcional: para paginación
+    template_name = 'academia/teacher_list.html'
+    context_object_name = 'teachers'
+    paginate_by = 10
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -63,7 +63,7 @@ class TeacherCreateView(CreateView):
     model = Teacher
     form_class = TeacherForm
     template_name = 'academia/teacher_form.html'
-    success_url = reverse_lazy('academia:teacher-list') # Redirige a la lista después de crear
+    success_url = reverse_lazy('academia:teacher-list')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -77,7 +77,7 @@ class TeacherUpdateView(UpdateView):
     model = Teacher
     form_class = TeacherForm
     template_name = 'academia/teacher_form.html'
-    success_url = reverse_lazy('academia:teacher-list') # Redirige a la lista después de actualizar
+    success_url = reverse_lazy('academia:teacher-list')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -126,7 +126,7 @@ class StudentDetailView(DetailView):
 class StudentCreateView(CreateView):
     model = Student
     form_class = StudentForm
-    template_name = 'academia/student_form.html' # Podemos reutilizar o crear uno específico
+    template_name = 'academia/student_form.html'
     success_url = reverse_lazy('academia:student-list')
 
     def get_context_data(self, **kwargs):
@@ -140,7 +140,7 @@ class StudentCreateView(CreateView):
 class StudentUpdateView(UpdateView):
     model = Student
     form_class = StudentForm
-    template_name = 'academia/student_form.html' # Reutilizamos
+    template_name = 'academia/student_form.html'
     success_url = reverse_lazy('academia:student-list')
 
     def get_context_data(self, **kwargs):
@@ -153,7 +153,7 @@ class StudentUpdateView(UpdateView):
 
 class StudentDeleteView(DeleteView):
     model = Student
-    template_name = 'academia/student_confirm_delete.html' # Podemos reutilizar o crear uno específico
+    template_name = 'academia/student_confirm_delete.html'
     success_url = reverse_lazy('academia:student-list')
     context_object_name = 'student'
 
@@ -190,7 +190,7 @@ class SubjectDetailView(DetailView):
 class SubjectCreateView(CreateView):
     model = Subject
     form_class = SubjectForm
-    template_name = 'academia/subject_form.html' # Podemos reutilizar o crear uno específico
+    template_name = 'academia/subject_form.html'
     success_url = reverse_lazy('academia:subject-list')
 
     def get_context_data(self, **kwargs):
@@ -204,7 +204,7 @@ class SubjectCreateView(CreateView):
 class SubjectUpdateView(UpdateView):
     model = Subject
     form_class = SubjectForm
-    template_name = 'academia/subject_form.html' # Reutilizamos
+    template_name = 'academia/subject_form.html'
     success_url = reverse_lazy('academia:subject-list')
 
     def get_context_data(self, **kwargs):
@@ -217,7 +217,7 @@ class SubjectUpdateView(UpdateView):
 
 class SubjectDeleteView(DeleteView):
     model = Subject
-    template_name = 'academia/subject_confirm_delete.html' # Podemos reutilizar o crear uno específico
+    template_name = 'academia/subject_confirm_delete.html'
     success_url = reverse_lazy('academia:subject-list')
     context_object_name = 'subject'
 
@@ -235,7 +235,6 @@ class CourseListView(ListView):
     paginate_by = 10
 
     def get_queryset(self):
-        # Optimizar la consulta para incluir los datos relacionados
         return Course.objects.select_related('subject', 'teacher').all()
 
     def get_context_data(self, **kwargs):
@@ -250,19 +249,18 @@ class CourseDetailView(DetailView):
     context_object_name = 'course'
 
     def get_queryset(self):
-        # Optimizar la consulta para incluir los datos relacionados
         return Course.objects.select_related('subject', 'teacher').all()
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['active_page'] = 'courses'
-        context['page_title'] = f"Detalle de Curso: {self.object}" # Usa el __str__ del modelo
+        context['page_title'] = f"Detalle de Curso: {self.object}"
         return context
 
 class CourseCreateView(CreateView):
     model = Course
     form_class = CourseForm
-    template_name = 'academia/course_form.html' # Reutilizar un template de formulario genérico
+    template_name = 'academia/course_form.html'
     success_url = reverse_lazy('academia:course-list')
 
     def get_context_data(self, **kwargs):
@@ -276,7 +274,7 @@ class CourseCreateView(CreateView):
 class CourseUpdateView(UpdateView):
     model = Course
     form_class = CourseForm
-    template_name = 'academia/course_form.html' # Reutilizar
+    template_name = 'academia/course_form.html'
     success_url = reverse_lazy('academia:course-list')
 
     def get_context_data(self, **kwargs):
@@ -289,7 +287,7 @@ class CourseUpdateView(UpdateView):
 
 class CourseDeleteView(DeleteView):
     model = Course
-    template_name = 'academia/course_confirm_delete.html' # Reutilizar
+    template_name = 'academia/course_confirm_delete.html'
     success_url = reverse_lazy('academia:course-list')
     context_object_name = 'course'
 
@@ -307,7 +305,6 @@ class EnrollmentListView(ListView):
     paginate_by = 10
 
     def get_queryset(self):
-        # Optimizar la consulta para incluir datos relacionados
         return Enrollment.objects.select_related(
             'student', 'course', 'course__subject', 'course__teacher'
         ).order_by('-course__academic_period', 'course__subject__name', 'student__surname')
@@ -326,20 +323,18 @@ class EnrollmentDetailView(DetailView):
     def get_queryset(self):
         return Enrollment.objects.select_related(
             'student', 'course', 'course__subject', 'course__teacher'
-        ).prefetch_related('attendance_logs') # Para mostrar los logs de asistencia
+        ).prefetch_related('attendance_logs')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['active_page'] = 'enrollments'
         context['page_title'] = f"Detalle de Inscripción: {self.object.student} - {self.object.course.subject}"
-        # Los logs de asistencia ya están disponibles a través de prefetch_related
-        # context['attendance_logs'] = self.object.attendance_logs.all().order_by('lesson_number') # Opcional si no se usa prefetch
         return context
 
 class EnrollmentCreateView(CreateView):
     model = Enrollment
     form_class = EnrollmentForm
-    template_name = 'academia/enrollment_form.html' # Reutilizar un template de formulario genérico
+    template_name = 'academia/enrollment_form.html'
     success_url = reverse_lazy('academia:enrollment-list')
 
     def get_context_data(self, **kwargs):
@@ -353,12 +348,10 @@ class EnrollmentCreateView(CreateView):
 class EnrollmentUpdateView(UpdateView):
     model = Enrollment
     form_class = EnrollmentForm
-    template_name = 'academia/enrollment_form.html' # Reutilizar
+    template_name = 'academia/enrollment_form.html'
     success_url = reverse_lazy('academia:enrollment-list')
 
     def get_queryset(self):
-        # Es buena práctica incluir select_related aquí también si el formulario
-        # o el template de alguna manera se benefician de ello (aunque para el form no es común)
         return Enrollment.objects.select_related(
             'student', 'course', 'course__subject', 'course__teacher'
         )
@@ -373,7 +366,7 @@ class EnrollmentUpdateView(UpdateView):
 
 class EnrollmentDeleteView(DeleteView):
     model = Enrollment
-    template_name = 'academia/enrollment_confirm_delete.html' # Reutilizar o crear específico
+    template_name = 'academia/enrollment_confirm_delete.html'
     success_url = reverse_lazy('academia:enrollment-list')
     context_object_name = 'enrollment'
 
@@ -404,7 +397,7 @@ class AttendanceLogListView(ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['active_page'] = 'attendancelogs' # Podrías crear una nueva sección o anidarla
+        context['active_page'] = 'attendancelogs'
         context['page_title'] = 'Listado de Registros de Asistencia'
         return context
 
@@ -429,7 +422,7 @@ class AttendanceLogDetailView(DetailView):
 class AttendanceLogCreateView(CreateView):
     model = AttendanceLog
     form_class = AttendanceLogForm
-    template_name = 'academia/attendancelog_form.html' # Reutilizar un template de formulario genérico
+    template_name = 'academia/attendancelog_form.html'
     success_url = reverse_lazy('academia:attendancelog-list')
 
     def get_context_data(self, **kwargs):
@@ -443,7 +436,7 @@ class AttendanceLogCreateView(CreateView):
 class AttendanceLogUpdateView(UpdateView):
     model = AttendanceLog
     form_class = AttendanceLogForm
-    template_name = 'academia/attendancelog_form.html' # Reutilizar
+    template_name = 'academia/attendancelog_form.html'
     success_url = reverse_lazy('academia:attendancelog-list')
 
     def get_queryset(self):
@@ -471,7 +464,7 @@ class AttendanceLogDeleteView(DeleteView):
         context['active_page'] = 'attendancelogs'
         context['page_title'] = f"Eliminar Registro de Asistencia: {self.object.enrollment.student} - L{self.object.lesson_number}"
         return context
-    
+
 class TakeAttendanceView(View):
     template_name = 'academia/take_attendance_form.html'
     selection_form_class = AttendanceTakingSelectionForm
@@ -480,8 +473,8 @@ class TakeAttendanceView(View):
     def get(self, request, *args, **kwargs):
         selection_form = self.selection_form_class(request.GET or None)
         student_formset = None
-        enrollments_with_forms = [] # Usaremos esto para pasar (enrollment, form) al template
-        course_obj = None # Renombrado para evitar conflicto con el nombre del campo del formulario
+        enrollments_with_forms = []
+        course_obj = None
 
         if selection_form.is_valid() and 'course' in request.GET:
             course_id = selection_form.cleaned_data['course'].id
@@ -490,7 +483,7 @@ class TakeAttendanceView(View):
             lesson_number_val = selection_form.cleaned_data['lesson_number']
 
             enrollments = Enrollment.objects.filter(course=course_obj).select_related('student').order_by('student__surname', 'student__name')
-            
+
             StudentAttendanceFormSet = formset_factory(self.student_form_class, extra=0)
             initial_data_for_formset = []
             for enrollment in enrollments:
@@ -504,7 +497,7 @@ class TakeAttendanceView(View):
                 except AttendanceLog.DoesNotExist:
                     initial_data_for_formset.append({
                         'enrollment_id': enrollment.id,
-                        'is_present': True, # Default a presente
+                        'is_present': True,
                         'notes': ''
                     })
             student_formset = StudentAttendanceFormSet(initial=initial_data_for_formset, prefix='students')
@@ -512,8 +505,7 @@ class TakeAttendanceView(View):
             for i, enrollment in enumerate(enrollments):
                 if i < len(student_formset.forms):
                     enrollments_with_forms.append((enrollment, student_formset.forms[i]))
-            
-            # Re-inicializar el formulario de selección para mantener los valores
+
             selection_form = self.selection_form_class(initial={
                 'course': course_obj,
                 'lesson_date': lesson_date_val,
@@ -522,9 +514,9 @@ class TakeAttendanceView(View):
 
         context = {
             'selection_form': selection_form,
-            'student_formset': student_formset, # Para el management_form
+            'student_formset': student_formset,
             'enrollments_with_forms': enrollments_with_forms,
-            'course': course_obj, # El objeto curso seleccionado
+            'course': course_obj,
             'page_title': _('Take Attendance'),
             'form_title': _('Take Attendance for Course'),
             'active_page': 'attendancelogs',
@@ -532,9 +524,6 @@ class TakeAttendanceView(View):
         return render(request, self.template_name, context)
 
     def post(self, request, *args, **kwargs):
-        # Los datos del curso, fecha y lección deben venir del formulario
-        # Se envían como campos ocultos o se reconstruyen.
-        # Aquí asumimos que se envían como campos ocultos.
         course_id = request.POST.get('course_id_hidden')
         lesson_date_str = request.POST.get('lesson_date_hidden')
         lesson_number_str = request.POST.get('lesson_number_hidden')
@@ -563,8 +552,8 @@ class TakeAttendanceView(View):
 
                 if enrollment_id:
                     try:
-                        enrollment = Enrollment.objects.get(pk=enrollment_id, course=course_obj) # Asegurar que el enrollment pertenece al curso
-                        
+                        enrollment = Enrollment.objects.get(pk=enrollment_id, course=course_obj)
+
                         if lesson_number_val > enrollment.course.subject.number_of_lessons:
                             messages.warning(request, _("Lesson number %(lesson_num)s for student %(student)s exceeds total lessons (%(total_lessons)s). Skipped.") % {
                                 'lesson_num': lesson_number_val, 'student': enrollment.student, 'total_lessons': enrollment.course.subject.number_of_lessons})
@@ -584,17 +573,11 @@ class TakeAttendanceView(View):
                         messages.error(request, _("Enrollment with ID %(id)s not found for this course.") % {'id': enrollment_id})
                     except Exception as e:
                         messages.error(request, _("Error processing attendance for enrollment ID %(id)s: %(error)s") % {'id': enrollment_id, 'error': str(e)})
-            
+
             messages.success(request, _("%(count)d attendance records processed for course '%(course)s' on %(date)s, lesson #%(number)s.") % {
                 'count': processed_count, 'course': course_obj.subject.name, 'date': lesson_date_val.strftime('%Y-%m-%d'), 'number': lesson_number_val
             })
             return redirect(reverse_lazy('academia:attendancelog-list'))
         else:
-            # Si el formset no es válido, reconstruir el contexto GET con los errores
-            # Esto es simplificado; idealmente, pasarías los datos POST de vuelta al formset para rellenar
             messages.error(request, _("There were errors in the submitted attendance data. Please review."))
-            # Re-renderizar la página con los errores (requiere pasar los datos GET originales o reconstruir el estado)
-            # Para simplificar, redirigimos al GET vacío, el usuario tendrá que re-seleccionar.
-            # Una implementación más robusta guardaría la selección del curso/fecha/lección.
             return redirect(f"{reverse_lazy('academia:take-attendance')}?course={course_id}&lesson_date={lesson_date_str}&lesson_number={lesson_number_str}")
-    
