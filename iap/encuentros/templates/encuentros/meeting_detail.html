@@ -1,0 +1,40 @@
+{% extends "base.html" %} {# Ajusta esto a tu plantilla base real #}
+{% load i18n %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2>{{ page_title }}</h2>
+        <div>
+            <a href="{% url 'encuentros:meeting-update' meeting.pk %}" class="btn btn-warning">{% translate "Edit" %}</a>
+            <a href="{% url 'encuentros:meeting-delete' meeting.pk %}" class="btn btn-danger">{% translate "Delete" %}</a>
+        </div>
+    </div>
+    
+    <div class="card">
+        <div class="card-header">
+            {% translate "Meeting Details" %}
+        </div>
+        <div class="card-body">
+            <dl class="row">
+                <dt class="col-sm-3">{% translate "Code" %}:</dt>
+                <dd class="col-sm-9">{{ meeting.code }}</dd>
+
+                <dt class="col-sm-3">{% translate "Type" %}:</dt>
+                <dd class="col-sm-9">{{ meeting.get_type_display }}</dd>
+
+                <dt class="col-sm-3">{% translate "Date" %}:</dt>
+                <dd class="col-sm-9">{{ meeting.date|date:"Y-m-d" }}</dd>
+
+                <dt class="col-sm-3">{% translate "Description" %}:</dt>
+                <dd class="col-sm-9">{{ meeting.description|linebreaksbr|default:_("N/A") }}</dd>
+            </dl>
+        </div>
+        <div class="card-footer">
+            <a href="{% url 'encuentros:meeting-list' %}" class="btn btn-secondary">{% translate "Back to List" %}</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

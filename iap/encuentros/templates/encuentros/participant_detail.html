@@ -1,0 +1,65 @@
+{% extends "base.html" %} {# Ajusta esto a tu plantilla base real #}
+{% load i18n %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2>{{ page_title }}</h2>
+        <div>
+            <a href="{% url 'encuentros:participant-update' participant.pk %}" class="btn btn-warning">{% translate "Edit" %}</a>
+            <a href="{% url 'encuentros:participant-delete' participant.pk %}" class="btn btn-danger">{% translate "Delete" %}</a>
+        </div>
+    </div>
+    
+    <div class="card">
+        <div class="card-header">
+            {% translate "Participant Details" %}
+        </div>
+        <div class="card-body">
+            <dl class="row">
+                <dt class="col-sm-3">{% translate "Name" %}:</dt>
+                <dd class="col-sm-9">{{ participant.name }}</dd>
+
+                <dt class="col-sm-3">{% translate "Surname" %}:</dt>
+                <dd class="col-sm-9">{{ participant.surname }}</dd>
+
+                <dt class="col-sm-3">{% translate "Email" %}:</dt>
+                <dd class="col-sm-9">{{ participant.email|default:_("N/A") }}</dd>
+
+                <dt class="col-sm-3">{% translate "Phone Number" %}:</dt>
+                <dd class="col-sm-9">{{ participant.phone_number|default:_("N/A") }}</dd>
+
+                <dt class="col-sm-3">{% translate "Date of Birth" %}:</dt>
+                <dd class="col-sm-9">{{ participant.date_of_birth|date:"Y-m-d"|default:_("N/A") }}</dd>
+
+                <dt class="col-sm-3">{% translate "Height (cm)" %}:</dt>
+                <dd class="col-sm-9">{{ participant.height|default:_("N/A") }}</dd>
+
+                <dt class="col-sm-3">{% translate "Address Reference" %}:</dt>
+                <dd class="col-sm-9">{{ participant.address_reference|linebreaksbr|default:_("N/A") }}</dd>
+
+                <dt class="col-sm-3">{% translate "Civil Status" %}:</dt>
+                <dd class="col-sm-9">{{ participant.get_civil_status_display|default:_("N/A") }}</dd>
+
+                <dt class="col-sm-3">{% translate "Notes" %}:</dt>
+                <dd class="col-sm-9">{{ participant.notes|linebreaksbr|default:_("N/A") }}</dd>
+            </dl>
+
+            {# Aquí podrías añadir secciones para FamilyParticipantInfo y ChurchDataInfo #}
+            {# Ejemplo:
+            <h4 class="mt-4">{% translate "Family Information" %}</h4>
+            {% for family_member in participant.family_members.all %}
+                <p>{{ family_member.name }} {{ family_member.surname }} ({{ family_member.familiar_relationship }}) - {{ family_member.phone_number }}</p>
+            {% empty %}
+                <p>{% translate "No family information recorded." %}</p>
+            {% endfor %}
+            #}
+        </div>
+        <div class="card-footer">
+            <a href="{% url 'encuentros:participant-list' %}" class="btn btn-secondary">{% translate "Back to List" %}</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

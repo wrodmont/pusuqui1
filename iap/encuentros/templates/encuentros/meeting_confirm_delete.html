@@ -1,0 +1,24 @@
+{% extends "base.html" %} {# Ajusta esto a tu plantilla base real #}
+{% load i18n %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <h2>{{ page_title }}</h2>
+    <div class="alert alert-danger" role="alert">
+        <p>{% blocktranslate with code=meeting.code type=meeting.get_type_display date=meeting.date|date:"Y-m-d" %}
+        Are you sure you want to delete the meeting <strong>"{{ code }} - {{ type }}"</strong> scheduled for <strong>{{ date }}</strong>?
+        {% endblocktranslate %}</p>
+        {% if meeting.description %}
+        <p><strong>{% translate "Description" %}:</strong> {{ meeting.description|truncatewords:30 }}</p>
+        {% endif %}
+    </div>
+    
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">{% translate "Yes, delete" %}</button>
+        <a href="{% url 'encuentros:meeting-detail' meeting.pk %}" class="btn btn-secondary">{% translate "Cancel" %}</a>
+    </form>
+</div>
+{% endblock %}

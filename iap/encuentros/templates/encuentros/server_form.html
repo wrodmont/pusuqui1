@@ -1,0 +1,35 @@
+{% extends "base.html" %} {# Ajusta esto a tu plantilla base real #}
+{% load i18n %}
+{% load crispy_forms_tags %} {# Si usas django-crispy-forms #}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block extra_head %}
+{{ form.media }} {# Para widgets como Select2 si se configuran en el form #}
+{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <h2>{{ form_title|default:page_title }}</h2>
+    <div class="card">
+        <div class="card-body">
+            <form method="post">
+                {% csrf_token %}
+                
+                {{ form|crispy }} 
+                                
+                <button type="submit" class="btn btn-primary">{{ submit_button_text|default:_("Save") }}</button>
+                <a href="{% if object %}{% url 'encuentros:server-detail' object.pk %}{% else %}{% url 'encuentros:server-list' %}{% endif %}" class="btn btn-secondary">{% translate "Cancel" %}</a>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Puedes añadir JS específico para el formulario de Server aquí si es necesario
+});
+</script>
+{% endblock %}

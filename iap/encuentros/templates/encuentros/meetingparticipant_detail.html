@@ -1,0 +1,46 @@
+{% extends "base.html" %} {# Ajusta esto a tu plantilla base real #}
+{% load i18n %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2>{{ page_title }}</h2>
+        <div>
+            <a href="{% url 'encuentros:meetingparticipant-update' meeting_participant.pk %}" class="btn btn-warning">{% translate "Edit" %}</a>
+            <a href="{% url 'encuentros:meetingparticipant-delete' meeting_participant.pk %}" class="btn btn-danger">{% translate "Delete" %}</a>
+        </div>
+    </div>
+    
+    <div class="card">
+        <div class="card-header">
+            {% translate "Meeting Attendance Details" %}
+        </div>
+        <div class="card-body">
+            <dl class="row">
+                <dt class="col-sm-3">{% translate "Meeting" %}:</dt>
+                <dd class="col-sm-9"><a href="{% url 'encuentros:meeting-detail' meeting_participant.meeting.pk %}">{{ meeting_participant.meeting }}</a></dd>
+
+                <dt class="col-sm-3">{% translate "Participant" %}:</dt>
+                <dd class="col-sm-9"><a href="{% url 'encuentros:participant-detail' meeting_participant.participant.pk %}">{{ meeting_participant.participant }}</a></dd>
+
+                <dt class="col-sm-3">{% translate "Attendance Date" %}:</dt>
+                <dd class="col-sm-9">{{ meeting_participant.event_date|date:"Y-m-d" }}</dd>
+
+                <dt class="col-sm-3">{% translate "Was Present?" %}:</dt>
+                <dd class="col-sm-9">
+                    {% if meeting_participant.is_present %}
+                        <span class="badge bg-success">{% translate "Yes" %}</span>
+                    {% else %}
+                        <span class="badge bg-danger">{% translate "No" %}</span>
+                    {% endif %}
+                </dd>
+            </dl>
+        </div>
+        <div class="card-footer">
+            <a href="{% url 'encuentros:meetingparticipant-list' %}" class="btn btn-secondary">{% translate "Back to List" %}</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

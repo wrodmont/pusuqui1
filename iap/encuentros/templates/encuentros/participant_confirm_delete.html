@@ -1,0 +1,22 @@
+{% extends "base.html" %} {# Ajusta esto a tu plantilla base real #}
+{% load i18n %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <h2>{{ page_title }}</h2>
+    <div class="alert alert-danger" role="alert">
+        <p>{% blocktranslate with name=participant.name surname=participant.surname %}
+        Are you sure you want to delete the participant <strong>"{{ name }} {{ surname }}"</strong>?
+        {% endblocktranslate %}</p>
+        <p><small>{% translate "This action cannot be undone and might affect related records like family or church information." %}</small></p>
+    </div>
+    
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">{% translate "Yes, delete" %}</button>
+        <a href="{% url 'encuentros:participant-detail' participant.pk %}" class="btn btn-secondary">{% translate "Cancel" %}</a>
+    </form>
+</div>
+{% endblock %}

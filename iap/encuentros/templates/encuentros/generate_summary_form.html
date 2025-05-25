@@ -1,0 +1,50 @@
+{% extends "base.html" %} {# Ajusta esto a tu plantilla base real #}
+{% load i18n %}
+{% load crispy_forms_tags %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block extra_head %}
+{{ form.media }} {# Para widgets como Select2 #}
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js" defer></script>
+<style>
+    /* Asegurar que select2 se muestre correctamente con Bootstrap */
+    .select2-container .select2-selection--single {
+        height: calc(1.5em + .75rem + 2px); /* Altura de form-control de Bootstrap */
+    }
+    .select2-container--default .select2-selection--single .select2-selection__arrow {
+        height: calc(1.5em + .75rem - 2px); /* Ajustar altura de la flecha */
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <h2>{{ form_title|default:page_title }}</h2>
+    <div class="card">
+        <div class="card-body">
+            <form method="post">
+                {% csrf_token %}
+                
+                {{ form|crispy }} 
+                
+                <button type="submit" class="btn btn-primary mt-3">{{ submit_button_text|default:_("Generate") }}</button>
+                <a href="{% url 'encuentros:summary-list' %}" class="btn btn-secondary mt-3">{% translate "Cancel" %}</a>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    $('#id_meeting').select2({
+        theme: 'bootstrap-5',
+        placeholder: "{% translate 'Select a meeting' %}",
+        allowClear: true
+    });
+});
+</script>
+{% endblock %}

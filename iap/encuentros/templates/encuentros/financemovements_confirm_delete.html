@@ -1,0 +1,25 @@
+{% extends "base.html" %} {# Ajusta esto a tu plantilla base real #}
+{% load i18n %}
+{% load humanize %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <h2>{{ page_title }}</h2>
+    <div class="alert alert-danger" role="alert">
+        <p>{% blocktranslate with type=movement.get_transaction_type_display amount=movement.amount|floatformat:2 date=movement.trans_date|date:"Y-m-d" %}
+        Are you sure you want to delete the financial movement:
+        <strong>{{ type }} of {{ amount }} on {{ date }}</strong>?
+        {% endblocktranslate %}</p>
+        {% if movement.description %}<p><em>{% translate "Description" %}: {{ movement.description }}</em></p>{% endif %}
+        <p><small>{% translate "This action cannot be undone." %}</small></p>
+    </div>
+    
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">{% translate "Yes, delete" %}</button>
+        <a href="{% url 'encuentros:financemovements-detail' movement.pk %}" class="btn btn-secondary">{% translate "Cancel" %}</a>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,24 @@
+{% extends "base.html" %} {# Ajusta esto a tu plantilla base real #}
+{% load i18n %}
+{% load humanize %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <h2>{{ page_title }}</h2>
+    <div class="alert alert-danger" role="alert">
+        <p>{% blocktranslate with meeting_code=summary.meeting.code period_end=summary.period_end|date:"Y-m-d" %}
+        Are you sure you want to delete the financial summary for meeting <strong>"{{ meeting_code }}"</strong>
+        with period end date <strong>{{ period_end }}</strong>?
+        {% endblocktranslate %}</p>
+        <p><small>{% translate "This action cannot be undone. You can regenerate it later if needed." %}</small></p>
+    </div>
+    
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">{% translate "Yes, delete" %}</button>
+        <a href="{% url 'encuentros:summary-detail' summary.pk %}" class="btn btn-secondary">{% translate "Cancel" %}</a>
+    </form>
+</div>
+{% endblock %}

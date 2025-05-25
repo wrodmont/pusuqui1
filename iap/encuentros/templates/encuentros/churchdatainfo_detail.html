@@ -1,0 +1,80 @@
+{% extends "base.html" %} {# Ajusta esto a tu plantilla base real #}
+{% load i18n %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2>{{ page_title }}</h2>
+        <div>
+            <a href="{% url 'encuentros:churchdatainfo-update' church_data.pk %}" class="btn btn-warning">{% translate "Edit" %}</a>
+            <a href="{% url 'encuentros:churchdatainfo-delete' church_data.pk %}" class="btn btn-danger">{% translate "Delete" %}</a>
+        </div>
+    </div>
+    
+    <div class="card">
+        <div class="card-header">
+            {% translate "Church Data Information Details" %}
+        </div>
+        <div class="card-body">
+            <dl class="row">
+                <dt class="col-sm-4">{% translate "Participant" %}:</dt>
+                <dd class="col-sm-8"><a href="{% url 'encuentros:participant-detail' church_data.participant.pk %}">{{ church_data.participant }}</a></dd>
+
+                <dt class="col-sm-4">{% translate "Is Member of a Church?" %}:</dt>
+                <dd class="col-sm-8">{% if church_data.is_member_of_church %}{% translate "Yes" %}{% else %}{% translate "No" %}{% endif %}</dd>
+
+                <dt class="col-sm-4">{% translate "Church Name" %}:</dt>
+                <dd class="col-sm-8">{{ church_data.church_name|default:_("N/A") }}</dd>
+
+                <dt class="col-sm-4">{% translate "Is Baptized?" %}:</dt>
+                <dd class="col-sm-8">{% if church_data.is_baptized %}{% translate "Yes" %}{% else %}{% translate "No" %}{% endif %}</dd>
+
+                <dt class="col-sm-4">{% translate "Baptism Date" %}:</dt>
+                <dd class="col-sm-8">{{ church_data.baptism_date|date:"Y-m-d"|default:_("N/A") }}</dd>
+
+                <dt class="col-sm-4">{% translate "Is Part of a Disciple Group?" %}:</dt>
+                <dd class="col-sm-8">{% if church_data.is_part_of_disciple_group %}{% translate "Yes" %}{% else %}{% translate "No" %}{% endif %}</dd>
+
+                <dt class="col-sm-4">{% translate "Name of Leader" %}:</dt>
+                <dd class="col-sm-8">{{ church_data.name_of_leader|default:_("N/A") }}</dd>
+
+                <dt class="col-sm-4">{% translate "Is Part of Bible Academy?" %}:</dt>
+                <dd class="col-sm-8">{% if church_data.is_part_of_bible_academy %}{% translate "Yes" %}{% else %}{% translate "No" %}{% endif %}</dd>
+
+                <dt class="col-sm-4">{% translate "Actual Subject in Academy" %}:</dt>
+                <dd class="col-sm-8">{{ church_data.actual_subject|default:_("N/A") }}</dd>
+
+                <dt class="col-sm-4">{% translate "Is Registered and Paid?" %}:</dt>
+                <dd class="col-sm-8">{% if church_data.is_registered_paid %}{% translate "Yes" %}{% else %}{% translate "No" %}{% endif %}</dd>
+
+                <dt class="col-sm-4">{% translate "Amount Paid" %}:</dt>
+                <dd class="col-sm-8">
+                    {% if church_data.amount_paid is not None %}
+                        {{ church_data.amount_paid }} {# Consider currency formatting #}
+                    {% else %}
+                        {% translate "N/A" %}
+                    {% endif %}
+                </dd>
+
+                <dt class="col-sm-4">{% translate "Payment Reference" %}:</dt>
+                <dd class="col-sm-8">{{ church_data.payment_reference|default:_("N/A") }}</dd>
+
+                <dt class="col-sm-4">{% translate "Assisting Server" %}:</dt>
+                <dd class="col-sm-8">
+                    {% if church_data.server %}
+                        <a href="{% url 'encuentros:server-detail' church_data.server.pk %}">{{ church_data.server }}</a>
+                    {% else %}
+                        {% translate "N/A" %}
+                    {% endif %}
+                </dd>
+            </dl>
+        </div>
+        <div class="card-footer">
+            <a href="{% url 'encuentros:churchdatainfo-list' %}" class="btn btn-secondary">{% translate "Back to List" %}</a>
+            <a href="{% url 'encuentros:participant-detail' church_data.participant.pk %}" class="btn btn-info">{% translate "View Participant" %}</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

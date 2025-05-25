@@ -1,0 +1,39 @@
+{% extends "base.html" %} {# Ajusta esto a tu plantilla base real #}
+{% load i18n %}
+{% load crispy_forms_tags %} {# Si usas django-crispy-forms #}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block extra_head %}
+{{ form.media }} {# Para widgets como Select2 si se configuran en el form #}
+{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <h2>{{ form_title|default:page_title }}</h2>
+    <div class="card">
+        <div class="card-body">
+            <form method="post">
+                {% csrf_token %}
+                
+                {{ form|crispy }}                                 
+
+                <button type="submit" class="btn btn-primary">{{ submit_button_text|default:_("Save") }}</button>
+                <a href="{% if object %}{% url 'encuentros:meeting-detail' object.pk %}{% else %}{% url 'encuentros:meeting-list' %}{% endif %}" class="btn btn-secondary">{% translate "Cancel" %}</a>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Inicializar Select2 si es necesario para el campo 'type' o futuros campos
+    // $('.select2').select2({ theme: 'bootstrap-5' });
+
+    // Para el DateInput, si el navegador no soporta type="date"
+    // podrías añadir un datepicker JS aquí.
+});
+</script>
+{% endblock %}
