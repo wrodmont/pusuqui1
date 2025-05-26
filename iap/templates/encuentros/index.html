@@ -1,95 +1,115 @@
 {% extends "base.html" %}
 
-{% block title %}Página de Encuentros{% endblock %}
+{% block title %}Encuentros{% endblock %}
 
 {% block body %}
-<div class="container mt-4">
-    <!-- Encabezado de la página -->
-    <div class="text-center mb-5">
-        <h1 class="display-4 fw-bold section-title">Bienvenido a Encuentros</h1>
-        <p class="lead text-muted">Gestión completa de reuniones, participantes, servidores, y más.</p>
+<div class="container mt-5">
+
+  <div class="text-center mb-5">
+    <h1 class="display-4 fw-bold text-primary">Gestión de Encuentros</h1>
+    <p class="lead text-muted">Administra reuniones, participantes, finanzas y más.</p>
+  </div>
+
+  <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+
+    <!-- Reuniones -->
+    <div class="col">
+      <div class="card h-100 shadow-lg rounded-3 text-center">
+        <div class="card-body">
+          <i class="fas fa-handshake fa-4x mb-3 text-primary"></i>
+          <h5 class="card-title">Reuniones</h5>
+          <p class="card-text">Crea y administra todas las reuniones del ministerio.</p>
+          <a href="{% url 'encuentros:meeting-list' %}" class="btn btn-outline-primary rounded-pill px-4 py-2 shadow-sm">Ver Reuniones</a>
+        </div>
+      </div>
     </div>
 
-    <!-- Tarjetas de Navegación -->
-    <div class="row">
-        <!-- Reuniones -->
-        <div class="col-12 col-md-6 col-lg-3 mb-4">
-            <div class="card shadow-lg">
-                <div class="card-body text-center">
-                    <h4 class="card-title text-primary">Reuniones</h4>
-                    <p class="card-text">Organiza y gestiona todas las reuniones de la comunidad.</p>
-                    <a href="{% url 'encuentros:meeting-list' %}" class="btn btn-primary">Ver Reuniones</a>
-                </div>
-            </div>
+    <!-- Servidores -->
+    <div class="col">
+      <div class="card h-100 shadow-lg rounded-3 text-center">
+        <div class="card-body">
+          <i class="fas fa-user-shield fa-4x mb-3 text-success"></i>
+          <h5 class="card-title">Servidores</h5>
+          <p class="card-text">Gestiona los servidores y su participación.</p>
+          <a href="{% url 'encuentros:server-list' %}" class="btn btn-outline-success rounded-pill px-4 py-2 shadow-sm">Ver Servidores</a>
         </div>
-
-        <!-- Servidores -->
-        <div class="col-12 col-md-6 col-lg-3 mb-4">
-            <div class="card shadow-lg">
-                <div class="card-body text-center">
-                    <h4 class="card-title text-success">Servidores</h4>
-                    <p class="card-text">Administra los servidores y sus funciones dentro de los encuentros.</p>
-                    <a href="{% url 'encuentros:server-list' %}" class="btn btn-success">Ver Servidores</a>
-                </div>
-            </div>
-        </div>
-
-        <!-- Participantes -->
-        <div class="col-12 col-md-6 col-lg-3 mb-4">
-            <div class="card shadow-lg">
-                <div class="card-body text-center">
-                    <h4 class="card-title text-warning">Participantes</h4>
-                    <p class="card-text">Gestiona a los participantes de los encuentros y sus datos.</p>
-                    <a href="{% url 'encuentros:participant-list' %}" class="btn btn-warning">Ver Participantes</a>
-                </div>
-            </div>
-        </div>
-
-        <!-- Información Familiar de Participantes -->
-        <div class="col-12 col-md-6 col-lg-3 mb-4">
-            <div class="card shadow-lg">
-                <div class="card-body text-center">
-                    <h4 class="card-title text-info">Info Familiar</h4>
-                    <p class="card-text">Consulta y edita la información de los familiares de los participantes.</p>
-                    <a href="{% url 'encuentros:familyparticipantinfo-list' %}" class="btn btn-info">Ver Información Familiar</a>
-                </div>
-            </div>
-        </div>
-
-        <!-- Información de la Iglesia -->
-        <div class="col-12 col-md-6 col-lg-3 mb-4">
-            <div class="card shadow-lg">
-                <div class="card-body text-center">
-                    <h4 class="card-title text-dark">Iglesia</h4>
-                    <p class="card-text">Consulta y actualiza los datos relacionados con la iglesia y sus actividades.</p>
-                    <a href="{% url 'encuentros:churchdatainfo-list' %}" class="btn btn-dark">Ver Datos de la Iglesia</a>
-                </div>
-            </div>
-        </div>
+      </div>
     </div>
 
-    <!-- Resumen de Encuentros -->
-    <div class="row mt-5">
-        <div class="col-12 col-md-6 mb-4">
-            <div class="card shadow-lg">
-                <div class="card-body text-center">
-                    <h4 class="card-title text-primary">Resumen de Encuentros</h4>
-                    <p class="card-text">Genera y visualiza los resúmenes de los encuentros realizados.</p>
-                    <a href="{% url 'encuentros:summary-list' %}" class="btn btn-primary">Ver Resúmenes</a>
-                </div>
-            </div>
+    <!-- Participantes -->
+    <div class="col">
+      <div class="card h-100 shadow-lg rounded-3 text-center">
+        <div class="card-body">
+          <i class="fas fa-users fa-4x mb-3 text-warning"></i>
+          <h5 class="card-title">Participantes</h5>
+          <p class="card-text">Administra los participantes registrados en encuentros.</p>
+          <a href="{% url 'encuentros:participant-list' %}" class="btn btn-outline-warning rounded-pill px-4 py-2 shadow-sm">Ver Participantes</a>
         </div>
-
-        <!-- Movimientos Financieros -->
-        <div class="col-12 col-md-6 mb-4">
-            <div class="card shadow-lg">
-                <div class="card-body text-center">
-                    <h4 class="card-title text-success">Movimientos Financieros</h4>
-                    <p class="card-text">Consulta y gestiona los movimientos financieros relacionados con los encuentros.</p>
-                    <a href="{% url 'encuentros:financemovements-list' %}" class="btn btn-success">Ver Movimientos Financieros</a>
-                </div>
-            </div>
-        </div>
+      </div>
     </div>
+
+    <!-- Información Familiar -->
+    <div class="col">
+      <div class="card h-100 shadow-lg rounded-3 text-center">
+        <div class="card-body">
+          <i class="fas fa-home fa-4x mb-3 text-info"></i>
+          <h5 class="card-title">Info Familiar</h5>
+          <p class="card-text">Consulta y gestiona la información de las familias.</p>
+          <a href="{% url 'encuentros:familyparticipantinfo-list' %}" class="btn btn-outline-info rounded-pill px-4 py-2 shadow-sm">Ver Información Familiar</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Datos de Iglesia -->
+    <div class="col">
+      <div class="card h-100 shadow-lg rounded-3 text-center">
+        <div class="card-body">
+          <i class="fas fa-church fa-4x mb-3 text-dark"></i>
+          <h5 class="card-title">Datos de Iglesia</h5>
+          <p class="card-text">Administra los datos de las iglesias asociadas.</p>
+          <a href="{% url 'encuentros:churchdatainfo-list' %}" class="btn btn-outline-dark rounded-pill px-4 py-2 shadow-sm">Ver Datos de Iglesia</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Asistencia a Reuniones -->
+    <div class="col">
+      <div class="card h-100 shadow-lg rounded-3 text-center">
+        <div class="card-body">
+          <i class="fas fa-clipboard-check fa-4x mb-3 text-secondary"></i>
+          <h5 class="card-title">Asistencia</h5>
+          <p class="card-text">Lleva el control de asistencia a reuniones específicas.</p>
+          <a href="{% url 'encuentros:meetingparticipant-list' %}" class="btn btn-outline-secondary rounded-pill px-4 py-2 shadow-sm">Ver Asistencias</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Movimientos Financieros -->
+    <div class="col">
+      <div class="card h-100 shadow-lg rounded-3 text-center">
+        <div class="card-body">
+          <i class="fas fa-wallet fa-4x mb-3 text-success"></i>
+          <h5 class="card-title">Finanzas</h5>
+          <p class="card-text">Consulta los ingresos y egresos de los encuentros.</p>
+          <a href="{% url 'encuentros:financemovements-list' %}" class="btn btn-outline-success rounded-pill px-4 py-2 shadow-sm">Ver Finanzas</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Resúmenes -->
+    <div class="col">
+      <div class="card h-100 shadow-lg rounded-3 text-center">
+        <div class="card-body">
+          <i class="fas fa-file-alt fa-4x mb-3 text-primary"></i>
+          <h5 class="card-title">Resúmenes</h5>
+          <p class="card-text">Genera y revisa los informes de cada encuentro.</p>
+          <a href="{% url 'encuentros:summary-list' %}" class="btn btn-outline-primary rounded-pill px-4 py-2 shadow-sm">Ver Resúmenes</a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
 </div>
 {% endblock %}
+
