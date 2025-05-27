@@ -83,7 +83,7 @@ class AssistanceForm(forms.ModelForm):
         widgets = {
             # Usar Select para las ForeignKeys
             'child': forms.Select(attrs={'class': 'form-control'}),
-            'date': forms.Select(attrs={'class': 'form-control'}),
+            'date': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}), # Corregido para DateField
             'group': forms.Select(attrs={'class': 'form-control'}),
             'coordinator': forms.Select(attrs={'class': 'form-control'}),
             # Checkbox para el BooleanField
@@ -95,9 +95,26 @@ class AssistanceForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         # Ordenar niños por apellido y nombre
         self.fields['child'].queryset = child.objects.order_by('surname', 'name')
-        # Ordenar fechas por la más reciente primero
-        self.fields['date'].queryset = fecha.objects.order_by('-date')
         # Ordenar grupos por nombre
         self.fields['group'].queryset = group.objects.order_by('name')
         # Ordenar coordinadores por apellido y nombre
         self.fields['coordinator'].queryset = coordinator.objects.order_by('surname', 'name')
+        # El campo 'date' es un DateField, no necesita un queryset.
+        # Si antes había una línea como self.fields['date'].queryset = ..., debe eliminarse.
+
+class BatchAssistanceForm(forms.Form):
+    date = forms.DateField(
+        label="Fecha de Asistencia",
+        widget=forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
+        help_text="Seleccione la fecha para la cual se registrará la asistencia."
+    )
+    group = forms.ModelChoiceField(
+        queryset=group.objects.all().order_by('name'),
+        label="Grupo",
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
+    coordinator = forms.ModelChoiceField(
+        queryset=coordinator.objects.all().order_by('surname', 'name'),
+        label="Coordinador(a)",
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )

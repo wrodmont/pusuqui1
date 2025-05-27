@@ -13,9 +13,9 @@
         <p class="card-text"><strong>Grupo:</strong> {{ server.group }}</p>
     </div>
     <div class="card-footer">
-        <a href="{% url 'pusukids:server_update' server.pk %}" class="btn btn-warning">Editar</a>
-        <a href="{% url 'pusukids:server_delete' server.pk %}" class="btn btn-danger">Eliminar</a>
-        <a href="{% url 'pusukids:server_list' %}" class="btn btn-secondary">Volver a la lista</a>
+        <a href="{% url 'cunakids:server_update' server.pk %}" class="btn btn-warning">Editar</a>
+        <a href="{% url 'cunakids:server_delete' server.pk %}" class="btn btn-danger">Eliminar</a>
+        <a href="{% url 'cunakids:server_list' %}" class="btn btn-secondary">Volver a la lista</a>
     </div>
 </div>
 {% endblock %}

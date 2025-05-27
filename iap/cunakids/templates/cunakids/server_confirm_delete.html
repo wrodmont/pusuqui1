@@ -10,9 +10,9 @@
 <form method="post">
     {% csrf_token %}
     <button type="submit" class="btn btn-danger">Sí, eliminar</button>
-    <a href="{% url 'pusukids:server_detail' server.pk %}" class="btn btn-secondary">Cancelar</a>
+    <a href="{% url 'cunakids:server_detail' server.pk %}" class="btn btn-secondary">Cancelar</a>
     {# O redirigir a la lista:
-    <a href="{% url 'pusukids:server_list' %}" class="btn btn-secondary">Cancelar</a>
+    <a href="{% url 'cunakids:server_list' %}" class="btn btn-secondary">Cancelar</a>
     #}
 </form>
 {% endblock %}

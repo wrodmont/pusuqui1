@@ -65,7 +65,7 @@ class assistance(models.Model):
 
     def __str__(self):
          # Actualizar también aquí si es necesario
-         return f"{self.child.name} - {str(self.date.date)}"
+         return f"{self.child.name} - {str(self.date)}"
 
                 
 

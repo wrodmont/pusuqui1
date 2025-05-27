@@ -4,7 +4,7 @@ from .models import (
     coordinator, group, server, groupage, child, assistance,fecha,
     weekinfo, expense
 )
-
+from datetime import date as datetime_date # Renombrar para evitar conflicto con el modelo fecha
 
 class CoordinatorForm(forms.ModelForm):
     class Meta:
@@ -161,6 +161,28 @@ class ExpenseForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['fecha'].queryset = fecha.objects.order_by('-date')        
+
+class BatchAssistanceForm(forms.Form):
+    date = forms.ModelChoiceField(
+        queryset=fecha.objects.none(), # Queryset inicial vacío, se llenará en __init__
+        label="Fecha de Asistencia",
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
+    group = forms.ModelChoiceField(
+        queryset=group.objects.all().order_by('name'),
+        label="Grupo",
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
+    coordinator = forms.ModelChoiceField(
+        queryset=coordinator.objects.all().order_by('surname', 'name'),
+        label="Coordinador(a)",
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        current_year = datetime_date.today().year
+        self.fields['date'].queryset = fecha.objects.filter(date__year=current_year).order_by('-date')
 
 class FechaForm(forms.ModelForm):
     class Meta:

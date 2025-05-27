@@ -1,4 +1,4 @@
-<!-- c:\Proyectos\pusuqui\iap\pusukids\templates\pusukids\coordinator_form.html -->
+
 {% extends 'base.html' %}
 
 {% block body %}
@@ -7,6 +7,6 @@
         {% csrf_token %}
         {{ form.as_p }}
         <button type="submit" class="btn btn-success">{{ action }}</button>
-        <a href="{% url 'pusukids:coordinator_list' %}" class="btn btn-secondary">Cancelar</a>
+        <a href="{% url 'cunakids:coordinator_list' %}" class="btn btn-secondary">Cancelar</a>
     </form>
 {% endblock %}

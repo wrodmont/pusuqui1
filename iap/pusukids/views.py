@@ -9,7 +9,8 @@ from django.views.generic import ListView, DetailView, CreateView, UpdateView, D
 from datetime import date
 from .forms import (
     CoordinatorForm, GroupForm, ServerForm, GroupageForm, ChildForm,
-    AssistanceForm, WeekinfoForm, ExpenseForm, FechaForm # <-- Añadir AssistanceForm
+    AssistanceForm, WeekinfoForm, ExpenseForm, FechaForm,
+    BatchAssistanceForm
 )
 import traceback # Para debug si es necesario
 
@@ -253,21 +254,45 @@ def assistance_list(request):
 
     return render(request, 'pusukids/assistance_list.html', {'assistances': assistances_list})
 
+
 def assistance_create(request):
-    """Vista para crear un nuevo registro de asistencia."""
+    """
+    Vista para crear registros de asistencia en lote para todos los niños.
+    """
+    children_list = child.objects.order_by('surname', 'name')
+
     if request.method == 'POST':
-        form = AssistanceForm(request.POST)
+        form = BatchAssistanceForm(request.POST)
         if form.is_valid():
-            form.save()
-            # Opcional: Añadir mensaje de éxito (requiere configurar messages framework)
-            # messages.success(request, 'Registro de asistencia creado exitosamente.')
+            date_obj = form.cleaned_data['date']
+            group_obj = form.cleaned_data['group']
+            coordinator_obj = form.cleaned_data['coordinator']
+
+            assistances_to_create = []
+            for child_obj in children_list:
+                attended = request.POST.get(f'attended_{child_obj.pk}') == 'on'
+                assistances_to_create.append(
+                    assistance(
+                        child=child_obj,
+                        date=date_obj,
+                        group=group_obj,
+                        coordinator=coordinator_obj,
+                        attended=attended
+                    )
+                )
+            
+            if assistances_to_create:
+                assistance.objects.bulk_create(assistances_to_create)
+            # messages.success(request, 'Asistencias registradas exitosamente.') # Opcional
             return redirect('pusukids:assistance_list')
-        # else:
-            # Opcional: Añadir mensaje de error
-            # messages.error(request, 'Por favor corrige los errores en el formulario.')
     else:
-        form = AssistanceForm()
-    return render(request, 'pusukids/assistance_form.html', {'form': form, 'action': 'Registrar'})
+        form = BatchAssistanceForm()
+
+    return render(request, 'pusukids/assistance_batch_form.html', {
+        'form': form,
+        'children': children_list,
+        'action_title': 'Registrar Asistencia Grupal'
+    })
 
 def assistance_update(request, pk):
     """Vista para actualizar un registro de asistencia existente."""

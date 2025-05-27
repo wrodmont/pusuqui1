@@ -7,8 +7,8 @@ from django.urls import reverse, reverse_lazy
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from datetime import date
 from .forms import (
-    CoordinatorForm, GroupForm, ServerForm, ChildForm,
-    AssistanceForm, # <-- Añadir AssistanceForm
+    CoordinatorForm, GroupForm, ServerForm, ChildForm, AssistanceForm,
+    BatchAssistanceForm # <-- Añadir BatchAssistanceForm
 )
 import traceback # Para debug si es necesario
 
@@ -213,26 +213,50 @@ def assistance_list(request):
     """Vista para listar todos los registros de asistencia."""
     # Optimizar consulta usando select_related para cargar datos relacionados
     assistances_list = assistance.objects.select_related(
-        'child', 'date', 'group', 'coordinator'
-    ).order_by('-date__date', 'child__surname', 'child__name') # Ordenar por fecha desc, luego por niño
+        'child', 'group', 'coordinator'  # 'date' no es una relación
+    ).order_by('-date', 'child__surname', 'child__name') # Ordenar por fecha desc, luego por niño
 
     return render(request, 'cunakids/assistance_list.html', {'assistances': assistances_list})
 
 def assistance_create(request):
-    """Vista para crear un nuevo registro de asistencia."""
+    """
+    Vista para crear registros de asistencia en lote para todos los niños.
+    """
+    children_list = child.objects.order_by('surname', 'name')
+
     if request.method == 'POST':
-        form = AssistanceForm(request.POST)
+        form = BatchAssistanceForm(request.POST)
         if form.is_valid():
-            form.save()
-            # Opcional: Añadir mensaje de éxito (requiere configurar messages framework)
-            # messages.success(request, 'Registro de asistencia creado exitosamente.')
+            date_obj = form.cleaned_data['date']
+            group_obj = form.cleaned_data['group']
+            coordinator_obj = form.cleaned_data['coordinator']
+
+            assistances_to_create = []
+            for child_obj in children_list:
+                # El valor 'on' es el que envía un checkbox HTML cuando está marcado
+                attended = request.POST.get(f'attended_{child_obj.pk}') == 'on'
+                assistances_to_create.append(
+                    assistance(
+                        child=child_obj,
+                        date=date_obj,
+                        group=group_obj,
+                        coordinator=coordinator_obj,
+                        attended=attended
+                    )
+                )
+            
+            if assistances_to_create:
+                assistance.objects.bulk_create(assistances_to_create)
+            # messages.success(request, 'Asistencias registradas exitosamente.') # Opcional, requiere messages framework
             return redirect('cunakids:assistance_list')
-        # else:
-            # Opcional: Añadir mensaje de error
-            # messages.error(request, 'Por favor corrige los errores en el formulario.')
     else:
-        form = AssistanceForm()
-    return render(request, 'cunakids/assistance_form.html', {'form': form, 'action': 'Registrar'})
+        form = BatchAssistanceForm()
+
+    return render(request, 'cunakids/assistance_batch_form.html', {
+        'form': form,
+        'children': children_list,
+        'action_title': 'Registrar Asistencia Grupal'
+    })
 
 def assistance_update(request, pk):
     """Vista para actualizar un registro de asistencia existente."""
@@ -251,7 +275,7 @@ def assistance_update(request, pk):
     # Crear un título descriptivo
     action_title = (
         f"Editar Asistencia: {assistance_obj.child.name} {assistance_obj.child.surname} "
-        f"({assistance_obj.date.date.strftime('%Y-%m-%d')})"
+        f"({assistance_obj.date.strftime('%Y-%m-%d')})"
     )
     return render(request, 'cunakids/assistance_form.html', {
         'form': form,
@@ -261,7 +285,7 @@ def assistance_update(request, pk):
 
 def assistance_delete(request, pk):
     """Vista para eliminar un registro de asistencia."""
-    assistance_obj = get_object_or_404(assistance.objects.select_related('child', 'date'), pk=pk)
+    assistance_obj = get_object_or_404(assistance.objects.select_related('child', 'group', 'coordinator'), pk=pk)
     if request.method == 'POST':
         try:
             assistance_obj.delete()
