@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block body %}
+    <h1>Lista de Asistencias</h1>
+    <a href="{% url 'alabanza:assistance_create' %}" class="btn btn-primary mb-3">Registrar Nueva Asistencia</a>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Servidor</th>
+                <th>Fecha</th>
+                <th>Asistió</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for assistance in assistance_list %}
+                <tr>
+                    <td>{{ assistance.server }}</td>
+                    <td>{{ assistance.date }}</td>
+                    <td>{{ assistance.attended|yesno:"Sí,No" }}</td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="3">No hay asistencias registradas.</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

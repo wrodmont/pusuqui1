@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block title %}Lista de Servidores{% endblock %}
+
+{% block body %}
+<h2>Lista de Servidores</h2>
+<a href="{% url 'alabanza:server_create' %}" class="btn btn-primary mb-3">Agregar Nuevo Servidor</a>
+
+{% if servers %}
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Apellido</th>
+                <th>Coordinador</th>
+                <th>Grupo</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for server in servers %}
+            <tr>
+                <td>{{ server.name }}</td>
+                <td>{{ server.surname }}</td>
+                <td>{{ server.coordinator }}</td>
+                <td>{{ server.group }}</td>
+                <td>
+                    <a href="{% url 'alabanza:server_update' server.pk %}" class="btn btn-sm btn-warning">Editar</a>
+                    <a href="{% url 'alabanza:server_delete' server.pk %}" class="btn btn-sm btn-danger">Eliminar</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% else %}
+    <p>No hay servidores registrados.</p>
+{% endif %}
+{% endblock %}
