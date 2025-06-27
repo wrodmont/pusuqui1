@@ -4,4 +4,5 @@ sqlparse==0.5.3
 tzdata==2025.1
 gunicorn
 django-crispy-forms
+crispy-bootstrap5
 
