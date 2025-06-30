@@ -3,6 +3,7 @@ from django.http import HttpResponse
 from .models import (
     coordinator, group, server, child, assistance,
 )
+from django.db import IntegrityError
 from django.urls import reverse, reverse_lazy
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from datetime import date
@@ -10,6 +11,7 @@ from .forms import (
     CoordinatorForm, GroupForm, ServerForm, ChildForm, AssistanceForm,
     BatchAssistanceForm # <-- Añadir BatchAssistanceForm
 )
+from django.contrib import messages
 import traceback # Para debug si es necesario
 
 # Create your views here.
@@ -220,9 +222,10 @@ def assistance_list(request):
 
 def assistance_create(request):
     """
-    Vista para crear registros de asistencia en lote para todos los niños.
+    Vista para crear registros de asistencia en lote para todos los niños ACTIVOS.
     """
-    children_list = child.objects.order_by('surname', 'name')
+    # Filtrar para incluir solo niños con estado 'activo'
+    children_list = child.objects.filter(status='activo').order_by('surname', 'name')
 
     if request.method == 'POST':
         form = BatchAssistanceForm(request.POST)
@@ -244,18 +247,28 @@ def assistance_create(request):
                         attended=attended
                     )
                 )
-            
-            if assistances_to_create:
-                assistance.objects.bulk_create(assistances_to_create)
-            # messages.success(request, 'Asistencias registradas exitosamente.') # Opcional, requiere messages framework
-            return redirect('cunakids:assistance_list')
+            try:
+                if assistances_to_create:
+                    # ignore_conflicts=True podría ser una opción, pero es mejor notificar el error.
+                    assistance.objects.bulk_create(assistances_to_create)
+                messages.success(request, 'Asistencias registradas exitosamente.')
+                return redirect('cunakids:assistance_list')
+            except IntegrityError:
+                # Esto ocurre si se intenta registrar una asistencia para un niño en una fecha que ya existe.
+                messages.error(request, 'Error: Ya existe un registro de asistencia para uno o más niños en la fecha seleccionada. No se guardó ningún registro.')
+                # Volvemos a renderizar el formulario con los datos que el usuario ya había llenado
+                return render(request, 'cunakids/assistance_batch_form.html', {
+                    'form': form,
+                    'children': children_list,
+                    'action_title': 'Registrar Asistencia Grupal'
+                })
     else:
         form = BatchAssistanceForm()
 
     return render(request, 'cunakids/assistance_batch_form.html', {
         'form': form,
         'children': children_list,
-        'action_title': 'Registrar Asistencia Grupal'
+        'action_title': 'Registrar Asistencia Grupal',
     })
 
 def assistance_update(request, pk):
@@ -265,10 +278,10 @@ def assistance_update(request, pk):
         form = AssistanceForm(request.POST, instance=assistance_obj)
         if form.is_valid():
             form.save()
-            # messages.success(request, 'Registro de asistencia actualizado.')
+            messages.success(request, 'Registro de asistencia actualizado.')
             return redirect('cunakids:assistance_list')
-        # else:
-            # messages.error(request, 'Por favor corrige los errores.')
+        else:
+            messages.error(request, 'Por favor corrige los errores en el formulario.')
     else:
         form = AssistanceForm(instance=assistance_obj)
 
@@ -289,15 +302,13 @@ def assistance_delete(request, pk):
     if request.method == 'POST':
         try:
             assistance_obj.delete()
-            # messages.success(request, 'Registro de asistencia eliminado.')
+            messages.success(request, 'Registro de asistencia eliminado.')
             return redirect('cunakids:assistance_list')
-        except Exception as e:
-             # Manejar error si on_delete=PROTECT impide borrar (aunque aquí no aplica directamente)
-             # messages.error(request, f'No se pudo eliminar el registro: {e}')
-             # Podrías redirigir a la lista o mostrar el error en la misma página
+        except IntegrityError as e:
+             # Esto podría ocurrir si otro objeto depende de este registro de asistencia y tiene on_delete=PROTECT.
+             messages.error(request, f'No se pudo eliminar el registro debido a una restricción de la base de datos: {e}')
              return render(request, 'cunakids/assistance_confirm_delete.html', {
                  'assistance': assistance_obj,
-                 'error': f'Error al eliminar: {e}'
              })
 
     return render(request, 'cunakids/assistance_confirm_delete.html', {'assistance': assistance_obj})

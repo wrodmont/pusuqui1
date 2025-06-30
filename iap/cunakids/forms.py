@@ -52,7 +52,7 @@ class ServerForm(forms.ModelForm):
 class ChildForm(forms.ModelForm): # <-- Renombrada
     class Meta:
         model = child # <-- Cambiado a child
-        fields = ['name', 'surname', 'birthday', 'parent_name', 'contact_phone']
+        fields = ['name', 'surname', 'birthday', 'parent_name', 'contact_phone', 'status']
         # ... (labels y widgets como los tenías, asegúrate que las claves coinciden con los fields) ...
         labels = {
             'name': 'Nombre',
@@ -60,6 +60,7 @@ class ChildForm(forms.ModelForm): # <-- Renombrada
             'birthday': 'Fecha de Nacimiento',
             'parent_name': 'Nombre del Padre/Madre/Representante',
             'contact_phone': 'Teléfono de Contacto',
+            'status': 'Estado',
         }
         widgets = {
             'name': forms.TextInput(attrs={'class': 'form-control'}),
@@ -67,6 +68,7 @@ class ChildForm(forms.ModelForm): # <-- Renombrada
             'birthday': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
             'parent_name': forms.TextInput(attrs={'class': 'form-control'}),
             'contact_phone': forms.TextInput(attrs={'class': 'form-control', 'type': 'tel'}),
+            'status': forms.Select(attrs={'class': 'form-control'}),
         }
     
 class AssistanceForm(forms.ModelForm):

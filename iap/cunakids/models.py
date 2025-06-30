@@ -10,21 +10,21 @@ def validate_date(value):
         raise ValidationError(str(e))
 
 class coordinator(models.Model):
-    name = models.CharField(max_length=128)
+    name = models.CharField(max_length=128, unique=True)
     surname = models.CharField(max_length=128)     
     def __str__(self):
         return self.name
 
 
 class group(models.Model):
-    name = models.CharField(max_length=16)
+    name = models.CharField(max_length=16, unique=True)
     description = models.CharField(max_length=64)
     
     def __str__(self):
         return self.name
 
 class server(models.Model):
-    name = models.CharField(max_length=128)
+    name = models.CharField(max_length=128, unique=True)
     surname = models.CharField(max_length=128)
     coordinator = models.ForeignKey(coordinator, on_delete=models.PROTECT)
     group = models.ForeignKey(group, on_delete=models.PROTECT)
@@ -36,11 +36,21 @@ class server(models.Model):
         return self.name
 
 class child(models.Model):
-    name = models.CharField(max_length=128)
+    STATUS_CHOICES = [
+        ('activo', 'Activo'),
+        ('promovido', 'Promovido'),
+    ]
+    name = models.CharField(max_length=128, unique=True)
     surname = models.CharField(max_length=128)
     birthday = models.DateField(validators=[validate_date]) # El campo clave a probar
     parent_name = models.CharField(max_length=128, blank=True) # Hacemos algunos opcionales
     contact_phone = models.CharField(max_length=16, blank=True)
+    status = models.CharField(
+        max_length=10,
+        choices=STATUS_CHOICES,
+        default='activo',
+        verbose_name='Estado'
+    )
 
     @property
     def calculated_age(self):
@@ -56,12 +66,15 @@ class child(models.Model):
         return f"{self.name} {self.surname}"   
        
 class assistance(models.Model):
-    # kid = models.ForeignKey(kid, on_delete=models.PROTECT) # <-- Línea antigua
     child = models.ForeignKey(child, on_delete=models.PROTECT) # <-- CAMBIAR A child
-    date = models.DateField(validators=[validate_date])
+    date = models.DateField()
     group = models.ForeignKey(group, on_delete=models.PROTECT)
     coordinator = models.ForeignKey(coordinator, on_delete=models.PROTECT)
     attended = models.BooleanField()
+
+    class Meta:
+        # Asegura que no se pueda registrar la asistencia para el mismo niño en la misma fecha más de una vez.
+        unique_together = ('child', 'date')
 
     def __str__(self):
          # Actualizar también aquí si es necesario

@@ -35,8 +35,9 @@ class ServerAdmin(admin.ModelAdmin):
 @admin.register(child)
 class ChildAdmin(admin.ModelAdmin):
     # Configuración mínima para probar la carga de la lista
-    list_display = ('name', 'surname', 'birthday')
+    list_display = ('name', 'surname', 'birthday', 'status')
     search_fields = ('name', 'surname')
+    list_filter = ('status',)
 
 @admin.register(assistance)
 class AssistanceAdmin(admin.ModelAdmin):

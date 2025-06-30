@@ -4,7 +4,10 @@
 
 {% block body %}
 <h1>Lista de Asistencias</h1>
-<a href="{% url 'cunakids:assistance_create' %}" class="btn btn-primary mb-3">Registrar Nueva Asistencia</a>
+<div class="mb-3">
+    <a href="{% url 'cunakids:assistance_create' %}" class="btn btn-primary">Registrar Nueva Asistencia</a>
+    
+</div>
 
 {% if assistances %}
 <table class="table table-striped table-hover table-sm"> {# table-sm para más densidad #}
@@ -37,4 +40,5 @@
 {% else %}
 <p>No hay registros de asistencia.</p>
 {% endif %}
+<a href="{% url 'cunakids:index' %}" class="btn btn-secondary">Volver al Inicio</a>
 {% endblock %}
