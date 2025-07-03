@@ -1,40 +1,68 @@
-{% extends 'base.html' %} {# Ajusta si tu base se llama diferente #}
+{% extends 'base.html' %}
 
 {% block title %}Lista de Asistencias{% endblock %}
 
 {% block body %}
 <h1>Lista de Asistencias</h1>
-<a href="{% url 'pusukids:assistance_create' %}" class="btn btn-primary mb-3">Registrar Nueva Asistencia</a>
+<a href="{% url 'pusukids:assistance_create' %}" class="btn btn-primary mb-3">Registrar Asistencia Grupal</a>
+
+<!-- Formulario de Búsqueda y Filtro -->
+<div class="card mb-4">
+    <div class="card-body">
+        <h5 class="card-title">Buscar y Filtrar</h5>
+        <form method="get" action="{% url 'pusukids:assistance_list' %}">
+            <div class="row g-3">
+                <div class="col-md-5">
+                    <label for="surname" class="form-label">Buscar por Apellido</label>
+                    <input type="text" name="surname" id="surname" class="form-control" value="{{ search_surname|default:'' }}" placeholder="Ej: Pérez">
+                </div>
+                <div class="col-md-5">
+                    <label for="date_id" class="form-label">Filtrar por Fecha</label>
+                    <select name="date_id" id="date_id" class="form-select">
+                        <option value="">-- Todas las fechas --</option>
+                        {% for f in available_dates %}
+                            <option value="{{ f.id }}" {% if f.id == search_date_id %}selected{% endif %}>
+                                {{ f.date|date:"Y-m-d" }} (Semana {{ f.week_no }})
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-2 d-flex align-items-end">
+                    <button type="submit" class="btn btn-info w-100">Buscar</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
 
 {% if assistances %}
-<table class="table table-striped table-hover table-sm"> {# table-sm para más densidad #}
-    <thead>
-        <tr>
-            <th>Fecha</th>
-            <th>Niño/a</th>
-            <th>Grupo</th>
-            <th>Coordinador(a)</th>
-            <th>¿Asistió?</th>
-            <th>Acciones</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for a in assistances %}
-        <tr>
-            <td>{{ a.date.date|date:"Y-m-d" }}</td>
-            <td>{{ a.child.name }} {{ a.child.surname }}</td>
-            <td>{{ a.group.name }}</td>
-            <td>{{ a.coordinator.name }} {{ a.coordinator.surname }}</td>
-            <td>{{ a.attended|yesno:"Sí,No" }}</td> {# Filtro yesno para boolean #}
-            <td>
-                <a href="{% url 'pusukids:assistance_update' a.pk %}" class="btn btn-sm btn-warning">Editar</a>
-                <a href="{% url 'pusukids:assistance_delete' a.pk %}" class="btn btn-sm btn-danger">Eliminar</a>
-            </td>
-        </tr>
+    <table class="table table-striped table-hover">
+        <thead>
+            <tr>
+                <th>Fecha</th>
+                <th>Niño/a</th>
+                <th>Grupo</th>
+                <th>Coordinador(a)</th>
+                <th>¿Asistió?</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for a in assistances %}
+            <tr>
+                <td>{{ a.date.date|date:"Y-m-d" }}</td>
+                <td>{{ a.child.surname }}, {{ a.child.name }}</td>
+                <td>{{ a.group.name }}</td>
+                <td>{{ a.coordinator.name }}</td>
+                <td>{% if a.attended %}<span class="badge bg-success">Sí</span>{% else %}<span class="badge bg-danger">No</span>{% endif %}</td>
+                <td>
+                    <a href="{% url 'pusukids:assistance_update' a.pk %}" class="btn btn-sm btn-warning">Editar</a>
+                </td>
+            </tr>
         {% endfor %}
-    </tbody>
-</table>
+        </tbody>
+    </table>
 {% else %}
-<p>No hay registros de asistencia.</p>
+    <p>No se encontraron registros de asistencia que coincidan con los criterios de búsqueda.</p>
 {% endif %}
 {% endblock %}

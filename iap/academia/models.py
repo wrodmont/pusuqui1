@@ -57,6 +57,7 @@ class Student(models.Model):
         verbose_name = _("student")
         verbose_name_plural = _("students")
         ordering = ['surname', 'name']
+        unique_together = [['name', 'surname']]
 
 class Subject(models.Model):
     name = models.CharField(_("subject name"), max_length=128, unique=True)
@@ -228,3 +229,33 @@ class AttendanceLog(models.Model):
         # Or, if dates are more fixed than lesson numbers:
         # unique_together = ('enrollment', 'lesson_date')
         ordering = ['enrollment', 'lesson_date', 'lesson_number']
+
+class Grade(models.Model):
+    GRADE_TYPE_CHOICES = [
+        ('Leccion', _('Lesson')),
+        ('Examen', _('Exam')),
+    ]
+
+    enrollment = models.ForeignKey(
+        Enrollment,
+        on_delete=models.PROTECT,
+        related_name='grades',
+        verbose_name=_("enrollment")
+    )
+    lesson_number = models.PositiveIntegerField(
+        _("lesson number"),
+        help_text=_("The lesson number this grade refers to. If 'Exam', put 0.")
+    )
+    grade = models.DecimalField(_("grade"), max_digits=5, decimal_places=2)
+    grade_type = models.CharField(_("grade type"), max_length=10, choices=GRADE_TYPE_CHOICES)
+
+    def __str__(self):
+        return f"{self.enrollment} - {self.get_grade_type_display()} - {self.grade}"
+
+    class Meta:
+        verbose_name = _("grade")
+        verbose_name_plural = _("grades")
+        # Consider a unique constraint.  Is a student allowed multiple grades
+        # for the same lesson number (e.g., a retake)? If so, remove the unique_together.
+        unique_together = ('enrollment', 'lesson_number', 'grade_type')
+        ordering = ['enrollment', 'grade_type', 'lesson_number']        

@@ -1,7 +1,7 @@
 # c:\Proyectos\pusuqui\iap\pusukids\forms.py
 from django import forms
 from .models import (
-    coordinator, group, server, groupage, child, assistance,fecha,
+    coordinator, group, server, groupage, child, assistance, fecha, GroupCoordinator,
     weekinfo, expense
 )
 from datetime import date as datetime_date # Renombrar para evitar conflicto con el modelo fecha
@@ -57,7 +57,7 @@ class GroupageForm(forms.ModelForm):
 class ChildForm(forms.ModelForm): # <-- Renombrada
     class Meta:
         model = child # <-- Cambiado a child
-        fields = ['name', 'surname', 'birthday', 'groupage', 'parent_name', 'contact_phone']
+        fields = ['name', 'surname', 'birthday', 'groupage', 'parent_name', 'contact_phone', 'status']
         # ... (labels y widgets como los tenías, asegúrate que las claves coinciden con los fields) ...
         labels = {
             'name': 'Nombre',
@@ -66,6 +66,7 @@ class ChildForm(forms.ModelForm): # <-- Renombrada
             'groupage': 'Grupo de Edad',
             'parent_name': 'Nombre del Padre/Madre/Representante',
             'contact_phone': 'Teléfono de Contacto',
+            'status': 'Estado',
         }
         widgets = {
             'name': forms.TextInput(attrs={'class': 'form-control'}),
@@ -74,6 +75,7 @@ class ChildForm(forms.ModelForm): # <-- Renombrada
             'groupage': forms.Select(attrs={'class': 'form-control'}),
             'parent_name': forms.TextInput(attrs={'class': 'form-control'}),
             'contact_phone': forms.TextInput(attrs={'class': 'form-control', 'type': 'tel'}),
+            'status': forms.Select(attrs={'class': 'form-control'}),
         }
     
 class AssistanceForm(forms.ModelForm):
@@ -181,8 +183,11 @@ class BatchAssistanceForm(forms.Form):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        current_year = datetime_date.today().year
-        self.fields['date'].queryset = fecha.objects.filter(date__year=current_year).order_by('-date')
+        today = datetime_date.today()
+        self.fields['date'].queryset = fecha.objects.filter(
+            date__year=today.year,
+            date__month=today.month
+        ).order_by('-date')
 
 class FechaForm(forms.ModelForm):
     class Meta:
@@ -194,3 +199,21 @@ class FechaForm(forms.ModelForm):
         widgets = {
             'date': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
         }        
+
+class GroupCoordinatorForm(forms.ModelForm):
+    class Meta:
+        model = GroupCoordinator
+        fields = ['group', 'coordinator']
+        labels = {
+            'group': 'Grupo',
+            'coordinator': 'Coordinador(a)',
+        }
+        widgets = {
+            'group': forms.Select(attrs={'class': 'form-control'}),
+            'coordinator': forms.Select(attrs={'class': 'form-control'}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['group'].queryset = group.objects.order_by('name')
+        self.fields['coordinator'].queryset = coordinator.objects.order_by('surname', 'name')

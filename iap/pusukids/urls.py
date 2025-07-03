@@ -60,4 +60,10 @@ urlpatterns = [
     path('fechas/new/', views.fecha_create, name='fecha_create'),
     path('fechas/<int:pk>/edit/', views.fecha_update, name='fecha_update'),
     path('fechas/<int:pk>/delete/', views.fecha_delete, name='fecha_delete'),
+
+    # --- URLs para GroupCoordinator ---
+    path('groupcoordinators/', views.groupcoordinator_list, name='groupcoordinator_list'),
+    path('groupcoordinators/new/', views.groupcoordinator_create, name='groupcoordinator_create'),
+    path('groupcoordinators/<int:pk>/edit/', views.groupcoordinator_update, name='groupcoordinator_update'),
+    path('groupcoordinators/<int:pk>/delete/', views.groupcoordinator_delete, name='groupcoordinator_delete'),
 ]

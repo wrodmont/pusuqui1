@@ -1,5 +1,5 @@
 from django import forms
-from .models import Teacher, Student, Subject, Course, Enrollment, AttendanceLog
+from .models import Teacher, Student, Subject, Course, Enrollment, AttendanceLog, Grade
 from django.utils.translation import gettext_lazy as _
 from datetime import date
 
@@ -200,3 +200,21 @@ class StudentAttendanceForm(forms.Form):
     enrollment_id = forms.IntegerField(widget=forms.HiddenInput())
     is_present = forms.BooleanField(label=_("P"), required=False, widget=forms.CheckboxInput(attrs={'class': 'form-check-input ms-2 me-1'})) # P for Present
     notes = forms.CharField(label="", required=False, widget=forms.TextInput(attrs={'class': 'form-control form-control-sm', 'placeholder': _('Optional notes')}))
+
+
+class GradeForm(forms.ModelForm):
+    class Meta:
+        model = Grade
+        fields = ['enrollment', 'lesson_number', 'grade', 'grade_type']
+        widgets = {
+            'enrollment': forms.Select(attrs={'class': 'form-control select2'}),
+            'lesson_number': forms.NumberInput(attrs={'class': 'form-control'}),
+            'grade': forms.NumberInput(attrs={'class': 'form-control'}),
+            'grade_type': forms.Select(attrs={'class': 'form-control'}),
+        }
+        labels = {
+            'enrollment': _('Enrollment'),
+            'lesson_number': _('Lesson Number (0 for Exam)'),
+            'grade': _('Grade'),
+            'grade_type': _('Grade Type'),
+        }    

@@ -36,6 +36,10 @@ urlpatterns = [
     path('assistances/new/', views.assistance_create, name='assistance_create'),
     path('assistances/<int:pk>/edit/', views.assistance_update, name='assistance_update'),
     path('assistances/<int:pk>/delete/', views.assistance_delete, name='assistance_delete'),
-
-    # ... puedes agregar más URLs aquí ...
+    
+    # --- URLs para GroupCoordinator ---
+    path('groupcoordinators/', views.groupcoordinator_list, name='groupcoordinator_list'),
+    path('groupcoordinators/new/', views.groupcoordinator_create, name='groupcoordinator_create'),
+    path('groupcoordinators/<int:pk>/edit/', views.groupcoordinator_update, name='groupcoordinator_update'),
+    path('groupcoordinators/<int:pk>/delete/', views.groupcoordinator_delete, name='groupcoordinator_delete'),
 ]

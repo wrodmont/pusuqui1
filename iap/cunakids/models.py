@@ -80,7 +80,18 @@ class assistance(models.Model):
          # Actualizar también aquí si es necesario
          return f"{self.child.name} - {str(self.date)}"
 
-                
+class GroupCoordinator(models.Model):
+    group = models.ForeignKey(group, on_delete=models.CASCADE)
+    coordinator = models.ForeignKey(coordinator, on_delete=models.CASCADE)
+
+    class Meta:
+        unique_together = [['group', 'coordinator']]
+        verbose_name = "Asignación Grupo-Coordinador (Cuna)"
+        verbose_name_plural = "Asignaciones Grupo-Coordinador (Cuna)"
+
+    def __str__(self):
+        return f"{self.group.name} - {self.coordinator.name} {self.coordinator.surname}"
+
 
         
                      

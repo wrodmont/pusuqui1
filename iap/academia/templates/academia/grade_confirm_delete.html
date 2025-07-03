@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Confirmar Eliminación de Nota" %}{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card border-danger">
+                <div class="card-header bg-danger text-white">
+                    <h1 class="card-title h5">{% trans "Confirmar Eliminación de Nota" %}</h1>
+                </div>
+                <div class="card-body">
+                    <p>
+                        {% blocktrans with student=grade.enrollment.student course=grade.enrollment.course.subject.name grade_value=grade.grade grade_type=grade.get_grade_type_display %}
+                        Está a punto de eliminar permanentemente la nota ({{ grade_type }}) de <strong>{{ grade_value }}</strong> para el estudiante <strong>{{ student }}</strong> en el curso <strong>{{ course }}</strong>.
+                        {% endblocktrans %}
+                    </p>
+                    <p class="text-danger"><strong>{% trans "¡Esta acción no se puede deshacer!" %}</strong></p>
+                    <p>{% trans "¿Está seguro de que desea continuar?" %}</p>
+
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                            <a href="{% url 'academia:grade-list' %}" class="btn btn-secondary">{% trans "Cancelar" %}</a>
+                            <button type="submit" class="btn btn-danger">{% trans "Sí, eliminar nota" %}</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

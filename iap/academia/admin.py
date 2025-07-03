@@ -1,8 +1,8 @@
 from django.contrib import admin
 # Register your models here.
 from django.utils.translation import gettext_lazy as _ # <--- AÑADE ESTA LÍNEA
-from .models import Teacher, Student, Subject, Course, Enrollment, AttendanceLog
-
+from .models import Teacher, Student, Subject, Course, Enrollment, AttendanceLog,Grade
+from .models import Grade  # Import the new model
 @admin.register(Teacher)
 class TeacherAdmin(admin.ModelAdmin):
     list_display = ('name', 'surname', 'email', 'phone_number')
@@ -76,6 +76,14 @@ class AttendanceLogAdmin(admin.ModelAdmin):
         return obj.enrollment.course
     enrollment_course_name.short_description = _("Course")
     enrollment_course_name.admin_order_field = 'enrollment__course__subject__name'
+
+@admin.register(Grade)
+class GradeAdmin(admin.ModelAdmin):
+    list_display = ('enrollment', 'lesson_number', 'grade', 'grade_type')
+    list_filter = ('grade_type', 'enrollment__course__subject')
+    search_fields = ('enrollment__student__surname', 'enrollment__student__name', 'enrollment__course__subject__name')
+    ordering = ('enrollment__student__surname', 'enrollment__course__subject__name', 'lesson_number')
+    raw_id_fields = ('enrollment',)  # For performance, especially if you have many enrollments
 
 # Si prefieres un registro más simple sin personalización, puedes usar:
 # admin.site.register(Teacher)

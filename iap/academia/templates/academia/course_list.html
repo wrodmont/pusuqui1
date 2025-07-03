@@ -54,5 +54,8 @@
             No hay cursos registrados. <a href="{% url 'academia:course-create' %}" class="alert-link">¿Deseas agregar uno nuevo?</a>
         </div>
     {% endif %}
+    <div class="mt-4 text-center">
+        <a href="{% url 'academia:index' %}" class="btn btn-secondary">Volver al Menú Principal</a>
+    </div>
 </div>
 {% endblock %}

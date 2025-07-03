@@ -49,4 +49,11 @@ urlpatterns = [
     path('attendancelogs/<int:pk>/', views.AttendanceLogDetailView.as_view(), name='attendancelog-detail'),
     path('attendancelogs/<int:pk>/edit/', views.AttendanceLogUpdateView.as_view(), name='attendancelog-update'),
     path('attendancelogs/<int:pk>/delete/', views.AttendanceLogDeleteView.as_view(), name='attendancelog-delete'),
+
+    # URLs para Grade
+    path('grades/', views.GradeListView.as_view(), name='grade-list'),
+    path('grades/new/', views.GradeCreateView.as_view(), name='grade-create'),
+    path('grades/<int:pk>/', views.GradeDetailView.as_view(), name='grade-detail'),
+    path('grades/<int:pk>/edit/', views.GradeUpdateView.as_view(), name='grade-update'),
+    path('grades/<int:pk>/delete/', views.GradeDeleteView.as_view(), name='grade-delete'),
 ]

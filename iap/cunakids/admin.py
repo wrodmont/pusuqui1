@@ -7,7 +7,7 @@ from .models import (
     group,
     server,
     child,
-    assistance,
+    assistance, GroupCoordinator,
 
 )
 # Importa date de datetime
@@ -46,3 +46,10 @@ class AssistanceAdmin(admin.ModelAdmin):
     search_fields = ('child__name', 'child__surname') # <-- Cambiado kid__ a child__
     raw_id_fields = ('child', 'group', 'coordinator') # <-- 'date' eliminado
     list_editable = ('attended',)
+
+@admin.register(GroupCoordinator)
+class GroupCoordinatorAdmin(admin.ModelAdmin):
+    list_display = ('group', 'coordinator')
+    list_filter = ('group', 'coordinator')
+    search_fields = ('group__name', 'coordinator__name', 'coordinator__surname')
+    raw_id_fields = ('group', 'coordinator')

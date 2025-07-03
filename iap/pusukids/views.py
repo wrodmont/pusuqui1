@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse
 from .models import (
-    coordinator, group, server, groupage, child, assistance,fecha,
+    coordinator, group, server, groupage, child, assistance, fecha, GroupCoordinator,
     weekinfo, expense
 )
 from django.urls import reverse, reverse_lazy
@@ -9,9 +9,12 @@ from django.views.generic import ListView, DetailView, CreateView, UpdateView, D
 from datetime import date
 from .forms import (
     CoordinatorForm, GroupForm, ServerForm, GroupageForm, ChildForm,
-    AssistanceForm, WeekinfoForm, ExpenseForm, FechaForm,
+    AssistanceForm, WeekinfoForm, ExpenseForm, FechaForm, GroupCoordinatorForm,
     BatchAssistanceForm
 )
+from django.contrib import messages
+from django.core.paginator import Paginator
+from django.db import IntegrityError
 import traceback # Para debug si es necesario
 
 # Create your views here.
@@ -199,20 +202,39 @@ def groupage_delete(request, pk):
 
 def child_list(request):
     """Vista para listar todos los niños."""
-    # Obtén el queryset directamente
-    children_list = child.objects.all().order_by('surname', 'name')
+    # Por defecto, mostrar solo los niños activos.
+    # Se puede pasar un parámetro GET ?status=all para ver todos, o ?status=promovido.
+    status_filter = request.GET.get('status', 'activo')
 
-    # Pasa el queryset directamente al template.
+    if status_filter == 'all':
+        children_list = child.objects.all().order_by('surname', 'name')
+    else:
+        # Filtra por el estado solicitado ('activo', 'promovido', etc.)
+        children_list = child.objects.filter(status=status_filter).order_by('surname', 'name')
+
+    # Paginación
+    paginator = Paginator(children_list, 10) # 10 niños por página
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
     # La propiedad @property calculated_age estará disponible en cada objeto 'c' dentro del template.
-    return render(request, 'pusukids/child_list.html', {'children': children_list})
+    return render(request, 'pusukids/child_list.html', {
+        'page_obj': page_obj, 
+        'current_status': status_filter
+    })
 
 def child_create(request): # <-- Renombrada
     """Vista para crear un nuevo niño."""
     if request.method == 'POST':
         form = ChildForm(request.POST) # <-- Cambiado
         if form.is_valid():
-            form.save()
+            new_child = form.save()
+            messages.success(request, f"El niño/a '{new_child}' ha sido registrado/a exitosamente.")
             return redirect('pusukids:child_list') # <-- Cambiado
+        else:
+            # El error de 'unique_together' se mostrará automáticamente en el formulario.
+            # Añadimos un mensaje general para mayor claridad.
+            messages.error(request, 'No se pudo registrar al niño. Por favor, revisa los errores en el formulario.')
     else:
         form = ChildForm() # <-- Cambiado
     # Asegúrate que el template existe o renómbralo
@@ -224,8 +246,13 @@ def child_update(request, pk): # <-- Renombrada
     if request.method == 'POST':
         form = ChildForm(request.POST, instance=child_obj) # <-- Cambiado
         if form.is_valid():
-            form.save()
+            updated_child = form.save()
+            messages.success(request, f"Los datos de '{updated_child}' han sido actualizados exitosamente.")
             return redirect('pusukids:child_list') # <-- Cambiado
+        else:
+            # El error de 'unique_together' se mostrará automáticamente en el formulario.
+            # Añadimos un mensaje general para mayor claridad.
+            messages.error(request, 'No se pudieron guardar los cambios. Por favor, revisa los errores en el formulario.')
     else:
         form = ChildForm(instance=child_obj) # <-- Cambiado
     current_age = calculated_age(child_obj.birthday) if child_obj.birthday else "N/A"
@@ -247,19 +274,41 @@ def child_delete(request, pk): # <-- Renombrada
 
 def assistance_list(request):
     """Vista para listar todos los registros de asistencia."""
+    # Obtener parámetros de búsqueda del GET request
+    search_surname = request.GET.get('surname', '')
+    search_date_id = request.GET.get('date_id', '')
+
     # Optimizar consulta usando select_related para cargar datos relacionados
     assistances_list = assistance.objects.select_related(
         'child', 'date', 'group', 'coordinator'
     ).order_by('-date__date', 'child__surname', 'child__name') # Ordenar por fecha desc, luego por niño
 
-    return render(request, 'pusukids/assistance_list.html', {'assistances': assistances_list})
+    # Aplicar filtros si existen
+    if search_surname:
+        assistances_list = assistances_list.filter(child__surname__icontains=search_surname)
+    if search_date_id:
+        assistances_list = assistances_list.filter(date__id=search_date_id)
+
+    # Obtener las fechas del mes y año actual para el menú desplegable del filtro
+    today = date.today()
+    available_dates = fecha.objects.filter(
+        date__year=today.year,
+        date__month=today.month
+    ).order_by('-date')
+
+    return render(request, 'pusukids/assistance_list.html', {
+        'assistances': assistances_list,
+        'available_dates': available_dates,
+        'search_surname': search_surname,
+        'search_date_id': int(search_date_id) if search_date_id else None,
+    })
 
 
 def assistance_create(request):
     """
     Vista para crear registros de asistencia en lote para todos los niños.
     """
-    children_list = child.objects.order_by('surname', 'name')
+    children_list = child.objects.filter(status=child.STATUS_ACTIVO).order_by('surname', 'name')
 
     if request.method == 'POST':
         form = BatchAssistanceForm(request.POST)
@@ -282,9 +331,12 @@ def assistance_create(request):
                 )
             
             if assistances_to_create:
-                assistance.objects.bulk_create(assistances_to_create)
-            # messages.success(request, 'Asistencias registradas exitosamente.') # Opcional
-            return redirect('pusukids:assistance_list')
+                try:
+                    assistance.objects.bulk_create(assistances_to_create)
+                    messages.success(request, 'Asistencias registradas exitosamente.')
+                    return redirect('pusukids:assistance_list')
+                except IntegrityError:
+                    messages.error(request, 'Error: No se pudo registrar la asistencia. Es probable que ya existan registros para uno o más niños en la fecha seleccionada.')
     else:
         form = BatchAssistanceForm()
 
@@ -532,3 +584,56 @@ def fecha_delete(request, pk):
              })
 
     return render(request, 'pusukids/fecha_confirm_delete.html', {'fecha': fecha_obj})
+
+# --- Vistas para el CRUD de GroupCoordinator ---
+
+def groupcoordinator_list(request):
+    """Vista para listar todas las asignaciones de grupo-coordinador."""
+    assignments = GroupCoordinator.objects.select_related('group', 'coordinator').order_by('group__name', 'coordinator__surname')
+    return render(request, 'pusukids/groupcoordinator_list.html', {'assignments': assignments})
+
+def groupcoordinator_create(request):
+    """Vista para crear una nueva asignación."""
+    if request.method == 'POST':
+        form = GroupCoordinatorForm(request.POST)
+        if form.is_valid():
+            try:
+                form.save()
+                messages.success(request, 'Asignación creada exitosamente.')
+                return redirect('pusukids:groupcoordinator_list')
+            except IntegrityError:
+                messages.error(request, 'Error: Esta asignación de grupo y coordinador ya existe.')
+    else:
+        form = GroupCoordinatorForm()
+    return render(request, 'pusukids/groupcoordinator_form.html', {'form': form, 'action': 'Asignar'})
+
+def groupcoordinator_update(request, pk):
+    """Vista para actualizar una asignación."""
+    assignment = get_object_or_404(GroupCoordinator, pk=pk)
+    if request.method == 'POST':
+        form = GroupCoordinatorForm(request.POST, instance=assignment)
+        if form.is_valid():
+            try:
+                form.save()
+                messages.success(request, 'Asignación actualizada exitosamente.')
+                return redirect('pusukids:groupcoordinator_list')
+            except IntegrityError:
+                messages.error(request, 'Error: Esta asignación de grupo y coordinador ya existe.')
+    else:
+        form = GroupCoordinatorForm(instance=assignment)
+    
+    action_title = f"Editar Asignación: {assignment}"
+    return render(request, 'pusukids/groupcoordinator_form.html', {
+        'form': form, 
+        'action': 'Actualizar', 
+        'action_title': action_title
+    })
+
+def groupcoordinator_delete(request, pk):
+    """Vista para eliminar una asignación."""
+    assignment = get_object_or_404(GroupCoordinator.objects.select_related('group', 'coordinator'), pk=pk)
+    if request.method == 'POST':
+        assignment.delete()
+        messages.success(request, 'Asignación eliminada exitosamente.')
+        return redirect('pusukids:groupcoordinator_list')
+    return render(request, 'pusukids/groupcoordinator_confirm_delete.html', {'assignment': assignment})

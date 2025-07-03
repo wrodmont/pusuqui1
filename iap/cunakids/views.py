@@ -1,14 +1,14 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse
 from .models import (
-    coordinator, group, server, child, assistance,
+    coordinator, group, server, child, assistance, GroupCoordinator,
 )
 from django.db import IntegrityError
 from django.urls import reverse, reverse_lazy
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from datetime import date
 from .forms import (
-    CoordinatorForm, GroupForm, ServerForm, ChildForm, AssistanceForm,
+    CoordinatorForm, GroupForm, ServerForm, ChildForm, AssistanceForm, GroupCoordinatorForm,
     BatchAssistanceForm # <-- Añadir BatchAssistanceForm
 )
 from django.contrib import messages
@@ -312,3 +312,56 @@ def assistance_delete(request, pk):
              })
 
     return render(request, 'cunakids/assistance_confirm_delete.html', {'assistance': assistance_obj})
+
+# --- Vistas para el CRUD de GroupCoordinator (Cunakids) ---
+
+def groupcoordinator_list(request):
+    """Vista para listar todas las asignaciones de grupo-coordinador."""
+    assignments = GroupCoordinator.objects.select_related('group', 'coordinator').order_by('group__name', 'coordinator__surname')
+    return render(request, 'cunakids/groupcoordinator_list.html', {'assignments': assignments})
+
+def groupcoordinator_create(request):
+    """Vista para crear una nueva asignación."""
+    if request.method == 'POST':
+        form = GroupCoordinatorForm(request.POST)
+        if form.is_valid():
+            try:
+                form.save()
+                messages.success(request, 'Asignación creada exitosamente.')
+                return redirect('cunakids:groupcoordinator_list')
+            except IntegrityError:
+                messages.error(request, 'Error: Esta asignación de grupo y coordinador ya existe.')
+    else:
+        form = GroupCoordinatorForm()
+    return render(request, 'cunakids/groupcoordinator_form.html', {'form': form, 'action': 'Asignar'})
+
+def groupcoordinator_update(request, pk):
+    """Vista para actualizar una asignación."""
+    assignment = get_object_or_404(GroupCoordinator, pk=pk)
+    if request.method == 'POST':
+        form = GroupCoordinatorForm(request.POST, instance=assignment)
+        if form.is_valid():
+            try:
+                form.save()
+                messages.success(request, 'Asignación actualizada exitosamente.')
+                return redirect('cunakids:groupcoordinator_list')
+            except IntegrityError:
+                messages.error(request, 'Error: Esta asignación de grupo y coordinador ya existe.')
+    else:
+        form = GroupCoordinatorForm(instance=assignment)
+    
+    action_title = f"Editar Asignación: {assignment}"
+    return render(request, 'cunakids/groupcoordinator_form.html', {
+        'form': form, 
+        'action': 'Actualizar', 
+        'action_title': action_title
+    })
+
+def groupcoordinator_delete(request, pk):
+    """Vista para eliminar una asignación."""
+    assignment = get_object_or_404(GroupCoordinator.objects.select_related('group', 'coordinator'), pk=pk)
+    if request.method == 'POST':
+        assignment.delete()
+        messages.success(request, 'Asignación eliminada exitosamente.')
+        return redirect('cunakids:groupcoordinator_list')
+    return render(request, 'cunakids/groupcoordinator_confirm_delete.html', {'assignment': assignment})

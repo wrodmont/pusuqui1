@@ -7,7 +7,7 @@ from .models import (
     group,
     server,
     groupage,
-    child,
+    child, GroupCoordinator,
     fecha,
     assistance,
     weekinfo,
@@ -43,9 +43,10 @@ class GroupageAdmin(admin.ModelAdmin):
 @admin.register(child)
 class ChildAdmin(admin.ModelAdmin):
     # Configuración mínima para probar la carga de la lista
-    list_display = ('name', 'surname', 'birthday', 'groupage')
+    list_display = ('name', 'surname', 'birthday', 'groupage', 'status')
     search_fields = ('name', 'surname')
-    list_filter = ('groupage',)
+    list_filter = ('groupage', 'status')
+    list_editable = ('status',)
 
 @admin.register(fecha)
 class FechaAdmin(admin.ModelAdmin):
@@ -85,3 +86,9 @@ class ExpenseAdmin(admin.ModelAdmin):
     search_fields = ('description', 'reference')
     raw_id_fields = ('fecha',)
 
+@admin.register(GroupCoordinator)
+class GroupCoordinatorAdmin(admin.ModelAdmin):
+    list_display = ('group', 'coordinator')
+    list_filter = ('group', 'coordinator')
+    search_fields = ('group__name', 'coordinator__name', 'coordinator__surname')
+    raw_id_fields = ('group', 'coordinator')

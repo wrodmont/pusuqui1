@@ -1,7 +1,7 @@
 
 from django import forms
 from .models import (
-    coordinator, group, server,  child, assistance,
+    coordinator, group, server,  child, assistance, GroupCoordinator,
 
 )
 
@@ -120,3 +120,21 @@ class BatchAssistanceForm(forms.Form):
         label="Coordinador(a)",
         widget=forms.Select(attrs={'class': 'form-control'})
     )
+
+class GroupCoordinatorForm(forms.ModelForm):
+    class Meta:
+        model = GroupCoordinator
+        fields = ['group', 'coordinator']
+        labels = {
+            'group': 'Grupo',
+            'coordinator': 'Coordinador(a)',
+        }
+        widgets = {
+            'group': forms.Select(attrs={'class': 'form-control'}),
+            'coordinator': forms.Select(attrs={'class': 'form-control'}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['group'].queryset = group.objects.order_by('name')
+        self.fields['coordinator'].queryset = coordinator.objects.order_by('surname', 'name')

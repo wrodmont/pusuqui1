@@ -44,5 +44,8 @@
             No hay asignaturas registradas. <a href="{% url 'academia:subject-create' %}" class="alert-link">¿Deseas agregar una nueva?</a>
         </div>
     {% endif %}
+    <div class="mt-4 text-center">
+        <a href="{% url 'academia:index' %}" class="btn btn-secondary">Volver al Menú Principal</a>
+    </div>
 </div>
 {% endblock %}

@@ -41,6 +41,13 @@ class groupage(models.Model):
         return self.name
 
 class child(models.Model):
+    STATUS_ACTIVO = 'activo'
+    STATUS_PROMOVIDO = 'promovido'
+    STATUS_CHOICES = [
+        (STATUS_ACTIVO, 'Activo'),
+        (STATUS_PROMOVIDO, 'Promovido'),
+    ]
+
     name = models.CharField(max_length=128)
     surname = models.CharField(max_length=128)
     birthday = models.DateField(validators=[validate_date]) # El campo clave a probar
@@ -48,6 +55,7 @@ class child(models.Model):
     groupage = models.ForeignKey(groupage, on_delete=models.PROTECT)
     parent_name = models.CharField(max_length=128, blank=True) # Hacemos algunos opcionales
     contact_phone = models.CharField(max_length=16, blank=True)
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default=STATUS_ACTIVO)
 
     @property
     def calculated_age(self):
@@ -60,7 +68,10 @@ class child(models.Model):
         return age
     
     def __str__(self):
-        return f"{self.name} {self.surname}"   
+        return f"{self.name} {self.surname}"
+
+    class Meta:
+        unique_together = [['name', 'surname']]
 
 class fecha(models.Model):
     date = models.DateField(validators=[validate_date], unique=True)
@@ -80,6 +91,9 @@ class assistance(models.Model):
     def __str__(self):
          # Actualizar también aquí si es necesario
          return f"{self.child.name} - {str(self.date.date)}"
+
+    class Meta:
+        unique_together = [['child', 'date']]
 
                 
 class weekinfo(models.Model):
@@ -109,4 +123,16 @@ class expense(models.Model):
     def __str__(self):
         return self.description
         
-                     
+class GroupCoordinator(models.Model):
+    group = models.ForeignKey(group, on_delete=models.CASCADE)
+    coordinator = models.ForeignKey(coordinator, on_delete=models.CASCADE)
+
+    class Meta:
+        unique_together = [['group', 'coordinator']]
+        verbose_name = "Asignación Grupo-Coordinador"
+        verbose_name_plural = "Asignaciones Grupo-Coordinador"
+
+    def __str__(self):
+        return f"{self.group.name} - {self.coordinator.name} {self.coordinator.surname}"
+
+                    

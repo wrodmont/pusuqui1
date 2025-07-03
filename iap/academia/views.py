@@ -8,11 +8,12 @@ from django.contrib import messages
 from django.utils.translation import gettext_lazy as _
 from datetime import date
 
-from .models import Teacher, Student, Subject, Course, Enrollment, AttendanceLog
+from .models import Teacher, Student, Subject, Course, Enrollment, AttendanceLog, Grade
 from .forms import (
     TeacherForm, StudentForm, SubjectForm, CourseForm, EnrollmentForm, AttendanceLogForm,
-    AttendanceTakingSelectionForm, StudentAttendanceForm
-)
+    AttendanceTakingSelectionForm, StudentAttendanceForm,GradeForm
+) 
+from .forms import GradeForm # Import the new form
 
 def index(request):
     """
@@ -305,14 +306,30 @@ class EnrollmentListView(ListView):
     paginate_by = 10
 
     def get_queryset(self):
-        return Enrollment.objects.select_related(
+        queryset = Enrollment.objects.select_related(
             'student', 'course', 'course__subject', 'course__teacher'
         ).order_by('-course__academic_period', 'course__subject__name', 'student__surname')
+
+        # Aplicar filtros desde los parámetros GET
+        course_id = self.request.GET.get('course')
+        period = self.request.GET.get('period')
+
+        if course_id:
+            queryset = queryset.filter(course__id=course_id)
+        if period:
+            queryset = queryset.filter(course__academic_period=period)
+
+        return queryset
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['active_page'] = 'enrollments'
         context['page_title'] = 'Listado de Inscripciones'
+        # Datos para los filtros del template
+        context['all_courses'] = Course.objects.select_related('subject').order_by('-academic_period', 'subject__name')
+        context['academic_periods'] = Course.objects.values_list('academic_period', flat=True).distinct().order_by('-academic_period')
+        context['current_course'] = self.request.GET.get('course', '')
+        context['current_period'] = self.request.GET.get('period', '')
         return context
 
 class EnrollmentDetailView(DetailView):
@@ -389,16 +406,31 @@ class AttendanceLogListView(ListView):
     paginate_by = 15
 
     def get_queryset(self):
-        return AttendanceLog.objects.select_related(
+        queryset = AttendanceLog.objects.select_related(
             'enrollment__student',
             'enrollment__course__subject',
             'enrollment__course__teacher'
         ).order_by('-lesson_date', 'enrollment__course__subject__name', 'enrollment__student__surname', 'lesson_number')
 
+        # Get filter parameters
+        course_id = self.request.GET.get('course')
+        lesson_number = self.request.GET.get('lesson_number')
+
+        # Apply filters
+        if course_id:
+            queryset = queryset.filter(enrollment__course__id=course_id)
+        if lesson_number:
+            queryset = queryset.filter(lesson_number=lesson_number)
+
+        return queryset
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['active_page'] = 'attendancelogs'
         context['page_title'] = 'Listado de Registros de Asistencia'
+        context['all_courses'] = Course.objects.select_related('subject').order_by('-academic_period', 'subject__name')
+        context['current_course'] = self.request.GET.get('course', '')
+        context['current_lesson_number'] = self.request.GET.get('lesson_number', '')
         return context
 
 class AttendanceLogDetailView(DetailView):
@@ -581,3 +613,79 @@ class TakeAttendanceView(View):
         else:
             messages.error(request, _("There were errors in the submitted attendance data. Please review."))
             return redirect(f"{reverse_lazy('academia:take-attendance')}?course={course_id}&lesson_date={lesson_date_str}&lesson_number={lesson_number_str}")
+
+# CRUD views for Grade
+class GradeListView(ListView):
+    model = Grade
+    template_name = 'academia/grade_list.html'
+    context_object_name = 'grades'
+    paginate_by = 10
+
+    def get_queryset(self):
+        return Grade.objects.select_related('enrollment__student', 'enrollment__course').order_by('enrollment__student__surname', 'enrollment__course__subject__name', 'lesson_number')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['active_page'] = 'grades'
+        context['page_title'] = _('List of Grades')
+        return context
+
+class GradeDetailView(DetailView):
+    model = Grade
+    template_name = 'academia/grade_detail.html'
+    context_object_name = 'grade'
+
+    def get_queryset(self):
+        return Grade.objects.select_related('enrollment__student', 'enrollment__course')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['active_page'] = 'grades'
+        context['page_title'] = _('Grade Detail')
+        return context
+
+class GradeCreateView(CreateView):
+    model = Grade
+    form_class = GradeForm
+    template_name = 'academia/grade_form.html'
+    success_url = reverse_lazy('academia:grade-list')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['active_page'] = 'grades'
+        context['page_title'] = _('Create New Grade')
+        context['form_title'] = _('New Grade Form')
+        context['submit_button_text'] = _('Save Grade')
+        return context
+
+class GradeUpdateView(UpdateView):
+    model = Grade
+    form_class = GradeForm
+    template_name = 'academia/grade_form.html'
+    success_url = reverse_lazy('academia:grade-list')
+
+    def get_queryset(self):
+        return Grade.objects.select_related('enrollment__student', 'enrollment__course')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['active_page'] = 'grades'
+        context['page_title'] = _('Update Grade')
+        context['form_title'] = _('Update Grade Form')
+        context['submit_button_text'] = _('Update Grade')
+        return context
+
+class GradeDeleteView(DeleteView):
+    model = Grade
+    template_name = 'academia/grade_confirm_delete.html'
+    success_url = reverse_lazy('academia:grade-list')
+    context_object_name = 'grade'
+
+    def get_queryset(self):
+        return Grade.objects.select_related('enrollment__student', 'enrollment__course')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['active_page'] = 'grades'
+        context['page_title'] = _('Delete Grade')
+        return context
