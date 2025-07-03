@@ -11,9 +11,9 @@ from datetime import date
 from .models import Teacher, Student, Subject, Course, Enrollment, AttendanceLog, Grade
 from .forms import (
     TeacherForm, StudentForm, SubjectForm, CourseForm, EnrollmentForm, AttendanceLogForm,
-    AttendanceTakingSelectionForm, StudentAttendanceForm,GradeForm
-) 
-from .forms import GradeForm # Import the new form
+    AttendanceTakingSelectionForm, StudentAttendanceForm, GradeForm,
+    GradeTakingSelectionForm, StudentGradeForm
+)
 
 def index(request):
     """
@@ -613,6 +613,120 @@ class TakeAttendanceView(View):
         else:
             messages.error(request, _("There were errors in the submitted attendance data. Please review."))
             return redirect(f"{reverse_lazy('academia:take-attendance')}?course={course_id}&lesson_date={lesson_date_str}&lesson_number={lesson_number_str}")
+
+class TakeGradesView(View):
+    template_name = 'academia/take_grades_form.html'
+    selection_form_class = GradeTakingSelectionForm
+    student_form_class = StudentGradeForm
+
+    def get(self, request, *args, **kwargs):
+        selection_form = self.selection_form_class(request.GET or None)
+        student_formset = None
+        enrollments_with_forms = []
+        course_obj = None
+
+        if selection_form.is_valid() and 'course' in request.GET:
+            course_obj = selection_form.cleaned_data['course']
+            lesson_number_val = selection_form.cleaned_data['lesson_number']
+            grade_type_val = selection_form.cleaned_data['grade_type']
+
+            enrollments = Enrollment.objects.filter(course=course_obj).select_related('student').order_by('student__surname', 'student__name')
+
+            StudentGradeFormSet = formset_factory(self.student_form_class, extra=0)
+            initial_data_for_formset = []
+            for enrollment in enrollments:
+                try:
+                    grade_obj = Grade.objects.get(enrollment=enrollment, lesson_number=lesson_number_val, grade_type=grade_type_val)
+                    initial_data_for_formset.append({
+                        'enrollment_id': enrollment.id,
+                        'grade': grade_obj.grade,
+                    })
+                except Grade.DoesNotExist:
+                    initial_data_for_formset.append({
+                        'enrollment_id': enrollment.id,
+                        'grade': None,
+                    })
+            student_formset = StudentGradeFormSet(initial=initial_data_for_formset, prefix='students')
+
+            for i, enrollment in enumerate(enrollments):
+                if i < len(student_formset.forms):
+                    enrollments_with_forms.append((enrollment, student_formset.forms[i]))
+
+            selection_form = self.selection_form_class(initial={
+                'course': course_obj,
+                'lesson_number': lesson_number_val,
+                'grade_type': grade_type_val
+            })
+
+        context = {
+            'selection_form': selection_form,
+            'student_formset': student_formset,
+            'enrollments_with_forms': enrollments_with_forms,
+            'course': course_obj,
+            'page_title': _('Take Grades'),
+            'form_title': _('Take Grades for Course'),
+            'active_page': 'grades',
+        }
+        return render(request, self.template_name, context)
+
+    def post(self, request, *args, **kwargs):
+        course_id = request.POST.get('course_id_hidden')
+        lesson_number_str = request.POST.get('lesson_number_hidden')
+        grade_type_str = request.POST.get('grade_type_hidden')
+
+        if not all([course_id, lesson_number_str, grade_type_str]):
+            messages.error(request, _("Missing course, lesson number, or grade type for submission."))
+            return redirect(reverse_lazy('academia:take-grades'))
+
+        try:
+            course_obj = get_object_or_404(Course, pk=course_id)
+            lesson_number_val = int(lesson_number_str)
+            grade_type_val = grade_type_str
+        except (Course.DoesNotExist, ValueError, TypeError) as e:
+            messages.error(request, _("Invalid course, lesson number, or grade type data: %(error)s") % {'error': str(e)})
+            return redirect(reverse_lazy('academia:take-grades'))
+
+        StudentGradeFormSet = formset_factory(self.student_form_class, extra=0)
+        student_formset = StudentGradeFormSet(request.POST, prefix='students')
+
+        if student_formset.is_valid():
+            grades_updated = 0
+            grades_deleted = 0
+            for form_data in student_formset.cleaned_data:
+                enrollment_id = form_data.get('enrollment_id')
+                grade_val = form_data.get('grade')
+
+                if not enrollment_id:
+                    continue
+
+                try:
+                    enrollment = Enrollment.objects.get(pk=enrollment_id, course=course_obj)
+                    
+                    if grade_val is not None:
+                        # Si se proporciona una nota, se crea o actualiza.
+                        Grade.objects.update_or_create(
+                            enrollment=enrollment, lesson_number=lesson_number_val, grade_type=grade_type_val,
+                            defaults={'grade': grade_val}
+                        )
+                        grades_updated += 1
+                    else:
+                        # Si la nota está vacía, se elimina cualquier registro existente.
+                        deleted_count, deletions_by_type = Grade.objects.filter(
+                            enrollment=enrollment, lesson_number=lesson_number_val, grade_type=grade_type_val
+                        ).delete()
+                        if deleted_count > 0:
+                            grades_deleted += 1
+
+                except Enrollment.DoesNotExist:
+                    messages.error(request, _("Enrollment with ID %(id)s not found for this course.") % {'id': enrollment_id})
+
+            success_message = _("%(updated)d grades created/updated and %(deleted)d deleted for course '%(course)s', lesson #%(number)s.") % {
+                'updated': grades_updated, 'deleted': grades_deleted, 'course': course_obj.subject.name, 'number': lesson_number_val}
+            messages.success(request, success_message)
+            return redirect(reverse_lazy('academia:grade-list'))
+        else:
+            messages.error(request, _("There were errors in the submitted grade data. Please review."))
+            return redirect(f"{reverse_lazy('academia:take-grades')}?course={course_id}&lesson_number={lesson_number_str}&grade_type={grade_type_str}")
 
 # CRUD views for Grade
 class GradeListView(ListView):

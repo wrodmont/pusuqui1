@@ -15,6 +15,7 @@ from .forms import (
 from django.contrib import messages
 from django.core.paginator import Paginator
 from django.db import IntegrityError
+from django.db.models import ProtectedError
 import traceback # Para debug si es necesario
 
 # Create your views here.

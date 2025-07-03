@@ -51,6 +51,7 @@ urlpatterns = [
     path('attendancelogs/<int:pk>/delete/', views.AttendanceLogDeleteView.as_view(), name='attendancelog-delete'),
 
     # URLs para Grade
+    path('grades/take/', views.TakeGradesView.as_view(), name='take-grades'),
     path('grades/', views.GradeListView.as_view(), name='grade-list'),
     path('grades/new/', views.GradeCreateView.as_view(), name='grade-create'),
     path('grades/<int:pk>/', views.GradeDetailView.as_view(), name='grade-detail'),

@@ -202,6 +202,52 @@ class StudentAttendanceForm(forms.Form):
     notes = forms.CharField(label="", required=False, widget=forms.TextInput(attrs={'class': 'form-control form-control-sm', 'placeholder': _('Optional notes')}))
 
 
+class GradeTakingSelectionForm(forms.Form):
+    course = forms.ModelChoiceField(
+        queryset=Course.objects.select_related('subject').order_by('-academic_period', 'subject__name'),
+        label=_("Course"),
+        widget=forms.Select(attrs={'class': 'form-control select2'})
+    )
+    lesson_number = forms.IntegerField(
+        label=_("Lesson Number (0 for Exam)"),
+        widget=forms.NumberInput(attrs={'class': 'form-control'}),
+        min_value=0,
+        help_text=_("Use 0 for the final exam grade.")
+    )
+    grade_type = forms.ChoiceField(
+        choices=Grade.GRADE_TYPE_CHOICES,
+        label=_("Grade Type"),
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
+
+    def clean(self):
+        cleaned_data = super().clean()
+        course = cleaned_data.get("course")
+        lesson_number = cleaned_data.get("lesson_number")
+        grade_type = cleaned_data.get("grade_type")
+
+        if course and lesson_number is not None:
+            if grade_type == 'Leccion' and lesson_number == 0:
+                 self.add_error('lesson_number', forms.ValidationError(
+                    _("Lesson number must be greater than 0 for grade type 'Lesson'.")
+                ))
+            if grade_type == 'Examen' and lesson_number != 0:
+                 self.add_error('lesson_number', forms.ValidationError(
+                    _("Lesson number must be 0 for grade type 'Exam'.")
+                ))
+            if lesson_number > course.subject.number_of_lessons:
+                self.add_error('lesson_number', forms.ValidationError(
+                    _("Lesson number (%(lesson_num)s) cannot exceed the total number of lessons (%(max_lessons)s) for this course's subject.") % {
+                        'lesson_num': lesson_number,
+                        'max_lessons': course.subject.number_of_lessons
+                    }
+                ))
+        return cleaned_data
+
+class StudentGradeForm(forms.Form):
+    enrollment_id = forms.IntegerField(widget=forms.HiddenInput())
+    grade = forms.DecimalField(label="", required=False, widget=forms.NumberInput(attrs={'class': 'form-control form-control-sm', 'placeholder': _('Grade'), 'step': '0.01'}))
+
 class GradeForm(forms.ModelForm):
     class Meta:
         model = Grade
