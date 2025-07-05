@@ -6,6 +6,53 @@
 <div class="container mt-4 text-center">
   <h1 class="display-4 fw-bold section-title">Ministerio de Anfitriones</h1>
   <p class="lead text-muted">Gestión del ministerio de hospitalidad y bienvenida.</p>
-  <!-- Puedes agregar aquí enlaces o información relevante -->
+
+  <div class="row mt-5">
+    <div class="col-md-4">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <h5 class="card-title">Total Servidores</h5>
+          <p class="card-text display-6">{{ total_servers }}</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <h5 class="card-title">Total Grupos</h5>
+          <p class="card-text display-6">{{ total_groups }}</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <h5 class="card-title">Total Coordinadores</h5>
+          <p class="card-text display-6">{{ total_coordinators }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {% if group_stats %}
+  <div class="mt-5">
+    <h3 class="fw-bold">Estadísticas de Asistencia por Grupos ({{ group_stats.date }})</h3>
+    <ul class="list-group list-group-flush mt-3">
+      <li class="list-group-item">Total asistentes: <strong>{{ group_stats.total_attendees }}</strong></li>
+      <li class="list-group-item">Grupos que asistieron: <strong>{{ group_stats.groups_attended }}</strong></li>
+      <li class="list-group-item">Grupos reportados: <strong>{{ group_stats.total_groups_in_report }}</strong></li>
+    </ul>
+  </div>
+  {% endif %}
+
+  {% if server_stats %}
+  <div class="mt-5">
+    <h3 class="fw-bold">Asistencia de Servidores ({{ server_stats.date }} - {{ server_stats.service }})</h3>
+    <ul class="list-group list-group-flush mt-3">
+      <li class="list-group-item">Servidores que asistieron: <strong>{{ server_stats.servers_attended }}</strong></li>
+      <li class="list-group-item">Total de servidores reportados: <strong>{{ server_stats.total_servers_in_report }}</strong></li>
+    </ul>
+  </div>
+  {% endif %}
 </div>
 {% endblock %}
