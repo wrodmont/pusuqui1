@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block title %}Lista de Ministerios{% endblock %}
+
+{% block body %}
+<h2>Lista de Ministerios</h2>
+<a href="{% url 'anfitriones:ministry_create' %}" class="btn btn-primary mb-3">Agregar Nuevo Ministerio</a>
+
+{% if ministries %}
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for ministry in ministries %}
+            <tr>
+                <td>{{ ministry.name }}</td>
+                <td>{{ ministry.description }}</td>
+                <td>
+                    <a href="{% url 'anfitriones:ministry_update' ministry.pk %}" class="btn btn-sm btn-warning">Editar</a>
+                    <a href="{% url 'anfitriones:ministry_delete' ministry.pk %}" class="btn btn-sm btn-danger">Eliminar</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% else %}
+    <p>No hay ministerios registrados.</p>
+{% endif %}
+{% endblock %}

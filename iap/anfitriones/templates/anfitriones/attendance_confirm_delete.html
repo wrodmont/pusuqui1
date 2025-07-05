@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block title %}Confirmar Eliminación de Estadística{% endblock %}
+
+{% block body %}
+<h2>Confirmar Eliminación</h2>
+<p>¿Estás seguro de que quieres eliminar el registro de <strong>{{ object.group.name }}</strong> del día <strong>{{ object.date|date:"d/m/Y" }}</strong>?</p>
+<form method="post">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-danger">Sí, eliminar</button>
+    <a href="{% url 'anfitriones:attendance_list' %}" class="btn btn-secondary">Cancelar</a>
+</form>
+{% endblock %}

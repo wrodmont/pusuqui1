@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block title %}Confirmar Eliminación de Servidor{% endblock %}
+
+{% block body %}
+<h2>Confirmar Eliminación</h2>
+<p>¿Estás seguro de que quieres eliminar al servidor "{{ object.name }} {{ object.surname }}"?</p>
+<form method="post">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-danger">Sí, eliminar</button>
+    <a href="{% url 'anfitriones:server_list' %}" class="btn btn-secondary">Cancelar</a>
+</form>
+{% endblock %}

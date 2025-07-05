@@ -7,9 +7,12 @@ class Coordinator(models.Model):
     def __str__(self):
         return f"{self.name} {self.surname}"
 
+    class Meta:
+        unique_together = ('name', 'surname')
+
 
 class Group(models.Model):
-    name = models.CharField(max_length=16)
+    name = models.CharField(max_length=16, unique=True)
     description = models.CharField(max_length=64)
     
     def __str__(self):
@@ -23,6 +26,9 @@ class Server(models.Model):
     
     def __str__(self):
         return f"{self.name} {self.surname}"
+
+    class Meta:
+        unique_together = ('name', 'surname')
 
 class Assistance(models.Model):
     server = models.ForeignKey(Server, on_delete=models.PROTECT)

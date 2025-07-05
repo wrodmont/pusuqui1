@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block title %}Registro de Asistencia por Lote{% endblock %}
+
+{% block body %}
+<h2>Registro de Asistencia por Lote</h2>
+<p>Selecciona la fecha, hora y servicio, luego marca los servidores que asistieron.</p>
+
+<form method="post">
+    {% csrf_token %}
+
+    {{ form.non_field_errors }}
+
+    <div class="row mb-3">
+        <div class="col-md-4">
+            {{ form.date.label_tag }}
+            {{ form.date }}
+            {{ form.date.errors }}
+        </div>
+        <div class="col-md-4">
+            {{ form.starthour.label_tag }}
+            {{ form.starthour }}
+            {{ form.starthour.errors }}
+        </div>
+        <div class="col-md-4">
+            {{ form.service.label_tag }}
+            {{ form.service }}
+            {{ form.service.errors }}
+        </div>
+    </div>
+
+    <h4 class="mt-4">Lista de Servidores</h4>
+    <div class="list-group">
+        {% for field in form.server_fields %}
+            <label class="list-group-item d-flex align-items-center">
+                {{ field }}
+                {{ field.label }}
+            </label>
+        {% endfor %}
+    </div>
+
+    <button type="submit" class="btn btn-success mt-3">Guardar Asistencia</button>
+    <a href="{% url 'anfitriones:assistance_list' %}" class="btn btn-secondary mt-3">Cancelar</a>
+</form>
+{% endblock %}

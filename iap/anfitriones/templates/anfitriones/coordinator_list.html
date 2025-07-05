@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block title %}Lista de Coordinadores{% endblock %}
+
+{% block body %}
+    <h1>Lista de Coordinadores (Anfitriones)</h1>
+    <a href="{% url 'anfitriones:coordinator_create' %}" class="btn btn-primary mb-3">Registrar Nuevo Coordinador</a>
+
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Apellido</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for coordinator in coordinators %}
+            <tr>
+                <td>{{ coordinator.name }}</td>
+                <td>{{ coordinator.surname }}</td>
+                <td>
+                    <a href="{% url 'anfitriones:coordinator_update' coordinator.pk %}" class="btn btn-sm btn-warning">Editar</a> |
+                    <a href="{% url 'anfitriones:coordinator_delete' coordinator.pk %}" class="btn btn-sm btn-danger">Eliminar</a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="3">No hay coordinadores registrados.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

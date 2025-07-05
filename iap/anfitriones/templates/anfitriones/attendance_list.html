@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block title %}Lista de Estadísticas de Grupos{% endblock %}
+
+{% block body %}
+<h2>Estadísticas de Grupos</h2>
+<a href="{% url 'anfitriones:attendance_create' %}" class="btn btn-primary mb-3">Registrar Nueva Estadística</a>
+
+{% if attendances %}
+    <table class="table table-striped table-hover">
+        <thead>
+            <tr>
+                <th>Grupo</th>
+                <th>Fecha</th>
+                <th>Asistió</th>
+                <th>Adultos</th>
+                <th>Jóvenes</th>
+                <th>Niños</th>
+                <th>Total</th>
+                <th>Autos</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for attendance in attendances %}
+            <tr>
+                <td>{{ attendance.group.name }}</td>
+                <td>{{ attendance.date|date:"d/m/Y" }}</td>
+                <td>
+                    {% if attendance.attended %}<span class="badge bg-success">Sí</span>{% else %}<span class="badge bg-danger">No</span>{% endif %}
+                </td>
+                <td>{{ attendance.adults }}</td>
+                <td>{{ attendance.youngs }}</td>
+                <td>{{ attendance.children }}</td>
+                <td><strong>{{ attendance.total }}</strong></td>
+                <td>{{ attendance.autos }}</td>
+                <td>
+                    <a href="{% url 'anfitriones:attendance_update' attendance.pk %}" class="btn btn-sm btn-warning">Editar</a>
+                    <a href="{% url 'anfitriones:attendance_delete' attendance.pk %}" class="btn btn-sm btn-danger">Eliminar</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% else %}
+    <p>No hay estadísticas de grupos registradas.</p>
+{% endif %}
+{% endblock %}

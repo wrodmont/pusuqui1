@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block title %}Lista de Asistencias de Servidores{% endblock %}
+
+{% block body %}
+<h2>Lista de Asistencias de Servidores</h2>
+<a href="{% url 'anfitriones:assistance_batch_create' %}" class="btn btn-primary mb-3">Registrar Nueva Asistencia</a>
+
+{% if assistances %}
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Servidor</th>
+                <th>Fecha</th>
+                <th>Hora Inicio</th>
+                <th>Servicio</th>
+                <th>Asistió</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for assistance in assistances %}
+            <tr>
+                <td>{{ assistance.server }}</td>
+                <td>{{ assistance.date|date:"d/m/Y" }}</td>
+                <td>{{ assistance.starthour|time:"H:i" }}</td>
+                <td>{{ assistance.get_service_display }}</td>
+                <td>
+                    {% if assistance.attended %}<span class="badge bg-success">Sí</span>{% else %}<span class="badge bg-danger">No</span>{% endif %}
+                </td>
+                <td>
+                    <a href="{% url 'anfitriones:assistance_update' assistance.pk %}" class="btn btn-sm btn-warning">Editar</a>
+                    <a href="{% url 'anfitriones:assistance_delete' assistance.pk %}" class="btn btn-sm btn-danger">Eliminar</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% else %}
+    <p>No hay asistencias registradas.</p>
+{% endif %}
+{% endblock %}
