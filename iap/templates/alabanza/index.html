@@ -1,67 +1,63 @@
+{% extends "base.html" %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Alabanza - Panel Principal</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
-</head>
-<body class="bg-light text-dark">
-    <div class="container py-5">
-        <div class="text-center mb-5">
-            <img src="{% static 'img/logo1.png' %}" alt="Logo Iglesia" height="80">
-            <h1 class="mt-3">Ministerio de Alabanza</h1>
-            <p class="lead">Bienvenido al sistema de gestión de servidores, grupos y coordinadores.</p>
-        </div>
 
-        <div class="row g-4">
-            <div class="col-md-6 col-lg-3">
-                <div class="card shadow h-100">
-                    <div class="card-body text-center">
-                        <h5 class="card-title">Coordinadores</h5>
-                        <p class="card-text">Gestión de coordinadores del ministerio.</p>
-                        <a href="{% url 'alabanza:coordinator_list' %}" class="btn btn-primary">Ver lista</a>
-                    </div>
-                </div>
-            </div>
+{% block title %}Ministerio de Alabanza - Panel Principal{% endblock %}
 
-            <div class="col-md-6 col-lg-3">
-                <div class="card shadow h-100">
-                    <div class="card-body text-center">
-                        <h5 class="card-title">Grupos</h5>
-                        <p class="card-text">Administra los grupos musicales y vocales.</p>
-                        <a href="{% url 'alabanza:group_list' %}" class="btn btn-success">Ver grupos</a>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-6 col-lg-3">
-                <div class="card shadow h-100">
-                    <div class="card-body text-center">
-                        <h5 class="card-title">Servidores</h5>
-                        <p class="card-text">Registro de miembros del ministerio.</p>
-                        <a href="{% url 'alabanza:server_list' %}" class="btn btn-warning">Ver servidores</a>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-6 col-lg-3">
-                <div class="card shadow h-100">
-                    <div class="card-body text-center">
-                        <h5 class="card-title">Asistencias</h5>
-                        <p class="card-text">Registro de asistencia a eventos y ensayos.</p>
-                        <a href="{% url 'alabanza:assistance_list' %}" class="btn btn-danger">Ver asistencia</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <footer class="text-center mt-5">
-            <hr>
-            <small>“Formar discípulos de Cristo, apasionados por cumplir el plan de Dios.”</small>
-        </footer>
+{% block body %}
+<div class="container py-5">
+    <div class="text-center mb-5">
+        <img src="{% static 'img/logo1.png' %}" alt="Logo Iglesia" height="80">
+        <h1 class="mt-3">Ministerio de Alabanza</h1>
+        <p class="lead">Bienvenido al sistema de gestión de servidores, grupos y coordinadores.</p>
     </div>
-</body>
-</html>
+
+    <div class="row g-4">
+        <div class="col-md-6 col-lg-3">
+            <div class="card shadow h-100">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Coordinadores</h5>
+                    <p class="card-text">Gestión de coordinadores del ministerio.</p>
+                    <a href="{% url 'alabanza:coordinator_list' %}" class="btn btn-primary">Ver lista</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-3">
+            <div class="card shadow h-100">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Grupos</h5>
+                    <p class="card-text">Administra los grupos musicales y vocales.</p>
+                    <a href="{% url 'alabanza:group_list' %}" class="btn btn-success">Ver grupos</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-3">
+            <div class="card shadow h-100">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Servidores</h5>
+                    <p class="card-text">Registro de miembros del ministerio.</p>
+                    <a href="{% url 'alabanza:server_list' %}" class="btn btn-warning">Ver servidores</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-3">
+            <div class="card shadow h-100">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Asistencias</h5>
+                    <p class="card-text">Registro de asistencia a eventos y ensayos.</p>
+                    <a href="{% url 'alabanza:assistance_list' %}" class="btn btn-danger">Ver asistencia</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="text-center mt-5">
+        <hr>
+        <small>“Formar discípulos de Cristo, apasionados por cumplir el plan de Dios.”</small>
+    </footer>
+</div>
+{% endblock %}
+
 

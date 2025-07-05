@@ -78,7 +78,17 @@
                 </div>
             </div>
         </div>
+
+        <!-- Registro de Notas -->
+        <div class="col-12 col-md-6 col-lg-3 mb-4">
+            <div class="card shadow-lg border-danger">
+                <div class="card-body text-center">
+                    <h4 class="card-title text-danger">Registro de Notas</h4>
+                    <p class="card-text">Ingresa las calificaciones por clase y estudiante.</p>
+                    <a href="{% url 'academia:take-grades' %}" class="btn btn-danger">Registrar Notas</a>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 {% endblock %}
-
