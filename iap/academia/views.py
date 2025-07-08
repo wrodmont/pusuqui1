@@ -6,13 +6,14 @@ from django.views import View
 from django.forms import formset_factory
 from django.contrib import messages
 from django.utils.translation import gettext_lazy as _
+from django.db.models import Avg
+from django.db import transaction
+from decimal import Decimal, ROUND_HALF_UP
 from datetime import date
 
 from .models import Teacher, Student, Subject, Course, Enrollment, AttendanceLog, Grade
 from .forms import (
-    TeacherForm, StudentForm, SubjectForm, CourseForm, EnrollmentForm, AttendanceLogForm,
-    AttendanceTakingSelectionForm, StudentAttendanceForm, GradeForm,
-    GradeTakingSelectionForm, StudentGradeForm
+    TeacherForm, StudentForm, SubjectForm, CourseForm, EnrollmentForm, AttendanceLogForm, AttendanceTakingSelectionForm, StudentAttendanceForm, GradeForm, GradeTakingSelectionForm, StudentGradeForm, ClosePeriodForm
 )
 
 def index(request):
@@ -803,3 +804,99 @@ class GradeDeleteView(DeleteView):
         context['active_page'] = 'grades'
         context['page_title'] = _('Delete Grade')
         return context
+
+class ClosePeriodView(View):
+    template_name = 'academia/close_period_form.html'
+    form_class = ClosePeriodForm
+
+    def _calculate_student_final_data(self, enrollment):
+        """
+        Helper method to calculate all final scores and status for a single enrollment.
+        This avoids code duplication between GET and POST.
+        Returns a dictionary with the calculated data.
+        """
+        # 1. Calculate Attendance Score (0-100)
+        attendance_score = enrollment.attendance_score
+
+        # 2. Calculate Average Lesson Score
+        avg_lesson_score_result = Grade.objects.filter(
+            enrollment=enrollment, grade_type='Leccion'
+        ).aggregate(avg=Avg('grade'))
+        avg_lesson_score = avg_lesson_score_result['avg']
+
+        # 3. Get Exam Score
+        exam_grade_obj = Grade.objects.filter(
+            enrollment=enrollment, grade_type='Examen'
+        ).first()
+        exam_score = exam_grade_obj.grade if exam_grade_obj else None
+
+        # 4. Calculate Final Average
+        scores_to_average = []
+        if attendance_score is not None:
+            scores_to_average.append(Decimal(attendance_score))
+        if avg_lesson_score is not None:
+            scores_to_average.append(Decimal(avg_lesson_score))
+        if exam_score is not None:
+            scores_to_average.append(Decimal(exam_score))
+        
+        final_average = None
+        if scores_to_average:
+            final_average = sum(scores_to_average) / Decimal(len(scores_to_average))
+            final_average = final_average.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
+
+        # 5. Determine Status
+        status = enrollment.status # Default to current status
+        if final_average is not None:
+            if final_average >= 70:
+                status = Enrollment.Status.APPROVED
+            else:
+                status = Enrollment.Status.REPROVED
+        
+        return {
+            'student': enrollment.student,
+            'enrollment_id': enrollment.id,
+            'attendance_score': attendance_score,
+            'lesson_score': avg_lesson_score,
+            'exam_score': exam_score,
+            'final_average': final_average,
+            'status': status,
+            'status_display': Enrollment.Status(status).label,
+        }
+
+    def get(self, request, *args, **kwargs):
+        form = self.form_class(request.GET or None)
+        context = {
+            'form': form,
+            'course': None,
+            'student_data': [],
+            'page_title': _('Close School Period'),
+            'active_page': 'courses',
+        }
+
+        if form.is_valid():
+            course = form.cleaned_data['course']
+            context['course'] = course
+            
+            enrollments = Enrollment.objects.filter(course=course).select_related('student').order_by('student__surname', 'student__name')
+            context['student_data'] = [self._calculate_student_final_data(e) for e in enrollments]
+
+        return render(request, self.template_name, context)
+
+    def post(self, request, *args, **kwargs):
+        form = self.form_class(request.POST)
+        if form.is_valid():
+            course = form.cleaned_data['course']
+            try:
+                with transaction.atomic():
+                    enrollments_to_update = Enrollment.objects.filter(course=course)
+                    for enrollment in enrollments_to_update:
+                        final_data = self._calculate_student_final_data(enrollment)
+                        enrollment.lesson_score = final_data['lesson_score']
+                        enrollment.exam_score = final_data['exam_score']
+                        enrollment.status = final_data['status']
+                        enrollment.save(update_fields=['lesson_score', 'exam_score', 'status'])
+                messages.success(request, _("Successfully closed the period for course '%(course)s'. %(count)d student records were updated.") % {'course': course, 'count': enrollments_to_update.count()})
+                return redirect(f"{reverse_lazy('academia:close-period')}?course={course.id}")
+            except Exception as e:
+                messages.error(request, _("An error occurred while closing the period: %(error)s") % {'error': str(e)})
+        return redirect(reverse_lazy('academia:close-period'))

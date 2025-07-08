@@ -93,13 +93,13 @@ class CourseForm(forms.ModelForm):
 class EnrollmentForm(forms.ModelForm):
     class Meta:
         model = Enrollment
-        fields = ['student', 'course', 'enrollment_date', 'status', 'homework_score', 'exam_score']
+        fields = ['student', 'course', 'enrollment_date', 'status', 'lesson_score', 'exam_score']
         widgets = {
             'student': forms.Select(attrs={'class': 'form-control select2'}),
             'course': forms.Select(attrs={'class': 'form-control select2'}),
             'enrollment_date': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
             'status': forms.Select(attrs={'class': 'form-control'}),
-            'homework_score': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01'}),
+            'lesson_score': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01'}),
             'exam_score': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01'}),
         }
         labels = {
@@ -107,12 +107,12 @@ class EnrollmentForm(forms.ModelForm):
             'course': _('Course'),
             'enrollment_date': _('Enrollment Date'),
             'status': _('Status'),
-            'homework_score': _('Homework Score'),
+            'lesson_score': _('Lesson Score'),
             'exam_score': _('Exam Score'),
         }
         help_texts = {
             'enrollment_date': _('Defaults to today if not specified.'),
-            'homework_score': Enrollment._meta.get_field('homework_score').help_text,
+            'lesson_score': Enrollment._meta.get_field('lesson_score').help_text,
             'exam_score': Enrollment._meta.get_field('exam_score').help_text,
         }
 
@@ -264,3 +264,11 @@ class GradeForm(forms.ModelForm):
             'grade': _('Grade'),
             'grade_type': _('Grade Type'),
         }    
+
+class ClosePeriodForm(forms.Form):
+    course = forms.ModelChoiceField(
+        queryset=Course.objects.select_related('subject').order_by('-academic_period', 'subject__name'),
+        label=_("Course to Close"),
+        widget=forms.Select(attrs={'class': 'form-control select2'}),
+        help_text=_("Select the course to close the period and calculate final grades.")
+    )

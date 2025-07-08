@@ -40,7 +40,7 @@ class CourseAdmin(admin.ModelAdmin):
 
 @admin.register(Enrollment)
 class EnrollmentAdmin(admin.ModelAdmin):
-    list_display = ('student', 'course', 'enrollment_date', 'status', 'homework_score', 'exam_score', 'attendance_score_display', 'final_grade_display')
+    list_display = ('student', 'course', 'enrollment_date', 'status', 'lesson_score', 'exam_score', 'attendance_score_display', 'final_grade_display')
     list_filter = ('course__academic_period', 'course__subject', 'status', 'student')
     search_fields = ('student__name', 'student__surname', 'course__subject__name')
     ordering = ('course__academic_period', 'course__subject__name', 'student__surname')

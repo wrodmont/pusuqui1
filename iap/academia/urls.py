@@ -57,4 +57,7 @@ urlpatterns = [
     path('grades/<int:pk>/', views.GradeDetailView.as_view(), name='grade-detail'),
     path('grades/<int:pk>/edit/', views.GradeUpdateView.as_view(), name='grade-update'),
     path('grades/<int:pk>/delete/', views.GradeDeleteView.as_view(), name='grade-delete'),
+    
+    # --- NUEVA URL PARA CIERRE DE PERIODO ---
+    path('courses/close-period/', views.ClosePeriodView.as_view(), name='close-period'),
 ]

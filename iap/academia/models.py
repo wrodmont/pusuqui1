@@ -2,6 +2,7 @@ from django.db import models
 from django.core.exceptions import ValidationError
 from datetime import date, timedelta
 from django.utils.translation import gettext_lazy as _ # Para choices
+from decimal import Decimal
 
 # Validator function (similar to the one in cunakids)
 def validate_date(value):
@@ -127,6 +128,8 @@ class Course(models.Model):
 class Enrollment(models.Model):
     class Status(models.TextChoices):
         ENROLLED = 'ENROLLED', _('Enrolled')
+        APPROVED = 'APPROVED', _('Approved')
+        REPROVED = 'REPROVED', _('Reproved')
         COMPLETED = 'COMPLETED', _('Completed')
         DROPPED = 'DROPPED', _('Dropped Out')
         # Add more statuses if needed, e.g., 'AUDITING'
@@ -135,11 +138,11 @@ class Enrollment(models.Model):
     course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='enrollments', verbose_name=_("course"))
     enrollment_date = models.DateField(_("enrollment date"), default=date.today)
     
-    homework_score = models.DecimalField(
-        _("homework score"),
+    lesson_score = models.DecimalField(
+        _("lesson score"),
         max_digits=5, decimal_places=2,
         null=True, blank=True,
-        help_text=_("Overall score for homeworks/tasks (e.g., out of 100).")
+        help_text=_("Average score for lessons (e.g., out of 100).")
     )
     exam_score = models.DecimalField(
         _("exam score"),
@@ -178,20 +181,20 @@ class Enrollment(models.Model):
         Scores are assumed to be on a similar scale (e.g., 0-100).
         """
         scores = []
-        if self.homework_score is not None:
-            scores.append(self.homework_score)
+        if self.lesson_score is not None: # This is already a Decimal
+            scores.append(self.lesson_score) 
         
         att_score = self.attendance_score
         if att_score is not None:
-            scores.append(att_score) # attendance_score is already 0-100
+            scores.append(Decimal(att_score)) # Convert float to Decimal
 
-        if self.exam_score is not None:
-            scores.append(self.exam_score)
+        if self.exam_score is not None: # This is already a Decimal
+            scores.append(self.exam_score) 
 
         if not scores:
             return None
         
-        return sum(scores) / len(scores)
+        return sum(scores) / Decimal(len(scores))
 
     def __str__(self):
         return f"{self.student} - {self.course.subject.name} ({self.course.academic_period})"
