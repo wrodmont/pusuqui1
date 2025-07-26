@@ -33,14 +33,20 @@ DEBUG = True
 # Application definition
 
 INSTALLED_APPS = [
+    # Django Core Apps
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'django.contrib.humanize',  # <--- Añade esta línea
-    # apps
+    'django.contrib.humanize',
+
+    # Third-Party Apps
+    'crispy_forms',
+    'crispy_bootstrap5',
+
+    # Local Apps
     'academia',
     'alabanza',
     'anfitriones',
@@ -51,10 +57,6 @@ INSTALLED_APPS = [
     'multimedia',
     'pusukids',
     'account',
-    # crispy_forms
-    'crispy_forms',
-    'crispy_bootstrap5', # Add this for Bootstrap 5 templates
-
 ]
 
 # settings.py
