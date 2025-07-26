@@ -3,56 +3,83 @@
 {% block title %}Ministerio de Anfitriones{% endblock %}
 
 {% block body %}
-<div class="container mt-4 text-center">
-  <h1 class="display-4 fw-bold section-title">Ministerio de Anfitriones</h1>
-  <p class="lead text-muted">Gestión del ministerio de hospitalidad y bienvenida.</p>
+<!-- Botón para volver al inicio -->
+<div class="mb-4">
+    <a href="{% url 'home' %}" class="btn btn-outline-secondary">
+        <i class="fas fa-arrow-left me-2"></i> Volver al Inicio
+    </a>
+</div>
 
-  <div class="row mt-5">
+<div class="text-center">
+    <h1 class="display-4 fw-bold section-title">Ministerio de Anfitriones</h1>
+    <p class="lead text-muted">Gestión del ministerio de hospitalidad y bienvenida.</p>
+</div>
+
+<!-- Tarjetas de Resumen -->
+<div class="row mt-5 g-4">
     <div class="col-md-4">
-      <div class="card shadow-sm">
-        <div class="card-body">
-          <h5 class="card-title">Total Servidores</h5>
-          <p class="card-text display-6">{{ total_servers }}</p>
+        <div class="card text-center border-primary shadow-sm h-100">
+            <div class="card-header bg-primary text-white">
+                <h5 class="card-title mb-0"><i class="fas fa-users me-2"></i> Total Servidores</h5>
+            </div>
+            <div class="card-body d-flex align-items-center justify-content-center">
+                <p class="card-text display-4 fw-bold">{{ total_servers }}</p>
+            </div>
         </div>
-      </div>
     </div>
     <div class="col-md-4">
-      <div class="card shadow-sm">
-        <div class="card-body">
-          <h5 class="card-title">Total Grupos</h5>
-          <p class="card-text display-6">{{ total_groups }}</p>
+        <div class="card text-center border-primary shadow-sm h-100">
+            <div class="card-header bg-primary text-white">
+                <h5 class="card-title mb-0"><i class="fas fa-layer-group me-2"></i> Total Grupos</h5>
+            </div>
+            <div class="card-body d-flex align-items-center justify-content-center">
+                <p class="card-text display-4 fw-bold">{{ total_groups }}</p>
+            </div>
         </div>
-      </div>
     </div>
     <div class="col-md-4">
-      <div class="card shadow-sm">
-        <div class="card-body">
-          <h5 class="card-title">Total Coordinadores</h5>
-          <p class="card-text display-6">{{ total_coordinators }}</p>
+        <div class="card text-center border-primary shadow-sm h-100">
+            <div class="card-header bg-primary text-white">
+                <h5 class="card-title mb-0"><i class="fas fa-user-tie me-2"></i> Total Coordinadores</h5>
+            </div>
+            <div class="card-body d-flex align-items-center justify-content-center">
+                <p class="card-text display-4 fw-bold">{{ total_coordinators }}</p>
+            </div>
         </div>
-      </div>
     </div>
-  </div>
+</div>
 
-  {% if group_stats %}
-  <div class="mt-5">
-    <h3 class="fw-bold">Estadísticas de Asistencia por Grupos ({{ group_stats.date }})</h3>
-    <ul class="list-group list-group-flush mt-3">
-      <li class="list-group-item">Total asistentes: <strong>{{ group_stats.total_attendees }}</strong></li>
-      <li class="list-group-item">Grupos que asistieron: <strong>{{ group_stats.groups_attended }}</strong></li>
-      <li class="list-group-item">Grupos reportados: <strong>{{ group_stats.total_groups_in_report }}</strong></li>
-    </ul>
-  </div>
-  {% endif %}
+<!-- Estadísticas -->
+<div class="row mt-5 g-4">
+    {% if group_stats %}
+    <div class="col-lg-6">
+        <div class="card shadow-sm h-100">
+            <div class="card-header bg-light"><h4 class="mb-0">Estadísticas de Asistencia por Grupos</h4></div>
+            <div class="card-body">
+                <h6 class="card-subtitle mb-3 text-muted">Fecha: {{ group_stats.date }}</h6>
+                <ul class="list-group">
+                    <li class="list-group-item d-flex justify-content-between align-items-center">Total asistentes <span class="badge bg-primary rounded-pill">{{ group_stats.total_attendees }}</span></li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">Grupos que asistieron <span class="badge bg-primary rounded-pill">{{ group_stats.groups_attended }}</span></li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">Grupos reportados <span class="badge bg-secondary rounded-pill">{{ group_stats.total_groups_in_report }}</span></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    {% endif %}
 
-  {% if server_stats %}
-  <div class="mt-5">
-    <h3 class="fw-bold">Asistencia de Servidores ({{ server_stats.date }} - {{ server_stats.service }})</h3>
-    <ul class="list-group list-group-flush mt-3">
-      <li class="list-group-item">Servidores que asistieron: <strong>{{ server_stats.servers_attended }}</strong></li>
-      <li class="list-group-item">Total de servidores reportados: <strong>{{ server_stats.total_servers_in_report }}</strong></li>
-    </ul>
-  </div>
-  {% endif %}
+    {% if server_stats %}
+    <div class="col-lg-6">
+        <div class="card shadow-sm h-100">
+            <div class="card-header bg-light"><h4 class="mb-0">Asistencia de Servidores</h4></div>
+            <div class="card-body">
+                <h6 class="card-subtitle mb-3 text-muted">Fecha: {{ server_stats.date }} - {{ server_stats.service }}</h6>
+                <ul class="list-group">
+                    <li class="list-group-item d-flex justify-content-between align-items-center">Servidores que asistieron <span class="badge bg-primary rounded-pill">{{ server_stats.servers_attended }}</span></li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">Total de servidores reportados <span class="badge bg-secondary rounded-pill">{{ server_stats.total_servers_in_report }}</span></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    {% endif %}
 </div>
 {% endblock %}

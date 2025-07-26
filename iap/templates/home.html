@@ -3,7 +3,6 @@
 {% block title %}IAP - Iglesia Alianza Pusuqui{% endblock %}
 
 {% block body %}
-<div class="container mt-4">
 
   <div class="text-center mb-5">
     <h1 class="display-4 fw-bold section-title">Sistema de Gestión Ministerial</h1>
@@ -22,7 +21,7 @@
         <!-- Academia -->
         <div class="col">
           <div class="card h-100 border-primary shadow-sm">
-            <div class="card-header bg-light">
+            <div class="card-header bg-primary text-white">
               <h5 class="card-title mb-0"><i class="fas fa-book me-2"></i> Academia</h5>
             </div>
             <div class="card-body d-flex flex-column">
@@ -37,7 +36,7 @@
         <!-- Cunakids -->
         <div class="col">
           <div class="card h-100 border-primary shadow-sm">
-            <div class="card-header bg-light">
+            <div class="card-header bg-primary text-white">
               <h5 class="card-title mb-0"><i class="fas fa-users me-2"></i> Cunakids</h5>
             </div>
             <div class="card-body d-flex flex-column">
@@ -52,7 +51,7 @@
         <!-- Pusukids -->
         <div class="col">
           <div class="card h-100 border-primary shadow-sm">
-            <div class="card-header bg-light">
+            <div class="card-header bg-primary text-white">
               <h5 class="card-title mb-0"><i class="fas fa-baby me-2"></i> Pusukids</h5>
             </div>
             <div class="card-body d-flex flex-column">
@@ -67,7 +66,7 @@
         <!-- Alabanza -->
         <div class="col">
           <div class="card h-100 border-primary shadow-sm">
-            <div class="card-header bg-light">
+            <div class="card-header bg-primary text-white">
               <h5 class="card-title mb-0"><i class="fas fa-music me-2"></i> Alabanza</h5>
             </div>
             <div class="card-body d-flex flex-column">
@@ -82,7 +81,7 @@
         <!-- Anfitriones -->
         <div class="col">
           <div class="card h-100 border-primary shadow-sm">
-            <div class="card-header bg-light">
+            <div class="card-header bg-primary text-white">
               <h5 class="card-title mb-0"><i class="fas fa-handshake me-2"></i> Anfitriones</h5>
             </div>
             <div class="card-body d-flex flex-column">
@@ -93,24 +92,25 @@
             </div>
           </div>
         </div>
-                    <!-- Encuentros -->
-            <div class="col">
-              <div class="card h-100 border-0 shadow-lg rounded-3">
-                <div class="card-body text-center">
-                  <i class="fas fa-calendar-check fa-4x mb-3 text-primary"></i>
-                  <h5 class="card-title">Encuentros</h5>
-                  <p class="card-text">Gestiona los encuentros y reuniones de la iglesia.</p>
-                  <a href="{% url 'encuentros:index' %}" class="btn btn-outline-primary rounded-pill px-4 py-2 shadow-sm hover-zoom">
-                    Administrar Encuentros
-                  </a>
-                </div>
-              </div>
+        <!-- Encuentros -->
+        <div class="col">
+          <div class="card h-100 border-primary shadow-sm">
+            <div class="card-header bg-primary text-white">
+              <h5 class="card-title mb-0"><i class="fas fa-calendar-check me-2"></i> Encuentros</h5>
             </div>
+            <div class="card-body d-flex flex-column">
+              <p class="card-text flex-grow-1">Gestiona los encuentros y reuniones de la iglesia.</p>
+              <a href="{% url 'encuentros:index' %}" class="btn btn-outline-primary mt-auto">
+                <i class="fas fa-calendar-alt me-1"></i> Administrar Encuentros
+              </a>
+            </div>
+          </div>
+        </div>
 
         <!-- Discipulado -->
         <div class="col">
           <div class="card h-100 border-primary shadow-sm">
-            <div class="card-header bg-light">
+            <div class="card-header bg-primary text-white">
               <h5 class="card-title mb-0"><i class="fas fa-users me-2"></i> Discipulado</h5>
             </div>
             <div class="card-body d-flex flex-column">
@@ -126,5 +126,4 @@
     </div>
   </div>
 
-</div>
 {% endblock %}

@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     'jap',
     'multimedia',
     'pusukids',
+    'account',
     # crispy_forms
     'crispy_forms',
     'crispy_bootstrap5', # Add this for Bootstrap 5 templates
@@ -78,16 +79,10 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
-            os.path.join(BASE_DIR, 'templates'),  # Plantillas globales
-            os.path.join(BASE_DIR, 'academia/templates'),
-            os.path.join(BASE_DIR, 'alabanza/templates'),
-            os.path.join(BASE_DIR, 'anfitriones/templates'),
-            os.path.join(BASE_DIR, 'cunakids/templates'),
-            os.path.join(BASE_DIR, 'discipulado/templates'),
-            os.path.join(BASE_DIR, 'encuentros/templates'),
-            os.path.join(BASE_DIR, 'jap/templates'),
-            os.path.join(BASE_DIR, 'multimedia/templates'),
-            os.path.join(BASE_DIR, 'pusukids/templates'),
+            # Esta es la configuración estándar para un directorio de plantillas a nivel de proyecto.
+            # APP_DIRS=True encontrará automáticamente las plantillas dentro de tus aplicaciones
+            # (ej. account/templates/), por lo que no necesitas listarlas aquí.
+            os.path.join(BASE_DIR, 'templates'),
         ],
         'APP_DIRS': True,
         'OPTIONS': {
@@ -108,11 +103,9 @@ WSGI_APPLICATION = 'iap.wsgi.application'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-        'default': dj_database_url.config(default='sqlite:///db.sqlite3'),
-    }
+    # Esta configuración utiliza dj_database_url para configurar la base de datos,
+    # usando SQLite como valor por defecto si no se especifica una URL de base de datos.
+    'default': dj_database_url.config(default=f'sqlite:///{BASE_DIR / "db.sqlite3"}')
 }
 
 
@@ -177,4 +170,14 @@ MESSAGE_TAGS = {
     messages.ERROR: 'danger', # <-- Esta es la línea clave
 }
 
-ALLOWED_HOSTS = ['ministerio-app.herokuapp.com', 'www.alianzapusuqui.org', 'alianzapusuqui.org']
+#ALLOWED_HOSTS = ['ministerio-app.herokuapp.com', 'www.alianzapusuqui.org', 'alianzapusuqui.org']
+
+# --- Autenticación ---
+# URL a la que se redirige al usuario después de un inicio de sesión exitoso.
+LOGIN_REDIRECT_URL = 'home'
+
+# URL a la que se redirige al usuario después de cerrar sesión.
+LOGOUT_REDIRECT_URL = 'account:login'
+
+# URL a la que se redirige a los usuarios que no han iniciado sesión.
+LOGIN_URL = 'account:login'

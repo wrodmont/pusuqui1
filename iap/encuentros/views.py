@@ -1,6 +1,8 @@
 from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.decorators import login_required
 from django.utils.translation import gettext_lazy as _
 from django.views import View
 from django.shortcuts import redirect, get_object_or_404
@@ -10,7 +12,7 @@ from .models import Meeting, Server, Participant, FamilyParticipantInfo, ChurchD
 from .forms import MeetingForm, ServerForm, ParticipantForm, FamilyParticipantInfoForm, ChurchDataInfoForm, MeetingParticipantForm, FinanceMovementsForm, GenerateSummaryForm
 
 # Create your views here.
-
+@login_required
 def index(request):
     """
     Vista para la página principal de la aplicación Encuentros.
@@ -31,7 +33,7 @@ def index(request):
     return render(request, 'encuentros/index.html', context)
 
 # Vistas para Meeting
-class MeetingListView(ListView):
+class MeetingListView(LoginRequiredMixin,ListView):
     model = Meeting
     template_name = 'encuentros/meeting_list.html'
     context_object_name = 'meetings'
@@ -43,7 +45,7 @@ class MeetingListView(ListView):
         context['page_title'] = _('List of Meetings')
         return context
 
-class MeetingDetailView(DetailView):
+class MeetingDetailView(LoginRequiredMixin,DetailView):
     model = Meeting
     template_name = 'encuentros/meeting_detail.html'
     context_object_name = 'meeting'
@@ -54,7 +56,7 @@ class MeetingDetailView(DetailView):
         context['page_title'] = _('Meeting Details: %(code)s') % {'code': self.object.code}
         return context
 
-class MeetingCreateView(CreateView):
+class MeetingCreateView(LoginRequiredMixin,CreateView):
     model = Meeting
     form_class = MeetingForm
     template_name = 'encuentros/meeting_form.html'
@@ -68,7 +70,7 @@ class MeetingCreateView(CreateView):
         context['submit_button_text'] = _('Save Meeting')
         return context
 
-class MeetingUpdateView(UpdateView):
+class MeetingUpdateView(LoginRequiredMixin,UpdateView):
     model = Meeting
     form_class = MeetingForm
     template_name = 'encuentros/meeting_form.html'
@@ -82,7 +84,7 @@ class MeetingUpdateView(UpdateView):
         context['submit_button_text'] = _('Update Meeting')
         return context
 
-class MeetingDeleteView(DeleteView):
+class MeetingDeleteView(LoginRequiredMixin,DeleteView):
     model = Meeting
     template_name = 'encuentros/meeting_confirm_delete.html'
     success_url = reverse_lazy('encuentros:meeting-list')
@@ -95,7 +97,7 @@ class MeetingDeleteView(DeleteView):
         return context
 
 # Vistas para Server
-class ServerListView(ListView):
+class ServerListView(LoginRequiredMixin,ListView):
     model = Server
     template_name = 'encuentros/server_list.html'
     context_object_name = 'servers'
@@ -107,7 +109,7 @@ class ServerListView(ListView):
         context['page_title'] = _('List of Servers')
         return context
 
-class ServerDetailView(DetailView):
+class ServerDetailView(LoginRequiredMixin,DetailView):
     model = Server
     template_name = 'encuentros/server_detail.html'
     context_object_name = 'server'
@@ -118,7 +120,7 @@ class ServerDetailView(DetailView):
         context['page_title'] = _('Server Details: %(name)s') % {'name': self.object}
         return context
 
-class ServerCreateView(CreateView):
+class ServerCreateView(LoginRequiredMixin,CreateView):
     model = Server
     form_class = ServerForm
     template_name = 'encuentros/server_form.html'
@@ -132,7 +134,7 @@ class ServerCreateView(CreateView):
         context['submit_button_text'] = _('Save Server')
         return context
 
-class ServerUpdateView(UpdateView):
+class ServerUpdateView(LoginRequiredMixin,UpdateView):
     model = Server
     form_class = ServerForm
     template_name = 'encuentros/server_form.html'
@@ -146,7 +148,7 @@ class ServerUpdateView(UpdateView):
         context['submit_button_text'] = _('Update Server')
         return context
 
-class ServerDeleteView(DeleteView):
+class ServerDeleteView(LoginRequiredMixin,DeleteView):
     model = Server
     template_name = 'encuentros/server_confirm_delete.html'
     success_url = reverse_lazy('encuentros:server-list')
@@ -159,7 +161,7 @@ class ServerDeleteView(DeleteView):
         return context
 
 # Vistas para Participant
-class ParticipantListView(ListView):
+class ParticipantListView(LoginRequiredMixin,ListView):
     model = Participant
     template_name = 'encuentros/participant_list.html'
     context_object_name = 'participants'
@@ -171,7 +173,7 @@ class ParticipantListView(ListView):
         context['page_title'] = _('List of Participants')
         return context
 
-class ParticipantDetailView(DetailView):
+class ParticipantDetailView(LoginRequiredMixin,DetailView):
     model = Participant
     template_name = 'encuentros/participant_detail.html'
     context_object_name = 'participant'
@@ -185,7 +187,7 @@ class ParticipantDetailView(DetailView):
         # context['church_info'] = self.object.church_data.first() # Assuming one-to-one or first if one-to-many
         return context
 
-class ParticipantCreateView(CreateView):
+class ParticipantCreateView(LoginRequiredMixin,CreateView):
     model = Participant
     form_class = ParticipantForm
     template_name = 'encuentros/participant_form.html' # Reusing a generic form template
@@ -199,7 +201,7 @@ class ParticipantCreateView(CreateView):
         context['submit_button_text'] = _('Save Participant')
         return context
 
-class ParticipantUpdateView(UpdateView):
+class ParticipantUpdateView(LoginRequiredMixin,UpdateView):
     model = Participant
     form_class = ParticipantForm
     template_name = 'encuentros/participant_form.html' # Reusing
@@ -213,7 +215,7 @@ class ParticipantUpdateView(UpdateView):
         context['submit_button_text'] = _('Update Participant')
         return context
 
-class ParticipantDeleteView(DeleteView):
+class ParticipantDeleteView(LoginRequiredMixin,DeleteView):
     model = Participant
     template_name = 'encuentros/participant_confirm_delete.html'
     success_url = reverse_lazy('encuentros:participant-list')
@@ -226,7 +228,7 @@ class ParticipantDeleteView(DeleteView):
         return context
     
 # Vistas para FamilyParticipantInfo
-class FamilyParticipantInfoListView(ListView):
+class FamilyParticipantInfoListView(LoginRequiredMixin,ListView):
     model = FamilyParticipantInfo
     template_name = 'encuentros/familyparticipantinfo_list.html'
     context_object_name = 'family_infos'
@@ -242,7 +244,7 @@ class FamilyParticipantInfoListView(ListView):
         context['page_title'] = _('List of Family Member Information')
         return context
 
-class FamilyParticipantInfoDetailView(DetailView):
+class FamilyParticipantInfoDetailView(LoginRequiredMixin,DetailView):
     model = FamilyParticipantInfo
     template_name = 'encuentros/familyparticipantinfo_detail.html'
     context_object_name = 'family_info'
@@ -259,7 +261,7 @@ class FamilyParticipantInfoDetailView(DetailView):
         }
         return context
 
-class FamilyParticipantInfoCreateView(CreateView):
+class FamilyParticipantInfoCreateView(LoginRequiredMixin,CreateView):
     model = FamilyParticipantInfo
     form_class = FamilyParticipantInfoForm
     template_name = 'encuentros/familyparticipantinfo_form.html'
@@ -273,7 +275,7 @@ class FamilyParticipantInfoCreateView(CreateView):
         context['submit_button_text'] = _('Save Family Member Info')
         return context
 
-class FamilyParticipantInfoUpdateView(UpdateView):
+class FamilyParticipantInfoUpdateView(LoginRequiredMixin,UpdateView):
     model = FamilyParticipantInfo
     form_class = FamilyParticipantInfoForm
     template_name = 'encuentros/familyparticipantinfo_form.html'
@@ -287,7 +289,7 @@ class FamilyParticipantInfoUpdateView(UpdateView):
         context['submit_button_text'] = _('Update Family Member Info')
         return context
 
-class FamilyParticipantInfoDeleteView(DeleteView):
+class FamilyParticipantInfoDeleteView(LoginRequiredMixin,DeleteView):
     model = FamilyParticipantInfo
     template_name = 'encuentros/familyparticipantinfo_confirm_delete.html'
     success_url = reverse_lazy('encuentros:familyparticipantinfo-list')
@@ -300,7 +302,7 @@ class FamilyParticipantInfoDeleteView(DeleteView):
         return context
 
 # Vistas para ChurchDataInfo
-class ChurchDataInfoListView(ListView):
+class ChurchDataInfoListView(LoginRequiredMixin,ListView):
     model = ChurchDataInfo
     template_name = 'encuentros/churchdatainfo_list.html'
     context_object_name = 'church_data_entries'
@@ -315,7 +317,7 @@ class ChurchDataInfoListView(ListView):
         context['page_title'] = _('List of Church Data Information')
         return context
 
-class ChurchDataInfoDetailView(DetailView):
+class ChurchDataInfoDetailView(LoginRequiredMixin,DetailView):
     model = ChurchDataInfo
     template_name = 'encuentros/churchdatainfo_detail.html'
     context_object_name = 'church_data'
@@ -329,7 +331,7 @@ class ChurchDataInfoDetailView(DetailView):
         context['page_title'] = _('Church Data Details for: %(participant)s') % {'participant': self.object.participant}
         return context
 
-class ChurchDataInfoCreateView(CreateView):
+class ChurchDataInfoCreateView(LoginRequiredMixin,CreateView):
     model = ChurchDataInfo
     form_class = ChurchDataInfoForm
     template_name = 'encuentros/churchdatainfo_form.html'
@@ -343,7 +345,7 @@ class ChurchDataInfoCreateView(CreateView):
         context['submit_button_text'] = _('Save Church Data')
         return context
 
-class ChurchDataInfoUpdateView(UpdateView):
+class ChurchDataInfoUpdateView(LoginRequiredMixin,UpdateView):
     model = ChurchDataInfo
     form_class = ChurchDataInfoForm
     template_name = 'encuentros/churchdatainfo_form.html'
@@ -357,7 +359,7 @@ class ChurchDataInfoUpdateView(UpdateView):
         context['submit_button_text'] = _('Update Church Data')
         return context
 
-class ChurchDataInfoDeleteView(DeleteView):
+class ChurchDataInfoDeleteView(LoginRequiredMixin,DeleteView):
     model = ChurchDataInfo
     template_name = 'encuentros/churchdatainfo_confirm_delete.html'
     success_url = reverse_lazy('encuentros:churchdatainfo-list')
@@ -370,7 +372,7 @@ class ChurchDataInfoDeleteView(DeleteView):
         return context
 
 # Vistas para MeetingParticipant
-class MeetingParticipantListView(ListView):
+class MeetingParticipantListView(LoginRequiredMixin,ListView):
     model = MeetingParticipant
     template_name = 'encuentros/meetingparticipant_list.html'
     context_object_name = 'meeting_participants'
@@ -385,7 +387,7 @@ class MeetingParticipantListView(ListView):
         context['page_title'] = _('List of Meeting Attendances')
         return context
 
-class MeetingParticipantDetailView(DetailView):
+class MeetingParticipantDetailView(LoginRequiredMixin,DetailView):
     model = MeetingParticipant
     template_name = 'encuentros/meetingparticipant_detail.html'
     context_object_name = 'meeting_participant'
@@ -402,7 +404,7 @@ class MeetingParticipantDetailView(DetailView):
         }
         return context
 
-class MeetingParticipantCreateView(CreateView):
+class MeetingParticipantCreateView(LoginRequiredMixin,CreateView):
     model = MeetingParticipant
     form_class = MeetingParticipantForm
     template_name = 'encuentros/meetingparticipant_form.html'
@@ -416,7 +418,7 @@ class MeetingParticipantCreateView(CreateView):
         context['submit_button_text'] = _('Save Attendance Record')
         return context
 
-class MeetingParticipantUpdateView(UpdateView):
+class MeetingParticipantUpdateView(LoginRequiredMixin,UpdateView):
     model = MeetingParticipant
     form_class = MeetingParticipantForm
     template_name = 'encuentros/meetingparticipant_form.html'
@@ -430,7 +432,7 @@ class MeetingParticipantUpdateView(UpdateView):
         context['submit_button_text'] = _('Update Attendance Record')
         return context
 
-class MeetingParticipantDeleteView(DeleteView):
+class MeetingParticipantDeleteView(LoginRequiredMixin,DeleteView):
     model = MeetingParticipant
     template_name = 'encuentros/meetingparticipant_confirm_delete.html'
     success_url = reverse_lazy('encuentros:meetingparticipant-list')
@@ -443,7 +445,7 @@ class MeetingParticipantDeleteView(DeleteView):
         return context
     
 # Vistas para FinanceMovements
-class FinanceMovementsListView(ListView):
+class FinanceMovementsListView(LoginRequiredMixin,ListView):
     model = FinanceMovements
     template_name = 'encuentros/financemovements_list.html'
     context_object_name = 'finance_movements'
@@ -458,7 +460,7 @@ class FinanceMovementsListView(ListView):
         context['page_title'] = _('List of Financial Movements')
         return context
 
-class FinanceMovementsDetailView(DetailView):
+class FinanceMovementsDetailView(LoginRequiredMixin,DetailView):
     model = FinanceMovements
     template_name = 'encuentros/financemovements_detail.html'
     context_object_name = 'movement'
@@ -475,7 +477,7 @@ class FinanceMovementsDetailView(DetailView):
         }
         return context
 
-class FinanceMovementsCreateView(CreateView):
+class FinanceMovementsCreateView(LoginRequiredMixin,CreateView):
     model = FinanceMovements
     form_class = FinanceMovementsForm
     template_name = 'encuentros/financemovements_form.html'
@@ -489,7 +491,7 @@ class FinanceMovementsCreateView(CreateView):
         context['submit_button_text'] = _('Save Movement')
         return context
 
-class FinanceMovementsUpdateView(UpdateView):
+class FinanceMovementsUpdateView(LoginRequiredMixin,UpdateView):
     model = FinanceMovements
     form_class = FinanceMovementsForm
     template_name = 'encuentros/financemovements_form.html'
@@ -503,7 +505,7 @@ class FinanceMovementsUpdateView(UpdateView):
         context['submit_button_text'] = _('Update Movement')
         return context
 
-class FinanceMovementsDeleteView(DeleteView):
+class FinanceMovementsDeleteView(LoginRequiredMixin,DeleteView):
     model = FinanceMovements
     template_name = 'encuentros/financemovements_confirm_delete.html'
     success_url = reverse_lazy('encuentros:financemovements-list')
@@ -516,7 +518,7 @@ class FinanceMovementsDeleteView(DeleteView):
         return context    
 
 # Vistas para Summary
-class SummaryListView(ListView):
+class SummaryListView(LoginRequiredMixin,ListView):
     model = Summary
     template_name = 'encuentros/summary_list.html'
     context_object_name = 'summaries'
@@ -531,7 +533,7 @@ class SummaryListView(ListView):
         context['page_title'] = _('List of Financial Summaries')
         return context
 
-class SummaryDetailView(DetailView):
+class SummaryDetailView(LoginRequiredMixin,DetailView):
     model = Summary
     template_name = 'encuentros/summary_detail.html'
     context_object_name = 'summary'
@@ -545,7 +547,7 @@ class SummaryDetailView(DetailView):
         context['page_title'] = _('Financial Summary for: %(meeting)s') % {'meeting': self.object.meeting}
         return context
 
-class GenerateSummaryView(View):
+class GenerateSummaryView(LoginRequiredMixin,View):
     form_class = GenerateSummaryForm
     template_name = 'encuentros/generate_summary_form.html'
 
@@ -603,7 +605,7 @@ class GenerateSummaryView(View):
         
         return render(request, self.template_name, {'form': form, 'page_title': _('Generate Financial Summary'), 'active_page': 'summaries'})
 
-class SummaryDeleteView(DeleteView):
+class SummaryDeleteView(LoginRequiredMixin,DeleteView):
     model = Summary
     template_name = 'encuentros/summary_confirm_delete.html'
     success_url = reverse_lazy('encuentros:summary-list')

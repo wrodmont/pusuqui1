@@ -1,7 +1,10 @@
 from django.contrib import admin
 from django.urls import path, include
 from django.shortcuts import render
+from django.contrib.auth.decorators import login_required
 
+
+@login_required
 def home(request):
     return render(request, 'home.html')
 
@@ -16,5 +19,6 @@ urlpatterns = [
     path('jap/', include('jap.urls')),
     path('multimedia/', include('multimedia.urls')),
     path('pusukids/', include(('pusukids.urls', 'pusukids'), namespace='pusukids')),
+    path('account/', include('account.urls', namespace='account')),
     path('', home, name='home'),
 ]

@@ -3,7 +3,12 @@
 {% block title %}Encuentros{% endblock %}
 
 {% block body %}
-<div class="container mt-5">
+<!-- Botón para volver al inicio -->
+<div class="mb-4">
+    <a href="{% url 'home' %}" class="btn btn-outline-secondary">
+        <i class="fas fa-arrow-left me-2"></i> Volver al Inicio
+    </a>
+</div>
 
   <div class="text-center mb-5">
     <h1 class="display-4 fw-bold text-primary">Gestión de Encuentros</h1>
@@ -110,6 +115,4 @@
 
   </div>
 
-</div>
 {% endblock %}
-

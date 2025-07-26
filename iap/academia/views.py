@@ -2,6 +2,8 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse_lazy
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.decorators import login_required
 from django.views import View
 from django.forms import formset_factory
 from django.contrib import messages
@@ -16,6 +18,7 @@ from .forms import (
     TeacherForm, StudentForm, SubjectForm, CourseForm, EnrollmentForm, AttendanceLogForm, AttendanceTakingSelectionForm, StudentAttendanceForm, GradeForm, GradeTakingSelectionForm, StudentGradeForm, ClosePeriodForm
 )
 
+@login_required
 def index(request):
     """
     Vista para la página principal de la aplicación Academia,
@@ -31,6 +34,7 @@ def index(request):
     }
     return render(request, 'academia/index.html', context)
 
+@login_required
 def cursos(request):
     """
     Vista para la página de cursos.
@@ -38,7 +42,8 @@ def cursos(request):
     return render(request, 'academia/cursos.html')  # Crear plantilla si no existe
 
 # Vistas para Teacher
-class TeacherListView(ListView):
+# El decorador @login_required no se usa en vistas basadas en clases. Se usa LoginRequiredMixin.
+class TeacherListView(LoginRequiredMixin, ListView):
     model = Teacher
     template_name = 'academia/teacher_list.html'
     context_object_name = 'teachers'
@@ -50,7 +55,7 @@ class TeacherListView(ListView):
         context['page_title'] = 'Listado de Profesores'
         return context
 
-class TeacherDetailView(DetailView):
+class TeacherDetailView(LoginRequiredMixin,DetailView):
     model = Teacher
     template_name = 'academia/teacher_detail.html'
     context_object_name = 'teacher'
@@ -61,7 +66,7 @@ class TeacherDetailView(DetailView):
         context['page_title'] = f"Detalle de Profesor: {self.object.name} {self.object.surname}"
         return context
 
-class TeacherCreateView(CreateView):
+class TeacherCreateView(LoginRequiredMixin,CreateView):
     model = Teacher
     form_class = TeacherForm
     template_name = 'academia/teacher_form.html'
@@ -75,7 +80,7 @@ class TeacherCreateView(CreateView):
         context['submit_button_text'] = 'Guardar Profesor'
         return context
 
-class TeacherUpdateView(UpdateView):
+class TeacherUpdateView(LoginRequiredMixin,UpdateView):
     model = Teacher
     form_class = TeacherForm
     template_name = 'academia/teacher_form.html'
@@ -89,7 +94,7 @@ class TeacherUpdateView(UpdateView):
         context['submit_button_text'] = 'Actualizar Profesor'
         return context
 
-class TeacherDeleteView(DeleteView):
+class TeacherDeleteView(LoginRequiredMixin,DeleteView):
     model = Teacher
     template_name = 'academia/teacher_confirm_delete.html'
     success_url = reverse_lazy('academia:teacher-list')
@@ -102,7 +107,7 @@ class TeacherDeleteView(DeleteView):
         return context
 
 # Vistas para Student
-class StudentListView(ListView):
+class StudentListView(LoginRequiredMixin,ListView):
     model = Student
     template_name = 'academia/student_list.html'
     context_object_name = 'students'
@@ -114,7 +119,7 @@ class StudentListView(ListView):
         context['page_title'] = 'Listado de Estudiantes'
         return context
 
-class StudentDetailView(DetailView):
+class StudentDetailView(LoginRequiredMixin,DetailView):
     model = Student
     template_name = 'academia/student_detail.html'
     context_object_name = 'student'
@@ -125,7 +130,7 @@ class StudentDetailView(DetailView):
         context['page_title'] = f"Detalle de Estudiante: {self.object.name} {self.object.surname}"
         return context
 
-class StudentCreateView(CreateView):
+class StudentCreateView(LoginRequiredMixin,CreateView):
     model = Student
     form_class = StudentForm
     template_name = 'academia/student_form.html'
@@ -139,7 +144,7 @@ class StudentCreateView(CreateView):
         context['submit_button_text'] = 'Guardar Estudiante'
         return context
 
-class StudentUpdateView(UpdateView):
+class StudentUpdateView(LoginRequiredMixin,UpdateView):
     model = Student
     form_class = StudentForm
     template_name = 'academia/student_form.html'
@@ -153,7 +158,7 @@ class StudentUpdateView(UpdateView):
         context['submit_button_text'] = 'Actualizar Estudiante'
         return context
 
-class StudentDeleteView(DeleteView):
+class StudentDeleteView(LoginRequiredMixin,DeleteView):
     model = Student
     template_name = 'academia/student_confirm_delete.html'
     success_url = reverse_lazy('academia:student-list')
@@ -166,7 +171,7 @@ class StudentDeleteView(DeleteView):
         return context
 
 # Vistas para Subject
-class SubjectListView(ListView):
+class SubjectListView(LoginRequiredMixin,ListView):
     model = Subject
     template_name = 'academia/subject_list.html'
     context_object_name = 'subjects'
@@ -178,7 +183,7 @@ class SubjectListView(ListView):
         context['page_title'] = 'Listado de Asignaturas'
         return context
 
-class SubjectDetailView(DetailView):
+class SubjectDetailView(LoginRequiredMixin,DetailView):
     model = Subject
     template_name = 'academia/subject_detail.html'
     context_object_name = 'subject'
@@ -189,7 +194,7 @@ class SubjectDetailView(DetailView):
         context['page_title'] = f"Detalle de Asignatura: {self.object.name}"
         return context
 
-class SubjectCreateView(CreateView):
+class SubjectCreateView(LoginRequiredMixin,CreateView):
     model = Subject
     form_class = SubjectForm
     template_name = 'academia/subject_form.html'
@@ -203,7 +208,7 @@ class SubjectCreateView(CreateView):
         context['submit_button_text'] = 'Guardar Asignatura'
         return context
 
-class SubjectUpdateView(UpdateView):
+class SubjectUpdateView(LoginRequiredMixin,UpdateView):
     model = Subject
     form_class = SubjectForm
     template_name = 'academia/subject_form.html'
@@ -217,7 +222,7 @@ class SubjectUpdateView(UpdateView):
         context['submit_button_text'] = 'Actualizar Asignatura'
         return context
 
-class SubjectDeleteView(DeleteView):
+class SubjectDeleteView(LoginRequiredMixin,DeleteView):
     model = Subject
     template_name = 'academia/subject_confirm_delete.html'
     success_url = reverse_lazy('academia:subject-list')
@@ -230,7 +235,7 @@ class SubjectDeleteView(DeleteView):
         return context
 
 # Vistas para Course
-class CourseListView(ListView):
+class CourseListView(LoginRequiredMixin,ListView):
     model = Course
     template_name = 'academia/course_list.html'
     context_object_name = 'courses'
@@ -245,7 +250,7 @@ class CourseListView(ListView):
         context['page_title'] = 'Listado de Cursos'
         return context
 
-class CourseDetailView(DetailView):
+class CourseDetailView(LoginRequiredMixin,DetailView):
     model = Course
     template_name = 'academia/course_detail.html'
     context_object_name = 'course'
@@ -259,7 +264,7 @@ class CourseDetailView(DetailView):
         context['page_title'] = f"Detalle de Curso: {self.object}"
         return context
 
-class CourseCreateView(CreateView):
+class CourseCreateView(LoginRequiredMixin,CreateView):
     model = Course
     form_class = CourseForm
     template_name = 'academia/course_form.html'
@@ -273,7 +278,7 @@ class CourseCreateView(CreateView):
         context['submit_button_text'] = 'Guardar Curso'
         return context
 
-class CourseUpdateView(UpdateView):
+class CourseUpdateView(LoginRequiredMixin,UpdateView):
     model = Course
     form_class = CourseForm
     template_name = 'academia/course_form.html'
@@ -287,7 +292,7 @@ class CourseUpdateView(UpdateView):
         context['submit_button_text'] = 'Actualizar Curso'
         return context
 
-class CourseDeleteView(DeleteView):
+class CourseDeleteView(LoginRequiredMixin,DeleteView):
     model = Course
     template_name = 'academia/course_confirm_delete.html'
     success_url = reverse_lazy('academia:course-list')
@@ -300,7 +305,7 @@ class CourseDeleteView(DeleteView):
         return context
 
 # Vistas para Enrollment
-class EnrollmentListView(ListView):
+class EnrollmentListView(LoginRequiredMixin,ListView):
     model = Enrollment
     template_name = 'academia/enrollment_list.html'
     context_object_name = 'enrollments'
@@ -333,7 +338,7 @@ class EnrollmentListView(ListView):
         context['current_period'] = self.request.GET.get('period', '')
         return context
 
-class EnrollmentDetailView(DetailView):
+class EnrollmentDetailView(LoginRequiredMixin,DetailView):
     model = Enrollment
     template_name = 'academia/enrollment_detail.html'
     context_object_name = 'enrollment'
@@ -349,7 +354,7 @@ class EnrollmentDetailView(DetailView):
         context['page_title'] = f"Detalle de Inscripción: {self.object.student} - {self.object.course.subject}"
         return context
 
-class EnrollmentCreateView(CreateView):
+class EnrollmentCreateView(LoginRequiredMixin,CreateView):
     model = Enrollment
     form_class = EnrollmentForm
     template_name = 'academia/enrollment_form.html'
@@ -363,7 +368,7 @@ class EnrollmentCreateView(CreateView):
         context['submit_button_text'] = 'Guardar Inscripción'
         return context
 
-class EnrollmentUpdateView(UpdateView):
+class EnrollmentUpdateView(LoginRequiredMixin,UpdateView):
     model = Enrollment
     form_class = EnrollmentForm
     template_name = 'academia/enrollment_form.html'
@@ -382,7 +387,7 @@ class EnrollmentUpdateView(UpdateView):
         context['submit_button_text'] = 'Actualizar Inscripción'
         return context
 
-class EnrollmentDeleteView(DeleteView):
+class EnrollmentDeleteView(LoginRequiredMixin,DeleteView):
     model = Enrollment
     template_name = 'academia/enrollment_confirm_delete.html'
     success_url = reverse_lazy('academia:enrollment-list')
@@ -400,7 +405,7 @@ class EnrollmentDeleteView(DeleteView):
         return context
 
 # Vistas para AttendanceLog
-class AttendanceLogListView(ListView):
+class AttendanceLogListView(LoginRequiredMixin,ListView):
     model = AttendanceLog
     template_name = 'academia/attendancelog_list.html'
     context_object_name = 'attendancelogs'
@@ -434,7 +439,7 @@ class AttendanceLogListView(ListView):
         context['current_lesson_number'] = self.request.GET.get('lesson_number', '')
         return context
 
-class AttendanceLogDetailView(DetailView):
+class AttendanceLogDetailView(LoginRequiredMixin,DetailView):
     model = AttendanceLog
     template_name = 'academia/attendancelog_detail.html'
     context_object_name = 'attendancelog'
@@ -452,7 +457,7 @@ class AttendanceLogDetailView(DetailView):
         context['page_title'] = f"Detalle de Asistencia: {self.object.enrollment.student} - L{self.object.lesson_number}"
         return context
 
-class AttendanceLogCreateView(CreateView):
+class AttendanceLogCreateView(LoginRequiredMixin,CreateView):
     model = AttendanceLog
     form_class = AttendanceLogForm
     template_name = 'academia/attendancelog_form.html'
@@ -466,7 +471,7 @@ class AttendanceLogCreateView(CreateView):
         context['submit_button_text'] = 'Guardar Registro'
         return context
 
-class AttendanceLogUpdateView(UpdateView):
+class AttendanceLogUpdateView(LoginRequiredMixin,UpdateView):
     model = AttendanceLog
     form_class = AttendanceLogForm
     template_name = 'academia/attendancelog_form.html'
@@ -486,7 +491,7 @@ class AttendanceLogUpdateView(UpdateView):
         context['submit_button_text'] = 'Actualizar Registro'
         return context
 
-class AttendanceLogDeleteView(DeleteView):
+class AttendanceLogDeleteView(LoginRequiredMixin,DeleteView):
     model = AttendanceLog
     template_name = 'academia/attendancelog_confirm_delete.html'
     success_url = reverse_lazy('academia:attendancelog-list')
@@ -498,7 +503,7 @@ class AttendanceLogDeleteView(DeleteView):
         context['page_title'] = f"Eliminar Registro de Asistencia: {self.object.enrollment.student} - L{self.object.lesson_number}"
         return context
 
-class TakeAttendanceView(View):
+class TakeAttendanceView(LoginRequiredMixin,View):
     template_name = 'academia/take_attendance_form.html'
     selection_form_class = AttendanceTakingSelectionForm
     student_form_class = StudentAttendanceForm
@@ -615,7 +620,7 @@ class TakeAttendanceView(View):
             messages.error(request, _("There were errors in the submitted attendance data. Please review."))
             return redirect(f"{reverse_lazy('academia:take-attendance')}?course={course_id}&lesson_date={lesson_date_str}&lesson_number={lesson_number_str}")
 
-class TakeGradesView(View):
+class TakeGradesView(LoginRequiredMixin,View):
     template_name = 'academia/take_grades_form.html'
     selection_form_class = GradeTakingSelectionForm
     student_form_class = StudentGradeForm
@@ -730,7 +735,7 @@ class TakeGradesView(View):
             return redirect(f"{reverse_lazy('academia:take-grades')}?course={course_id}&lesson_number={lesson_number_str}&grade_type={grade_type_str}")
 
 # CRUD views for Grade
-class GradeListView(ListView):
+class GradeListView(LoginRequiredMixin,ListView):
     model = Grade
     template_name = 'academia/grade_list.html'
     context_object_name = 'grades'
@@ -745,7 +750,7 @@ class GradeListView(ListView):
         context['page_title'] = _('List of Grades')
         return context
 
-class GradeDetailView(DetailView):
+class GradeDetailView(LoginRequiredMixin,DetailView):
     model = Grade
     template_name = 'academia/grade_detail.html'
     context_object_name = 'grade'
@@ -759,7 +764,7 @@ class GradeDetailView(DetailView):
         context['page_title'] = _('Grade Detail')
         return context
 
-class GradeCreateView(CreateView):
+class GradeCreateView(LoginRequiredMixin,CreateView):
     model = Grade
     form_class = GradeForm
     template_name = 'academia/grade_form.html'
@@ -773,7 +778,7 @@ class GradeCreateView(CreateView):
         context['submit_button_text'] = _('Save Grade')
         return context
 
-class GradeUpdateView(UpdateView):
+class GradeUpdateView(LoginRequiredMixin,UpdateView):
     model = Grade
     form_class = GradeForm
     template_name = 'academia/grade_form.html'
@@ -790,7 +795,7 @@ class GradeUpdateView(UpdateView):
         context['submit_button_text'] = _('Update Grade')
         return context
 
-class GradeDeleteView(DeleteView):
+class GradeDeleteView(LoginRequiredMixin,DeleteView):
     model = Grade
     template_name = 'academia/grade_confirm_delete.html'
     success_url = reverse_lazy('academia:grade-list')
@@ -805,7 +810,7 @@ class GradeDeleteView(DeleteView):
         context['page_title'] = _('Delete Grade')
         return context
 
-class ClosePeriodView(View):
+class ClosePeriodView(LoginRequiredMixin,View):
     template_name = 'academia/close_period_form.html'
     form_class = ClosePeriodForm
 

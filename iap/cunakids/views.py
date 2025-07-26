@@ -6,6 +6,8 @@ from .models import (
 from django.db import IntegrityError
 from django.urls import reverse, reverse_lazy
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.decorators import login_required
 from datetime import date
 from .forms import (
     CoordinatorForm, GroupForm, ServerForm, ChildForm, AssistanceForm, GroupCoordinatorForm,
@@ -15,14 +17,14 @@ from django.contrib import messages
 import traceback # Para debug si es necesario
 
 # Create your views here.
-
+@login_required
 def calculated_age(born):
     if not born: return None
     today = date.today()
     age = today.year - born.year
     if (today.month, today.day) < (born.month, born.day): age -= 1
     return age
-
+@login_required
 def index(request):
     """
     Vista para la página principal de la aplicación Academia.
@@ -35,7 +37,7 @@ def index(request):
     """
     return render(request, 'cunakids/index.html')
 
-
+@login_required
 def coordinator_list(request):
     """
     Vista para listar todos los coordinadores.
@@ -49,6 +51,7 @@ def coordinator_list(request):
     print(coordinators)
     return render(request, 'cunakids/coordinator_list.html', {'coordinators': coordinators})
 
+@login_required
 def coordinator_create(request):
     """
     Vista para crear un nuevo coordinador.
@@ -62,6 +65,7 @@ def coordinator_create(request):
         form = CoordinatorForm()
     return render(request, 'cunakids/coordinator_form.html', {'form': form, 'action': 'Crear'})
 
+@login_required
 def coordinator_update(request, pk):
     """
     Vista para actualizar un coordinador existente.
@@ -76,6 +80,7 @@ def coordinator_update(request, pk):
         form = CoordinatorForm(instance=coordinator_obj)
     return render(request, 'cunakids/coordinator_form.html', {'form': form, 'action': 'Actualizar'})
 
+@login_required
 def coordinator_delete(request, pk):
     """
     Vista para eliminar un coordinador.
@@ -87,10 +92,12 @@ def coordinator_delete(request, pk):
     return render(request, 'cunakids/coordinator_confirm_delete.html', {'coordinator': coordinator_obj})
 
 # vista para crear groups
+@login_required
 def group_list(request):
     groups = group.objects.all()
     return render(request, 'cunakids/group_list.html', {'groups': groups})
 
+@login_required
 def group_create(request):
     if request.method == 'POST':
         form = GroupForm(request.POST)
@@ -101,6 +108,7 @@ def group_create(request):
         form = GroupForm()
     return render(request, 'cunakids/group_form.html', {'form': form})
 
+@login_required
 def group_update(request, pk):
     group_obj = get_object_or_404(group, pk=pk) 
     if request.method == 'POST':
@@ -112,6 +120,7 @@ def group_update(request, pk):
         form = GroupForm(instance=group_obj)
     return render(request, 'cunakids/group_form.html', {'form': form})
 
+@login_required
 def group_delete(request, pk):
     group_obj = get_object_or_404(group, pk=pk)
     if request.method == 'POST':
@@ -119,17 +128,17 @@ def group_delete(request, pk):
         return redirect('cunakids:group_list')
     return render(request, 'cunakids/group_confirm_delete.html', {'group': group_obj})
 
-class ServerListView(ListView):
+class ServerListView(LoginRequiredMixin,ListView):
     model = server
     template_name = 'cunakids/server_list.html'  # Especifica tu template
     context_object_name = 'servers'  # Nombre de la variable en el template
 
-class ServerDetailView(DetailView):
+class ServerDetailView(LoginRequiredMixin,DetailView):
     model = server
     template_name = 'cunakids/server_detail.html'
     context_object_name = 'server'
 
-class ServerCreateView(CreateView):
+class ServerCreateView(LoginRequiredMixin,CreateView):
     model = server
     form_class = ServerForm
     template_name = 'cunakids/server_form.html'
@@ -142,7 +151,7 @@ class ServerCreateView(CreateView):
         context['submit_button_text'] = 'Registrar'
         return context
 
-class ServerUpdateView(UpdateView):
+class ServerUpdateView(LoginRequiredMixin,UpdateView):
     model = server
     form_class = ServerForm
     template_name = 'cunakids/server_form.html'
@@ -155,14 +164,14 @@ class ServerUpdateView(UpdateView):
         context['submit_button_text'] = 'Actualizar'
         return context
 
-class ServerDeleteView(DeleteView):
+class ServerDeleteView(LoginRequiredMixin,DeleteView):
     model = server
     template_name = 'cunakids/server_confirm_delete.html'
     context_object_name = 'server'
     success_url = reverse_lazy('cunakids:server_list') # Redirige a la lista después de borrar
 
 # --- Vistas para el CRUD de Kid ---
-
+@login_required
 def child_list(request):
     """Vista para listar todos los niños."""
     # Obtén el queryset directamente
@@ -171,7 +180,7 @@ def child_list(request):
     # Pasa el queryset directamente al template.
     # La propiedad @property calculated_age estará disponible en cada objeto 'c' dentro del template.
     return render(request, 'cunakids/child_list.html', {'children': children_list})
-
+@login_required
 def child_create(request): # <-- Renombrada
     """Vista para crear un nuevo niño."""
     if request.method == 'POST':
@@ -184,6 +193,7 @@ def child_create(request): # <-- Renombrada
     # Asegúrate que el template existe o renómbralo
     return render(request, 'cunakids/child_form.html', {'form': form, 'action': 'Registrar'}) # <-- Cambiado template
 
+@login_required
 def child_update(request, pk): # <-- Renombrada
     """Vista para actualizar un niño existente."""
     child_obj = get_object_or_404(child, pk=pk) # <-- Cambiado
@@ -199,6 +209,7 @@ def child_update(request, pk): # <-- Renombrada
     # Asegúrate que el template existe o renómbralo
     return render(request, 'cunakids/child_form.html', {'form': form, 'action': 'Actualizar', 'action_title': action_title}) # <-- Cambiado template
 
+@login_required
 def child_delete(request, pk): # <-- Renombrada
     """Vista para eliminar un niño."""
     child_obj = get_object_or_404(child, pk=pk) # <-- Cambiado
@@ -210,7 +221,7 @@ def child_delete(request, pk): # <-- Renombrada
 
 
 # --- Vistas para el CRUD de Assistance ---
-
+@login_required
 def assistance_list(request):
     """Vista para listar todos los registros de asistencia."""
     # Optimizar consulta usando select_related para cargar datos relacionados
@@ -220,6 +231,7 @@ def assistance_list(request):
 
     return render(request, 'cunakids/assistance_list.html', {'assistances': assistances_list})
 
+@login_required
 def assistance_create(request):
     """
     Vista para crear registros de asistencia en lote para todos los niños ACTIVOS.
@@ -271,6 +283,7 @@ def assistance_create(request):
         'action_title': 'Registrar Asistencia Grupal',
     })
 
+@login_required
 def assistance_update(request, pk):
     """Vista para actualizar un registro de asistencia existente."""
     assistance_obj = get_object_or_404(assistance, pk=pk)
@@ -296,6 +309,7 @@ def assistance_update(request, pk):
         'action_title': action_title
     })
 
+@login_required
 def assistance_delete(request, pk):
     """Vista para eliminar un registro de asistencia."""
     assistance_obj = get_object_or_404(assistance.objects.select_related('child', 'group', 'coordinator'), pk=pk)
@@ -314,12 +328,13 @@ def assistance_delete(request, pk):
     return render(request, 'cunakids/assistance_confirm_delete.html', {'assistance': assistance_obj})
 
 # --- Vistas para el CRUD de GroupCoordinator (Cunakids) ---
-
+@login_required
 def groupcoordinator_list(request):
     """Vista para listar todas las asignaciones de grupo-coordinador."""
     assignments = GroupCoordinator.objects.select_related('group', 'coordinator').order_by('group__name', 'coordinator__surname')
     return render(request, 'cunakids/groupcoordinator_list.html', {'assignments': assignments})
 
+@login_required
 def groupcoordinator_create(request):
     """Vista para crear una nueva asignación."""
     if request.method == 'POST':
@@ -335,6 +350,7 @@ def groupcoordinator_create(request):
         form = GroupCoordinatorForm()
     return render(request, 'cunakids/groupcoordinator_form.html', {'form': form, 'action': 'Asignar'})
 
+@login_required
 def groupcoordinator_update(request, pk):
     """Vista para actualizar una asignación."""
     assignment = get_object_or_404(GroupCoordinator, pk=pk)
@@ -357,6 +373,7 @@ def groupcoordinator_update(request, pk):
         'action_title': action_title
     })
 
+@login_required
 def groupcoordinator_delete(request, pk):
     """Vista para eliminar una asignación."""
     assignment = get_object_or_404(GroupCoordinator.objects.select_related('group', 'coordinator'), pk=pk)

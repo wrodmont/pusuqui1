@@ -6,6 +6,8 @@ from .models import (
 )
 from django.urls import reverse, reverse_lazy
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.decorators import login_required
 from datetime import date
 from .forms import (
     CoordinatorForm, GroupForm, ServerForm, GroupageForm, ChildForm,
@@ -19,7 +21,7 @@ from django.db.models import ProtectedError
 import traceback # Para debug si es necesario
 
 # Create your views here.
-
+@login_required
 def calculated_age(born):
     if not born: return None
     today = date.today()
@@ -27,6 +29,7 @@ def calculated_age(born):
     if (today.month, today.day) < (born.month, born.day): age -= 1
     return age
 
+@login_required
 def index(request):
     """
     Vista para la página principal de la aplicación Academia.
@@ -39,7 +42,7 @@ def index(request):
     """
     return render(request, 'pusukids/index.html')
 
-
+@login_required
 def coordinator_list(request):
     """
     Vista para listar todos los coordinadores.
@@ -53,6 +56,7 @@ def coordinator_list(request):
     print(coordinators)
     return render(request, 'pusukids/coordinator_list.html', {'coordinators': coordinators})
 
+@login_required
 def coordinator_create(request):
     """
     Vista para crear un nuevo coordinador.
@@ -66,6 +70,7 @@ def coordinator_create(request):
         form = CoordinatorForm()
     return render(request, 'pusukids/coordinator_form.html', {'form': form, 'action': 'Crear'})
 
+@login_required
 def coordinator_update(request, pk):
     """
     Vista para actualizar un coordinador existente.
@@ -80,6 +85,7 @@ def coordinator_update(request, pk):
         form = CoordinatorForm(instance=coordinator_obj)
     return render(request, 'pusukids/coordinator_form.html', {'form': form, 'action': 'Actualizar'})
 
+@login_required
 def coordinator_delete(request, pk):
     """
     Vista para eliminar un coordinador.
@@ -91,10 +97,12 @@ def coordinator_delete(request, pk):
     return render(request, 'pusukids/coordinator_confirm_delete.html', {'coordinator': coordinator_obj})
 
 # vista para crear groups
+@login_required
 def group_list(request):
     groups = group.objects.all()
     return render(request, 'pusukids/group_list.html', {'groups': groups})
 
+@login_required
 def group_create(request):
     if request.method == 'POST':
         form = GroupForm(request.POST)
@@ -105,6 +113,7 @@ def group_create(request):
         form = GroupForm()
     return render(request, 'pusukids/group_form.html', {'form': form})
 
+@login_required
 def group_update(request, pk):
     group_obj = get_object_or_404(group, pk=pk) 
     if request.method == 'POST':
@@ -116,6 +125,7 @@ def group_update(request, pk):
         form = GroupForm(instance=group_obj)
     return render(request, 'pusukids/group_form.html', {'form': form})
 
+@login_required
 def group_delete(request, pk):
     group_obj = get_object_or_404(group, pk=pk)
     if request.method == 'POST':
@@ -123,17 +133,17 @@ def group_delete(request, pk):
         return redirect('pusukids:group_list')
     return render(request, 'pusukids/group_confirm_delete.html', {'group': group_obj})
 
-class ServerListView(ListView):
+class ServerListView(LoginRequiredMixin,ListView):
     model = server
     template_name = 'pusukids/server_list.html'  # Especifica tu template
     context_object_name = 'servers'  # Nombre de la variable en el template
 
-class ServerDetailView(DetailView):
+class ServerDetailView(LoginRequiredMixin,DetailView):
     model = server
     template_name = 'pusukids/server_detail.html'
     context_object_name = 'server'
 
-class ServerCreateView(CreateView):
+class ServerCreateView(LoginRequiredMixin,CreateView):
     model = server
     form_class = ServerForm
     template_name = 'pusukids/server_form.html'
@@ -146,7 +156,7 @@ class ServerCreateView(CreateView):
         context['submit_button_text'] = 'Registrar'
         return context
 
-class ServerUpdateView(UpdateView):
+class ServerUpdateView(LoginRequiredMixin,UpdateView):
     model = server
     form_class = ServerForm
     template_name = 'pusukids/server_form.html'
@@ -159,18 +169,19 @@ class ServerUpdateView(UpdateView):
         context['submit_button_text'] = 'Actualizar'
         return context
 
-class ServerDeleteView(DeleteView):
+class ServerDeleteView(LoginRequiredMixin,DeleteView):
     model = server
     template_name = 'pusukids/server_confirm_delete.html'
     context_object_name = 'server'
     success_url = reverse_lazy('pusukids:server_list') # Redirige a la lista después de borrar
 
 # Vistas generadas con Gemini para el CRUD de GroupAge
-
+@login_required
 def groupage_list(request):
     groupages = groupage.objects.all()
     return render(request, 'pusukids/groupage_list.html', {'groupages': groupages})
 
+@login_required
 def groupage_create(request):
     if request.method == 'POST':
         form = GroupageForm(request.POST)
@@ -181,6 +192,7 @@ def groupage_create(request):
         form = GroupageForm()
     return render(request, 'pusukids/groupage_form.html', {'form': form, 'action': 'Crear'})
 
+@login_required
 def groupage_update(request, pk):
     groupage_obj = get_object_or_404(groupage, pk=pk)
     if request.method == 'POST':
@@ -192,6 +204,7 @@ def groupage_update(request, pk):
         form = GroupageForm(instance=groupage_obj)
     return render(request, 'pusukids/groupage_form.html', {'form': form, 'action': 'Editar'})
 
+@login_required
 def groupage_delete(request, pk):
     groupage_obj = get_object_or_404(groupage, pk=pk)
     if request.method == 'POST':
@@ -200,7 +213,7 @@ def groupage_delete(request, pk):
     return render(request, 'pusukids/groupage_confirm_delete.html', {'groupage': groupage_obj})
 
 # --- Vistas para el CRUD de Kid ---
-
+@login_required
 def child_list(request):
     """Vista para listar todos los niños."""
     # Por defecto, mostrar solo los niños activos.
@@ -224,6 +237,7 @@ def child_list(request):
         'current_status': status_filter
     })
 
+@login_required
 def child_create(request): # <-- Renombrada
     """Vista para crear un nuevo niño."""
     if request.method == 'POST':
@@ -241,6 +255,7 @@ def child_create(request): # <-- Renombrada
     # Asegúrate que el template existe o renómbralo
     return render(request, 'pusukids/child_form.html', {'form': form, 'action': 'Registrar'}) # <-- Cambiado template
 
+@login_required
 def child_update(request, pk): # <-- Renombrada
     """Vista para actualizar un niño existente."""
     child_obj = get_object_or_404(child, pk=pk) # <-- Cambiado
@@ -261,6 +276,7 @@ def child_update(request, pk): # <-- Renombrada
     # Asegúrate que el template existe o renómbralo
     return render(request, 'pusukids/child_form.html', {'form': form, 'action': 'Actualizar', 'action_title': action_title}) # <-- Cambiado template
 
+@login_required
 def child_delete(request, pk): # <-- Renombrada
     """Vista para eliminar un niño."""
     child_obj = get_object_or_404(child, pk=pk) # <-- Cambiado
@@ -272,7 +288,7 @@ def child_delete(request, pk): # <-- Renombrada
 
 
 # --- Vistas para el CRUD de Assistance ---
-
+@login_required
 def assistance_list(request):
     """Vista para listar todos los registros de asistencia."""
     # Obtener parámetros de búsqueda del GET request
@@ -304,7 +320,7 @@ def assistance_list(request):
         'search_date_id': int(search_date_id) if search_date_id else None,
     })
 
-
+@login_required
 def assistance_create(request):
     """
     Vista para crear registros de asistencia en lote para todos los niños.
@@ -347,6 +363,7 @@ def assistance_create(request):
         'action_title': 'Registrar Asistencia Grupal'
     })
 
+@login_required
 def assistance_update(request, pk):
     """Vista para actualizar un registro de asistencia existente."""
     assistance_obj = get_object_or_404(assistance, pk=pk)
@@ -372,6 +389,7 @@ def assistance_update(request, pk):
         'action_title': action_title
     })
 
+@login_required
 def assistance_delete(request, pk):
     """Vista para eliminar un registro de asistencia."""
     assistance_obj = get_object_or_404(assistance.objects.select_related('child', 'date'), pk=pk)
@@ -391,6 +409,7 @@ def assistance_delete(request, pk):
 
     return render(request, 'pusukids/assistance_confirm_delete.html', {'assistance': assistance_obj})
 
+@login_required
 def weekinfo_list(request):
     """Vista para listar toda la información semanal."""
     weekinfos_list = weekinfo.objects.select_related(
@@ -399,6 +418,7 @@ def weekinfo_list(request):
 
     return render(request, 'pusukids/weekinfo_list.html', {'weekinfos': weekinfos_list})
 
+@login_required
 def weekinfo_create(request):
     """Vista para crear un nuevo registro de información semanal."""
     if request.method == 'POST':
@@ -413,6 +433,7 @@ def weekinfo_create(request):
         form = WeekinfoForm()
     return render(request, 'pusukids/weekinfo_form.html', {'form': form, 'action': 'Registrar'})
 
+@login_required
 def weekinfo_update(request, pk):
     """Vista para actualizar un registro de información semanal existente."""
     weekinfo_obj = get_object_or_404(weekinfo, pk=pk)
@@ -437,6 +458,7 @@ def weekinfo_update(request, pk):
         'action_title': action_title
     })
 
+@login_required
 def weekinfo_delete(request, pk):
     """Vista para eliminar un registro de información semanal."""
     # Incluir related para mostrar info en la confirmación
@@ -457,12 +479,13 @@ def weekinfo_delete(request, pk):
     return render(request, 'pusukids/weekinfo_confirm_delete.html', {'weekinfo': weekinfo_obj})
 
 # --- Vistas para el CRUD de Expense ---
-
+@login_required
 def expense_list(request):
     """Vista para listar todos los gastos."""
     expenses_list = expense.objects.select_related('fecha').order_by('-fecha__date', 'description')
     return render(request, 'pusukids/expense_list.html', {'expenses': expenses_list})
 
+@login_required
 def expense_create(request):
     """Vista para crear un nuevo registro de gasto."""
     if request.method == 'POST':
@@ -477,6 +500,7 @@ def expense_create(request):
         form = ExpenseForm()
     return render(request, 'pusukids/expense_form.html', {'form': form, 'action': 'Registrar'})
 
+@login_required
 def expense_update(request, pk):
     """Vista para actualizar un registro de gasto existente."""
     expense_obj = get_object_or_404(expense, pk=pk)
@@ -501,6 +525,7 @@ def expense_update(request, pk):
         'action_title': action_title
     })
 
+@login_required
 def expense_delete(request, pk):
     """Vista para eliminar un registro de gasto."""
     expense_obj = get_object_or_404(expense.objects.select_related('fecha'), pk=pk)
@@ -518,12 +543,13 @@ def expense_delete(request, pk):
     return render(request, 'pusukids/expense_confirm_delete.html', {'expense': expense_obj})
 
 # --- Vistas para el CRUD de Fecha ---
-
+@login_required
 def fecha_list(request):
     """Vista para listar todas las fechas (semanas)."""
     fechas_list = fecha.objects.order_by('-date')
     return render(request, 'pusukids/fecha_list.html', {'fechas': fechas_list})
 
+@login_required
 def fecha_create(request):
     """Vista para crear una nueva fecha (semana)."""
     if request.method == 'POST':
@@ -542,6 +568,7 @@ def fecha_create(request):
         form = FechaForm()
     return render(request, 'pusukids/fecha_form.html', {'form': form, 'action': 'Registrar'})
 
+@login_required
 def fecha_update(request, pk):
     """Vista para actualizar una fecha existente."""
     fecha_obj = get_object_or_404(fecha, pk=pk)
@@ -563,6 +590,7 @@ def fecha_update(request, pk):
         'action_title': action_title
     })
 
+@login_required
 def fecha_delete(request, pk):
     """Vista para eliminar una fecha."""
     fecha_obj = get_object_or_404(fecha, pk=pk)
@@ -587,12 +615,13 @@ def fecha_delete(request, pk):
     return render(request, 'pusukids/fecha_confirm_delete.html', {'fecha': fecha_obj})
 
 # --- Vistas para el CRUD de GroupCoordinator ---
-
+@login_required
 def groupcoordinator_list(request):
     """Vista para listar todas las asignaciones de grupo-coordinador."""
     assignments = GroupCoordinator.objects.select_related('group', 'coordinator').order_by('group__name', 'coordinator__surname')
     return render(request, 'pusukids/groupcoordinator_list.html', {'assignments': assignments})
 
+@login_required
 def groupcoordinator_create(request):
     """Vista para crear una nueva asignación."""
     if request.method == 'POST':
@@ -608,6 +637,7 @@ def groupcoordinator_create(request):
         form = GroupCoordinatorForm()
     return render(request, 'pusukids/groupcoordinator_form.html', {'form': form, 'action': 'Asignar'})
 
+@login_required
 def groupcoordinator_update(request, pk):
     """Vista para actualizar una asignación."""
     assignment = get_object_or_404(GroupCoordinator, pk=pk)
@@ -630,6 +660,7 @@ def groupcoordinator_update(request, pk):
         'action_title': action_title
     })
 
+@login_required
 def groupcoordinator_delete(request, pk):
     """Vista para eliminar una asignación."""
     assignment = get_object_or_404(GroupCoordinator.objects.select_related('group', 'coordinator'), pk=pk)

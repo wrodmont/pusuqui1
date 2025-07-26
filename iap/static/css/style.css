@@ -1,16 +1,31 @@
-/* Fondo general de toda la página */
+/* Variables de color de Bootstrap personalizadas */
+:root {
+  --bs-primary: #00363A;
+  --bs-primary-rgb: 0, 54, 58;
+}
+
+/* Estilos Generales */
 body {
   background-color: #e0f7fa; /* celeste clarito */
   color: #00363a; /* texto general en azul oscuro para contraste */
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-/* Navbar blanca */
+/* Navbar */
 .navbar {
   background-color: #ffffff !important; /* blanco */
   border-bottom: 2px solid #00acc1; /* línea inferior celeste */
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
 }
 
-/* Texto de los enlaces del navbar */
+.navbar-brand img {
+  transition: transform 0.3s ease;
+}
+
+.navbar-brand:hover img {
+  transform: scale(1.05);
+}
+
 .navbar .nav-link {
   color: #007c91 !important;
   font-weight: 500;
@@ -19,11 +34,10 @@ body {
 /* Hover en los enlaces del navbar */
 .navbar .nav-link:hover {
   color: #004d60 !important;
-  background-color: #b2ebf2 !important;
-  border-radius: 5px;
+  background-color: #b2ebf2 !important; /* Mantengo el !important del estilo original */
 }
 
-/* Menú desplegable blanco */
+/* Menú desplegable */
 .dropdown-menu {
   background-color: #ffffff;
   border: 1px solid #00acc1;
@@ -40,10 +54,37 @@ body {
   color: #004d60;
 }
 
-/* Contenedor principal (opcional si usas cards u otros elementos) */
+/* Contenedor principal */
 .container {
   background-color: #ffffff;
   border-radius: 12px;
   padding: 20px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Título de Sección */
+.section-title {
+  position: relative;
+  padding-bottom: 15px;
+  margin-bottom: 30px;
+}
+
+.section-title:after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 50px;
+  height: 3px;
+  background-color:  var(--bs-primary); /* Usando la variable de Bootstrap */
+}
+
+/* Colores personalizados (si aún son necesarios) */
+.bg-ministerio {
+  background-color: #6a994e !important;
+}
+
+.border-ministerio {
+  border-color: #6a994e !important;
 }

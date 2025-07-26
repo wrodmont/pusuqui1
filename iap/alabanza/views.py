@@ -2,12 +2,14 @@ from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import reverse_lazy
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.decorators import login_required
 from .models import Coordinator, Group, Server, Assistance
 from .forms import CoordinatorForm, GroupForm, ServerForm, AssistanceForm
 
 from django.contrib import messages
 # Create your views here.
-
+@login_required
 def index(request):
     """
     Vista para la página principal de la aplicación Academia.
@@ -20,82 +22,82 @@ def index(request):
     """
     return render(request, 'alabanza/index.html')
 
-class CoordinatorListView(ListView):
+class CoordinatorListView(LoginRequiredMixin,ListView):
     model = Coordinator
     template_name = 'alabanza/coordinator_list.html' # Especifica tu template
     context_object_name = 'coordinators' # Nombre del objeto en el contexto del template
 
-class CoordinatorCreateView(CreateView):
+class CoordinatorCreateView(LoginRequiredMixin,CreateView):
     model = Coordinator
     form_class = CoordinatorForm
     template_name = 'alabanza/coordinator_form.html' # Template para crear/editar
     success_url = reverse_lazy('alabanza:coordinator_list') # Redirige después de crear
 
-class CoordinatorUpdateView(UpdateView):
+class CoordinatorUpdateView(LoginRequiredMixin,UpdateView):
     model = Coordinator
     form_class = CoordinatorForm
     template_name = 'alabanza/coordinator_form.html'
     success_url = reverse_lazy('alabanza:coordinator_list')
 
-class CoordinatorDeleteView(DeleteView):
+class CoordinatorDeleteView(LoginRequiredMixin,DeleteView):
     model = Coordinator
     template_name = 'alabanza/coordinator_confirm_delete.html' # Template de confirmación
     success_url = reverse_lazy('alabanza:coordinator_list')
 
 
 # Views para CRUD de Group
-class GroupListView(ListView):
+class GroupListView(LoginRequiredMixin,ListView):
     model = Group
     template_name = 'alabanza/group_list.html'
     context_object_name = 'groups'
 
-class GroupCreateView(CreateView):
+class GroupCreateView(LoginRequiredMixin,CreateView):
     model = Group
     form_class = GroupForm
     template_name = 'alabanza/group_form.html'
     success_url = reverse_lazy('alabanza:group_list')
 
-class GroupUpdateView(UpdateView):
+class GroupUpdateView(LoginRequiredMixin,UpdateView):
     model = Group
     form_class = GroupForm
     template_name = 'alabanza/group_form.html'
     success_url = reverse_lazy('alabanza:group_list')
 
-class GroupDeleteView(DeleteView):
+class GroupDeleteView(LoginRequiredMixin,DeleteView):
     model = Group
     template_name = 'alabanza/group_confirm_delete.html'
     success_url = reverse_lazy('alabanza:group_list')    
 
 # Vista para el CRUD de Server
-class ServerListView(ListView):
+class ServerListView(LoginRequiredMixin,ListView):
     model = Server
     template_name = 'alabanza/server_list.html'
     context_object_name = 'servers'
 
-class ServerCreateView(CreateView):
+class ServerCreateView(LoginRequiredMixin,CreateView):
     model = Server
     form_class = ServerForm
     template_name = 'alabanza/server_form.html'
     success_url = reverse_lazy('alabanza:server_list')
 
-class ServerUpdateView(UpdateView):
+class ServerUpdateView(LoginRequiredMixin,UpdateView):
     model = Server
     form_class = ServerForm
     template_name = 'alabanza/server_form.html'
     success_url = reverse_lazy('alabanza:server_list')
 
-class ServerDeleteView(DeleteView):
+class ServerDeleteView(LoginRequiredMixin,DeleteView):
     model = Server
     template_name = 'alabanza/server_confirm_delete.html'
     success_url = reverse_lazy('alabanza:server_list')
 
 # Crud para assistance
-class AssistanceListView(ListView):
+class AssistanceListView(LoginRequiredMixin,ListView):
     model = Assistance
     template_name = 'alabanza/assistance_list.html'
     context_object_name = 'assistance_list'
 
-class AssistanceCreateView(CreateView):
+class AssistanceCreateView(LoginRequiredMixin,CreateView):
     model = Assistance
     form_class = AssistanceForm
     template_name = 'alabanza/assistance_form.html'

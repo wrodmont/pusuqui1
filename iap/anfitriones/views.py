@@ -2,12 +2,14 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.urls import reverse_lazy
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.decorators import login_required
 from django.db.models import Sum
 from .models import Assistance, Attendance, Coordinator, Group, Server, Ministry
 from .forms import AssistanceForm, AttendanceForm, BatchAssistanceForm, CoordinatorForm, GroupForm,ServerForm, MinistryForm
 
 # Create your views here.
-
+@login_required
 def index(request):
     # --- General Counts ---
     total_servers = Server.objects.count()
@@ -59,120 +61,121 @@ def index(request):
     return render(request, 'anfitriones/index.html', context)
 
 # Views para CRUD de Coordinator
-class CoordinatorListView(ListView):
+class CoordinatorListView(LoginRequiredMixin,ListView):
     model = Coordinator
     template_name = 'anfitriones/coordinator_list.html'
     context_object_name = 'coordinators'
 
-class CoordinatorCreateView(CreateView):
+class CoordinatorCreateView(LoginRequiredMixin,CreateView):
     model = Coordinator
     form_class = CoordinatorForm
     template_name = 'anfitriones/coordinator_form.html'
     success_url = reverse_lazy('anfitriones:coordinator_list')
 
-class CoordinatorUpdateView(UpdateView):
+class CoordinatorUpdateView(LoginRequiredMixin,UpdateView):
     model = Coordinator
     form_class = CoordinatorForm
     template_name = 'anfitriones/coordinator_form.html'
     success_url = reverse_lazy('anfitriones:coordinator_list')
 
-class CoordinatorDeleteView(DeleteView):
+class CoordinatorDeleteView(LoginRequiredMixin,DeleteView):
     model = Coordinator
     template_name = 'anfitriones/coordinator_confirm_delete.html'
     success_url = reverse_lazy('anfitriones:coordinator_list')
 
 # Views para CRUD de Group
-class GroupListView(ListView):
+class GroupListView(LoginRequiredMixin,ListView):
     model = Group
     template_name = 'anfitriones/group_list.html'
     context_object_name = 'groups'
 
-class GroupCreateView(CreateView):
+class GroupCreateView(LoginRequiredMixin,CreateView):
     model = Group
     form_class = GroupForm
     template_name = 'anfitriones/group_form.html'
     success_url = reverse_lazy('anfitriones:group_list')
 
-class GroupUpdateView(UpdateView):
+class GroupUpdateView(LoginRequiredMixin,UpdateView):
     model = Group
     form_class = GroupForm
     template_name = 'anfitriones/group_form.html'
     success_url = reverse_lazy('anfitriones:group_list')
 
-class GroupDeleteView(DeleteView):
+class GroupDeleteView(LoginRequiredMixin,DeleteView):
     model = Group
     template_name = 'anfitriones/group_confirm_delete.html'
     success_url = reverse_lazy('anfitriones:group_list')  
 
 # Vista para el CRUD de Server
-class ServerListView(ListView):
+class ServerListView(LoginRequiredMixin,ListView):
     model = Server
     template_name = 'anfitriones/server_list.html'
     context_object_name = 'servers'
 
-class ServerCreateView(CreateView):
+class ServerCreateView(LoginRequiredMixin,CreateView):
     model = Server
     form_class = ServerForm
     template_name = 'anfitriones/server_form.html'
     success_url = reverse_lazy('anfitriones:server_list')
 
-class ServerUpdateView(UpdateView):
+class ServerUpdateView(LoginRequiredMixin,UpdateView):
     model = Server
     form_class = ServerForm
     template_name = 'anfitriones/server_form.html'
     success_url = reverse_lazy('anfitriones:server_list')
 
-class ServerDeleteView(DeleteView):
+class ServerDeleteView(LoginRequiredMixin,DeleteView):
     model = Server
     template_name = 'anfitriones/server_confirm_delete.html'
     success_url = reverse_lazy('anfitriones:server_list')
 
 # Views para CRUD de Ministry
-class MinistryListView(ListView):
+class MinistryListView(LoginRequiredMixin,ListView):
     model = Ministry
     template_name = 'anfitriones/ministry_list.html'
     context_object_name = 'ministries'
 
-class MinistryCreateView(CreateView):
+class MinistryCreateView(LoginRequiredMixin,CreateView):
     model = Ministry
     form_class = MinistryForm
     template_name = 'anfitriones/ministry_form.html'
     success_url = reverse_lazy('anfitriones:ministry_list')
 
-class MinistryUpdateView(UpdateView):
+class MinistryUpdateView(LoginRequiredMixin,UpdateView):
     model = Ministry
     form_class = MinistryForm
     template_name = 'anfitriones/ministry_form.html'
     success_url = reverse_lazy('anfitriones:ministry_list')
 
-class MinistryDeleteView(DeleteView):
+class MinistryDeleteView(LoginRequiredMixin,DeleteView):
     model = Ministry
     template_name = 'anfitriones/ministry_confirm_delete.html'
     success_url = reverse_lazy('anfitriones:ministry_list')
 
 # Views para CRUD de Assistance
-class AssistanceListView(ListView):
+class AssistanceListView(LoginRequiredMixin,ListView):
     model = Assistance
     template_name = 'anfitriones/assistance_list.html'
     context_object_name = 'assistances'
 
-class AssistanceCreateView(CreateView):
+class AssistanceCreateView(LoginRequiredMixin,CreateView):
     model = Assistance
     form_class = AssistanceForm
     template_name = 'anfitriones/assistance_form.html'
     success_url = reverse_lazy('anfitriones:assistance_list')
 
-class AssistanceUpdateView(UpdateView):
+class AssistanceUpdateView(LoginRequiredMixin,UpdateView):
     model = Assistance
     form_class = AssistanceForm
     template_name = 'anfitriones/assistance_form.html'
     success_url = reverse_lazy('anfitriones:assistance_list')
 
-class AssistanceDeleteView(DeleteView):
+class AssistanceDeleteView(LoginRequiredMixin,DeleteView):
     model = Assistance
     template_name = 'anfitriones/assistance_confirm_delete.html'
     success_url = reverse_lazy('anfitriones:assistance_list')
-
+    
+@login_required
 def batch_assistance_create(request):
     """
     Vista para crear o actualizar registros de asistencia en lote.
@@ -203,24 +206,24 @@ def batch_assistance_create(request):
     return render(request, 'anfitriones/batch_assistance_form.html', {'form': form})
 
 # Views para CRUD de Attendance (Estadísticas de Grupo)
-class AttendanceListView(ListView):
+class AttendanceListView(LoginRequiredMixin,ListView):
     model = Attendance
     template_name = 'anfitriones/attendance_list.html'
     context_object_name = 'attendances'
 
-class AttendanceCreateView(CreateView):
+class AttendanceCreateView(LoginRequiredMixin,CreateView):
     model = Attendance
     form_class = AttendanceForm
     template_name = 'anfitriones/attendance_form.html'
     success_url = reverse_lazy('anfitriones:attendance_list')
 
-class AttendanceUpdateView(UpdateView):
+class AttendanceUpdateView(LoginRequiredMixin,UpdateView):
     model = Attendance
     form_class = AttendanceForm
     template_name = 'anfitriones/attendance_form.html'
     success_url = reverse_lazy('anfitriones:attendance_list')
 
-class AttendanceDeleteView(DeleteView):
+class AttendanceDeleteView(LoginRequiredMixin,DeleteView):
     model = Attendance
     template_name = 'anfitriones/attendance_confirm_delete.html'
     success_url = reverse_lazy('anfitriones:attendance_list')
