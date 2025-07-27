@@ -17,8 +17,10 @@ from datetime import date # <--- Asegúrate que esta línea existe
 
 @admin.register(coordinator)
 class CoordinatorAdmin(admin.ModelAdmin):
-    list_display = ('name', 'surname')
-    search_fields = ('name', 'surname')
+    list_display = ('name', 'surname', 'user')
+    search_fields = ('name', 'surname', 'user__username')
+    # raw_id_fields facilita la selección de usuarios cuando hay muchos
+    raw_id_fields = ('user',)
 
 @admin.register(group)
 class GroupAdmin(admin.ModelAdmin):

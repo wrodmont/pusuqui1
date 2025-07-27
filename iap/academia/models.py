@@ -1,5 +1,6 @@
 from django.db import models
 from django.core.exceptions import ValidationError
+from django.contrib.auth.models import User
 from datetime import date, timedelta
 from django.utils.translation import gettext_lazy as _ # Para choices
 from decimal import Decimal
@@ -18,6 +19,14 @@ def validate_date(value):
         raise ValidationError(str(e))
 
 class Teacher(models.Model):
+    user = models.OneToOneField(
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        verbose_name=_("user account"),
+        help_text=_("Link this teacher profile to a Django user account to allow login.")
+    )
     name = models.CharField(_("name"), max_length=128)
     surname = models.CharField(_("surname"), max_length=128)
     email = models.EmailField(_("email"), max_length=254, unique=True, null=True, blank=True)

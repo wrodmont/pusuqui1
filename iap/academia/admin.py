@@ -1,3 +1,4 @@
+
 from django.contrib import admin
 # Register your models here.
 from django.utils.translation import gettext_lazy as _ # <--- AÑADE ESTA LÍNEA
@@ -5,31 +6,32 @@ from .models import Teacher, Student, Subject, Course, Enrollment, AttendanceLog
 from .models import Grade  # Import the new model
 @admin.register(Teacher)
 class TeacherAdmin(admin.ModelAdmin):
-    list_display = ('name', 'surname', 'email', 'phone_number')
-    search_fields = ('name', 'surname', 'email')
-    ordering = ('surname', 'name')
-
+     list_display = ('name', 'surname', 'email', 'phone_number', 'user')
+     search_fields = ('name', 'surname', 'email', 'user__username')
+     ordering = ('surname', 'name')
+     raw_id_fields = ('user',) # Facilita la selección de usuarios
+ 
 @admin.register(Student)
 class StudentAdmin(admin.ModelAdmin):
-    list_display = ('name', 'surname', 'email', 'phone_number', 'date_of_birth', 'age')
-    search_fields = ('name', 'surname', 'email')
-    list_filter = ('date_of_birth',)
-    ordering = ('surname', 'name')
-    readonly_fields = ('age',) # La edad es una propiedad calculada
-
+     list_display = ('name', 'surname', 'email', 'phone_number', 'date_of_birth', 'age')
+     search_fields = ('name', 'surname', 'email')
+     list_filter = ('date_of_birth',)
+     ordering = ('surname', 'name')
+     readonly_fields = ('age',) # La edad es una propiedad calculada
+ 
 @admin.register(Subject)
 class SubjectAdmin(admin.ModelAdmin):
-    list_display = ('name', 'number_of_lessons')
-    search_fields = ('name',)
-    ordering = ('name',)
-
+     list_display = ('name', 'number_of_lessons')
+     search_fields = ('name',)
+     ordering = ('name',)
+ 
 class AttendanceLogInline(admin.TabularInline): # O admin.StackedInline
     model = AttendanceLog
     extra = 1 # Número de formularios extra para agregar asistencia
     fields = ('lesson_number', 'lesson_date', 'is_present', 'notes')
     ordering = ('lesson_number',)
     # Podrías añadir validaciones o campos readonly aquí si es necesario
-
+ 
 @admin.register(Course)
 class CourseAdmin(admin.ModelAdmin):
     list_display = ('subject', 'teacher', 'academic_period', 'day_of_week', 'start_time', 'start_date', 'end_date', 'is_active')
@@ -37,7 +39,7 @@ class CourseAdmin(admin.ModelAdmin):
     search_fields = ('subject__name', 'teacher__name', 'teacher__surname', 'academic_period')
     ordering = ('-academic_period', 'subject__name', 'start_date')
     raw_id_fields = ('teacher', 'subject') # Útil si tienes muchos profesores o materias
-
+ 
 @admin.register(Enrollment)
 class EnrollmentAdmin(admin.ModelAdmin):
     list_display = ('student', 'course', 'enrollment_date', 'status', 'lesson_score', 'exam_score', 'attendance_score_display', 'final_grade_display')
@@ -57,7 +59,7 @@ class EnrollmentAdmin(admin.ModelAdmin):
         grade = obj.final_grade
         return f"{grade:.2f}" if grade is not None else "N/A"
     final_grade_display.short_description = _("Final Grade")
-
+ 
 @admin.register(AttendanceLog)
 class AttendanceLogAdmin(admin.ModelAdmin):
     list_display = ('enrollment_student_name', 'enrollment_course_name', 'lesson_number', 'lesson_date', 'is_present')
@@ -70,8 +72,8 @@ class AttendanceLogAdmin(admin.ModelAdmin):
         return obj.enrollment.student
     enrollment_student_name.short_description = _("Student")
     enrollment_student_name.admin_order_field = 'enrollment__student__surname'
-
-
+ 
+ 
     def enrollment_course_name(self, obj):
         return obj.enrollment.course
     enrollment_course_name.short_description = _("Course")
@@ -84,11 +86,11 @@ class GradeAdmin(admin.ModelAdmin):
     search_fields = ('enrollment__student__surname', 'enrollment__student__name', 'enrollment__course__subject__name')
     ordering = ('enrollment__student__surname', 'enrollment__course__subject__name', 'lesson_number')
     raw_id_fields = ('enrollment',)  # For performance, especially if you have many enrollments
-
-# Si prefieres un registro más simple sin personalización, puedes usar:
-# admin.site.register(Teacher)
-# admin.site.register(Student)
-# admin.site.register(Subject)
-# admin.site.register(Course)
-# admin.site.register(Enrollment)
-# admin.site.register(AttendanceLog)
+ 
+ # Si prefieres un registro más simple sin personalización, puedes usar:
+ # admin.site.register(Teacher)
+ # admin.site.register(Student)
+ # admin.site.register(Subject)
+ # admin.site.register(Course)
+ # admin.site.register(Enrollment)
+ # admin.site.register(AttendanceLog)

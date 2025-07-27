@@ -19,38 +19,43 @@
 
     <!-- Tarjetas con enlaces a las secciones -->
     <div class="row">
-        <!-- Profesores -->
-        <div class="col-12 col-md-6 col-lg-3 mb-4">
-            <div class="card shadow-lg">
-                <div class="card-body text-center">
-                    <h4 class="card-title text-primary">Profesores</h4>
-                    <p class="card-text">Gestiona a los profesores de la academia. Agrega, edita o elimina sus datos.</p>
-                    <a href="{% url 'academia:teacher-list' %}" class="btn btn-primary">Ver Profesores</a>
+        {% if user.is_superuser %}
+            <!-- Profesores -->
+            <div class="col-12 col-md-6 col-lg-3 mb-4">
+                <div class="card shadow-lg">
+                    <div class="card-body text-center">
+                        <h4 class="card-title text-primary">Profesores</h4>
+                        <p class="card-text">Gestiona a los profesores de la academia. Agrega, edita o elimina sus datos.</p>
+                        <a href="{% url 'academia:teacher-list' %}" class="btn btn-primary w-100">Ver Profesores</a>
+                        <a href="{% url 'academia:teacher-create' %}" class="btn btn-outline-primary w-100 mt-2">Crear Profesor</a>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <!-- Estudiantes -->
-        <div class="col-12 col-md-6 col-lg-3 mb-4">
-            <div class="card shadow-lg">
-                <div class="card-body text-center">
-                    <h4 class="card-title text-success">Estudiantes</h4>
-                    <p class="card-text">Gestiona los estudiantes. Visualiza sus datos, inscripciones y más.</p>
-                    <a href="{% url 'academia:student-list' %}" class="btn btn-success">Ver Estudiantes</a>
+            <!-- Estudiantes -->
+            <div class="col-12 col-md-6 col-lg-3 mb-4">
+                <div class="card shadow-lg">
+                    <div class="card-body text-center">
+                        <h4 class="card-title text-success">Estudiantes</h4>
+                        <p class="card-text">Gestiona los estudiantes. Visualiza sus datos, inscripciones y más.</p>
+                        <a href="{% url 'academia:student-list' %}" class="btn btn-success w-100">Ver Estudiantes</a>
+                        <a href="{% url 'academia:student-create' %}" class="btn btn-outline-success w-100 mt-2">Crear Estudiante</a>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <!-- Asignaturas -->
-        <div class="col-12 col-md-6 col-lg-3 mb-4">
-            <div class="card shadow-lg">
-                <div class="card-body text-center">
-                    <h4 class="card-title text-warning">Asignaturas</h4>
-                    <p class="card-text">Organiza y administra las asignaturas del curso. Crea y edita asignaturas fácilmente.</p>
-                    <a href="{% url 'academia:subject-list' %}" class="btn btn-warning">Ver Asignaturas</a>
+            <!-- Asignaturas -->
+            <div class="col-12 col-md-6 col-lg-3 mb-4">
+                <div class="card shadow-lg">
+                    <div class="card-body text-center">
+                        <h4 class="card-title text-warning">Asignaturas</h4>
+                        <p class="card-text">Organiza y administra las asignaturas del curso. Crea y edita asignaturas fácilmente.</p>
+                        <a href="{% url 'academia:subject-list' %}" class="btn btn-warning w-100">Ver Asignaturas</a>
+                        <a href="{% url 'academia:subject-create' %}" class="btn btn-outline-warning w-100 mt-2">Crear Asignatura</a>
+                    </div>
                 </div>
             </div>
-        </div>
+        {% endif %}
 
         <!-- Cursos -->
         <div class="col-12 col-md-6 col-lg-3 mb-4">
@@ -58,7 +63,10 @@
                 <div class="card-body text-center">
                     <h4 class="card-title text-info">Cursos</h4>
                     <p class="card-text">Gestiona los cursos y asigna profesores y estudiantes a ellos. Todo desde un solo lugar.</p>
-                    <a href="{% url 'academia:course-list' %}" class="btn btn-info">Ver Cursos</a>
+                    <a href="{% url 'academia:course-list' %}" class="btn btn-info w-100">Ver Cursos</a>
+                    {% if user.is_superuser %}
+                        <a href="{% url 'academia:course-create' %}" class="btn btn-outline-info w-100 mt-2">Crear Curso</a>
+                    {% endif %}
                 </div>
             </div>
         </div>
@@ -69,7 +77,10 @@
                 <div class="card-body text-center">
                     <h4 class="card-title text-success">Matrículas</h4>
                     <p class="card-text">Gestiona las matrículas de los estudiantes. Agrega, edita o elimina registros.</p>
-                    <a href="{% url 'academia:enrollment-list' %}" class="btn btn-success">Ver Matrículas</a>
+                    <a href="{% url 'academia:enrollment-list' %}" class="btn btn-success w-100">Ver Matrículas</a>
+                    {% if user.is_superuser %}
+                        <a href="{% url 'academia:enrollment-create' %}" class="btn btn-outline-success w-100 mt-2">Crear Matrícula</a>
+                    {% endif %}
                 </div>
             </div>
         </div>
@@ -97,6 +108,7 @@
         </div>
 
         <!-- Cierre de Período Académico -->
+        {% if user.is_superuser %}
         <div class="col-12 col-md-6 col-lg-3 mb-4">
             <div class="card shadow-lg border-dark">
                 <div class="card-body text-center">
@@ -106,5 +118,6 @@
                 </div>
             </div>
         </div>
+        {% endif %}
     </div>
 {% endblock %}

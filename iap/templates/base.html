@@ -55,11 +55,12 @@
           <ul class="navbar-nav me-auto mb-2 mb-lg-0">
             <!-- Enlaces principales -->
             <li class="nav-item">
-              <a class="nav-link" href="{% url 'pusukids:index' %}">
+              <a class="nav-link" href="{% url 'home' %}">
                 <i class="fas fa-home"></i> Inicio
               </a>
             </li>
 
+            {% if user.is_superuser or not user.teacher %}
             <!-- SECCIÓN: Datos Maestros -->
             <li class="nav-item dropdown">
               <a
@@ -196,6 +197,7 @@
                 <!-- Puedes agregar más opciones relacionadas con la gestión de datos aquí -->
               </ul>
             </li>
+            {% endif %}
           </ul>
 
           <!-- SECCIÓN DE USUARIO (a la derecha) -->

@@ -1,129 +1,127 @@
 {% extends "base.html" %}
+{% load static %}
 
-{% block title %}IAP - Iglesia Alianza Pusuqui{% endblock %}
+{% block title %}Panel Principal{% endblock %}
 
 {% block body %}
-
-  <div class="text-center mb-5">
-    <h1 class="display-4 fw-bold section-title">Sistema de Gestión Ministerial</h1>
-    <p class="lead text-muted">Gestión integral de los ministerios de la Iglesia Alianza Pusuqui</p>
-  </div>
-
-  <!-- SECCIÓN: MINISTERIOS -->
-  <div class="card mb-5 border-primary shadow">
-    <div class="card-header bg-primary text-white py-3">
-      <h3 class="mb-0"><i class="fas fa-church me-2"></i> Ministerios</h3>
+<div class="container mt-5">
+    <div class="px-4 py-5 my-5 text-center">
+        <h1 class="display-5 fw-bold">Bienvenido, {{ request.user.username }}</h1>
+        <div class="col-lg-6 mx-auto">
+            <p class="lead mb-4">Selecciona la aplicación a la que deseas acceder.</p>
+        </div>
     </div>
-    <div class="card-body">
-      <p class="card-text mb-4 fs-5">Administra todos los ministerios y actividades de la iglesia.</p>
-      <div class="row row-cols-1 row-cols-md-3 g-4">
 
-        <!-- Academia -->
-        <div class="col">
-          <div class="card h-100 border-primary shadow-sm">
-            <div class="card-header bg-primary text-white">
-              <h5 class="card-title mb-0"><i class="fas fa-book me-2"></i> Academia</h5>
-            </div>
-            <div class="card-body d-flex flex-column">
-              <p class="card-text flex-grow-1">Gestione la información de la Academia.</p>
-              <a href="{% url 'academia:index' %}" class="btn btn-outline-primary mt-auto">
-                <i class="fas fa-chalkboard-teacher me-1"></i> Administrar Academia
-              </a>
-            </div>
-          </div>
-        </div>
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
 
-        <!-- Cunakids -->
+        {% if app_perms.can_access_cunakids %}
         <div class="col">
-          <div class="card h-100 border-primary shadow-sm">
-            <div class="card-header bg-primary text-white">
-              <h5 class="card-title mb-0"><i class="fas fa-users me-2"></i> Cunakids</h5>
+            <div class="card h-100">
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title">Cuna Kids</h5>
+                    <p class="card-text">Gestión de niños, asistencias y coordinadores del ministerio de cuna.</p>
+                    <a href="{% url 'cunakids:index' %}" class="btn btn-primary mt-auto">Acceder</a>
+                </div>
             </div>
-            <div class="card-body d-flex flex-column">
-              <p class="card-text flex-grow-1">Gestione el ministerio niños.</p>
-              <a href="{% url 'cunakids:index' %}" class="btn btn-outline-primary mt-auto">
-                <i class="fas fa-child me-1"></i> Administrar Cunakids
-              </a>
-            </div>
-          </div>
         </div>
+        {% endif %}
 
-        <!-- Pusukids -->
+        {% if app_perms.can_access_academia %}
         <div class="col">
-          <div class="card h-100 border-primary shadow-sm">
-            <div class="card-header bg-primary text-white">
-              <h5 class="card-title mb-0"><i class="fas fa-baby me-2"></i> Pusukids</h5>
+            <div class="card h-100">
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title">Academia</h5>
+                    <p class="card-text">Gestión de cursos, estudiantes y profesores de la academia.</p>
+                    <a href="{% url 'academia:index' %}" class="btn btn-primary mt-auto">Acceder</a>
+                </div>
             </div>
-            <div class="card-body d-flex flex-column">
-              <p class="card-text flex-grow-1">Gestione el ministerio infantil.</p>
-              <a href="{% url 'pusukids:index' %}" class="btn btn-outline-primary mt-auto">
-                <i class="fas fa-baby-carriage me-1"></i> Administrar Pusukids
-              </a>
-            </div>
-          </div>
         </div>
+        {% endif %}
 
-        <!-- Alabanza -->
+        {% if app_perms.can_access_alabanza %}
         <div class="col">
-          <div class="card h-100 border-primary shadow-sm">
-            <div class="card-header bg-primary text-white">
-              <h5 class="card-title mb-0"><i class="fas fa-music me-2"></i> Alabanza</h5>
+            <div class="card h-100">
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title">Alabanza</h5>
+                    <p class="card-text">Administración del ministerio de alabanza.</p>
+                    <a href="{% url 'alabanza:index' %}" class="btn btn-primary mt-auto">Acceder</a>
+                </div>
             </div>
-            <div class="card-body d-flex flex-column">
-              <p class="card-text flex-grow-1">Gestione el ministerio de alabanza y adoración.</p>
-              <a href="{% url 'alabanza:index' %}" class="btn btn-outline-primary mt-auto">
-                <i class="fas fa-microphone-alt me-1"></i> Administrar Alabanza
-              </a>
-            </div>
-          </div>
         </div>
+        {% endif %}
 
-        <!-- Anfitriones -->
+        {% if app_perms.can_access_anfitriones %}
         <div class="col">
-          <div class="card h-100 border-primary shadow-sm">
-            <div class="card-header bg-primary text-white">
-              <h5 class="card-title mb-0"><i class="fas fa-handshake me-2"></i> Anfitriones</h5>
+            <div class="card h-100">
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title">Anfitriones</h5>
+                    <p class="card-text">Coordinación del equipo de anfitriones.</p>
+                    <a href="{% url 'anfitriones:index' %}" class="btn btn-primary mt-auto">Acceder</a>
+                </div>
             </div>
-            <div class="card-body d-flex flex-column">
-              <p class="card-text flex-grow-1">Organiza el equipo de bienvenida.</p>
-              <a href="{% url 'anfitriones:index' %}" class="btn btn-outline-primary mt-auto">
-                <i class="fas fa-door-open me-1"></i> Administrar Anfitriones
-              </a>
-            </div>
-          </div>
         </div>
-        <!-- Encuentros -->
-        <div class="col">
-          <div class="card h-100 border-primary shadow-sm">
-            <div class="card-header bg-primary text-white">
-              <h5 class="card-title mb-0"><i class="fas fa-calendar-check me-2"></i> Encuentros</h5>
-            </div>
-            <div class="card-body d-flex flex-column">
-              <p class="card-text flex-grow-1">Gestiona los encuentros y reuniones de la iglesia.</p>
-              <a href="{% url 'encuentros:index' %}" class="btn btn-outline-primary mt-auto">
-                <i class="fas fa-calendar-alt me-1"></i> Administrar Encuentros
-              </a>
-            </div>
-          </div>
-        </div>
+        {% endif %}
 
-        <!-- Discipulado -->
+        {% if app_perms.can_access_discipulado %}
         <div class="col">
-          <div class="card h-100 border-primary shadow-sm">
-            <div class="card-header bg-primary text-white">
-              <h5 class="card-title mb-0"><i class="fas fa-users me-2"></i> Discipulado</h5>
+            <div class="card h-100">
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title">Discipulado</h5>
+                    <p class="card-text">Seguimiento y gestión de grupos de discipulado.</p>
+                    <a href="{% url 'discipulado:index' %}" class="btn btn-primary mt-auto">Acceder</a>
+                </div>
             </div>
-            <div class="card-body d-flex flex-column">
-              <p class="card-text flex-grow-1">Gestione los grupos pequeños y células.</p>
-              <a href="{% url 'discipulado:index' %}" class="btn btn-outline-primary mt-auto">
-                <i class="fas fa-users-cog me-1"></i> Administrar Discipulado
-              </a>
-            </div>
-          </div>
         </div>
+        {% endif %}
 
-      </div>
+        {% if app_perms.can_access_encuentros %}
+        <div class="col">
+            <div class="card h-100">
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title">Encuentros</h5>
+                    <p class="card-text">Organización de encuentros y retiros.</p>
+                    <a href="{% url 'encuentros:index' %}" class="btn btn-primary mt-auto">Acceder</a>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        {% if app_perms.can_access_jap %}
+        <div class="col">
+            <div class="card h-100">
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title">JAP</h5>
+                    <p class="card-text">Ministerio de Jóvenes Adultos Profesionales.</p>
+                    <a href="{% url 'jap:index' %}" class="btn btn-primary mt-auto">Acceder</a>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        {% if app_perms.can_access_multimedia %}
+        <div class="col">
+            <div class="card h-100">
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title">Multimedia</h5>
+                    <p class="card-text">Gestión del equipo y recursos de multimedia.</p>
+                    <a href="{% url 'multimedia:index' %}" class="btn btn-primary mt-auto">Acceder</a>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        {% if app_perms.can_access_pusukids %}
+        <div class="col">
+            <div class="card h-100">
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title">Pusu Kids</h5>
+                    <p class="card-text">Gestión de niños, asistencias y coordinadores del ministerio de niños.</p>
+                    <a href="{% url 'pusukids:index' %}" class="btn btn-primary mt-auto">Acceder</a>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
     </div>
-  </div>
-
+</div>
 {% endblock %}

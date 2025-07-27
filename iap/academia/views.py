@@ -2,7 +2,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse_lazy
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.decorators import login_required
 from django.views import View
 from django.forms import formset_factory
@@ -17,6 +17,13 @@ from .models import Teacher, Student, Subject, Course, Enrollment, AttendanceLog
 from .forms import (
     TeacherForm, StudentForm, SubjectForm, CourseForm, EnrollmentForm, AttendanceLogForm, AttendanceTakingSelectionForm, StudentAttendanceForm, GradeForm, GradeTakingSelectionForm, StudentGradeForm, ClosePeriodForm
 )
+
+class SuperuserRequiredMixin(UserPassesTestMixin):
+    """
+    Mixin to ensure the user is a superuser.
+    """
+    def test_func(self):
+        return self.request.user.is_superuser
 
 @login_required
 def index(request):
@@ -43,7 +50,7 @@ def cursos(request):
 
 # Vistas para Teacher
 # El decorador @login_required no se usa en vistas basadas en clases. Se usa LoginRequiredMixin.
-class TeacherListView(LoginRequiredMixin, ListView):
+class TeacherListView(LoginRequiredMixin, SuperuserRequiredMixin, ListView):
     model = Teacher
     template_name = 'academia/teacher_list.html'
     context_object_name = 'teachers'
@@ -55,7 +62,7 @@ class TeacherListView(LoginRequiredMixin, ListView):
         context['page_title'] = 'Listado de Profesores'
         return context
 
-class TeacherDetailView(LoginRequiredMixin,DetailView):
+class TeacherDetailView(LoginRequiredMixin, SuperuserRequiredMixin, DetailView):
     model = Teacher
     template_name = 'academia/teacher_detail.html'
     context_object_name = 'teacher'
@@ -66,7 +73,7 @@ class TeacherDetailView(LoginRequiredMixin,DetailView):
         context['page_title'] = f"Detalle de Profesor: {self.object.name} {self.object.surname}"
         return context
 
-class TeacherCreateView(LoginRequiredMixin,CreateView):
+class TeacherCreateView(LoginRequiredMixin, SuperuserRequiredMixin, CreateView):
     model = Teacher
     form_class = TeacherForm
     template_name = 'academia/teacher_form.html'
@@ -80,7 +87,7 @@ class TeacherCreateView(LoginRequiredMixin,CreateView):
         context['submit_button_text'] = 'Guardar Profesor'
         return context
 
-class TeacherUpdateView(LoginRequiredMixin,UpdateView):
+class TeacherUpdateView(LoginRequiredMixin, SuperuserRequiredMixin, UpdateView):
     model = Teacher
     form_class = TeacherForm
     template_name = 'academia/teacher_form.html'
@@ -94,7 +101,7 @@ class TeacherUpdateView(LoginRequiredMixin,UpdateView):
         context['submit_button_text'] = 'Actualizar Profesor'
         return context
 
-class TeacherDeleteView(LoginRequiredMixin,DeleteView):
+class TeacherDeleteView(LoginRequiredMixin, SuperuserRequiredMixin, DeleteView):
     model = Teacher
     template_name = 'academia/teacher_confirm_delete.html'
     success_url = reverse_lazy('academia:teacher-list')
@@ -107,7 +114,7 @@ class TeacherDeleteView(LoginRequiredMixin,DeleteView):
         return context
 
 # Vistas para Student
-class StudentListView(LoginRequiredMixin,ListView):
+class StudentListView(LoginRequiredMixin, SuperuserRequiredMixin, ListView):
     model = Student
     template_name = 'academia/student_list.html'
     context_object_name = 'students'
@@ -119,7 +126,7 @@ class StudentListView(LoginRequiredMixin,ListView):
         context['page_title'] = 'Listado de Estudiantes'
         return context
 
-class StudentDetailView(LoginRequiredMixin,DetailView):
+class StudentDetailView(LoginRequiredMixin, SuperuserRequiredMixin, DetailView):
     model = Student
     template_name = 'academia/student_detail.html'
     context_object_name = 'student'
@@ -130,7 +137,7 @@ class StudentDetailView(LoginRequiredMixin,DetailView):
         context['page_title'] = f"Detalle de Estudiante: {self.object.name} {self.object.surname}"
         return context
 
-class StudentCreateView(LoginRequiredMixin,CreateView):
+class StudentCreateView(LoginRequiredMixin, SuperuserRequiredMixin, CreateView):
     model = Student
     form_class = StudentForm
     template_name = 'academia/student_form.html'
@@ -144,7 +151,7 @@ class StudentCreateView(LoginRequiredMixin,CreateView):
         context['submit_button_text'] = 'Guardar Estudiante'
         return context
 
-class StudentUpdateView(LoginRequiredMixin,UpdateView):
+class StudentUpdateView(LoginRequiredMixin, SuperuserRequiredMixin, UpdateView):
     model = Student
     form_class = StudentForm
     template_name = 'academia/student_form.html'
@@ -158,7 +165,7 @@ class StudentUpdateView(LoginRequiredMixin,UpdateView):
         context['submit_button_text'] = 'Actualizar Estudiante'
         return context
 
-class StudentDeleteView(LoginRequiredMixin,DeleteView):
+class StudentDeleteView(LoginRequiredMixin, SuperuserRequiredMixin, DeleteView):
     model = Student
     template_name = 'academia/student_confirm_delete.html'
     success_url = reverse_lazy('academia:student-list')
@@ -171,7 +178,7 @@ class StudentDeleteView(LoginRequiredMixin,DeleteView):
         return context
 
 # Vistas para Subject
-class SubjectListView(LoginRequiredMixin,ListView):
+class SubjectListView(LoginRequiredMixin, SuperuserRequiredMixin, ListView):
     model = Subject
     template_name = 'academia/subject_list.html'
     context_object_name = 'subjects'
@@ -183,7 +190,7 @@ class SubjectListView(LoginRequiredMixin,ListView):
         context['page_title'] = 'Listado de Asignaturas'
         return context
 
-class SubjectDetailView(LoginRequiredMixin,DetailView):
+class SubjectDetailView(LoginRequiredMixin, SuperuserRequiredMixin, DetailView):
     model = Subject
     template_name = 'academia/subject_detail.html'
     context_object_name = 'subject'
@@ -194,7 +201,7 @@ class SubjectDetailView(LoginRequiredMixin,DetailView):
         context['page_title'] = f"Detalle de Asignatura: {self.object.name}"
         return context
 
-class SubjectCreateView(LoginRequiredMixin,CreateView):
+class SubjectCreateView(LoginRequiredMixin, SuperuserRequiredMixin, CreateView):
     model = Subject
     form_class = SubjectForm
     template_name = 'academia/subject_form.html'
@@ -208,7 +215,7 @@ class SubjectCreateView(LoginRequiredMixin,CreateView):
         context['submit_button_text'] = 'Guardar Asignatura'
         return context
 
-class SubjectUpdateView(LoginRequiredMixin,UpdateView):
+class SubjectUpdateView(LoginRequiredMixin, SuperuserRequiredMixin, UpdateView):
     model = Subject
     form_class = SubjectForm
     template_name = 'academia/subject_form.html'
@@ -222,7 +229,7 @@ class SubjectUpdateView(LoginRequiredMixin,UpdateView):
         context['submit_button_text'] = 'Actualizar Asignatura'
         return context
 
-class SubjectDeleteView(LoginRequiredMixin,DeleteView):
+class SubjectDeleteView(LoginRequiredMixin, SuperuserRequiredMixin, DeleteView):
     model = Subject
     template_name = 'academia/subject_confirm_delete.html'
     success_url = reverse_lazy('academia:subject-list')
@@ -242,7 +249,22 @@ class CourseListView(LoginRequiredMixin,ListView):
     paginate_by = 10
 
     def get_queryset(self):
-        return Course.objects.select_related('subject', 'teacher').all()
+        """
+        Filtra los cursos mostrados.
+        - Superusuarios ven todos los cursos.
+        - Profesores ven solo los cursos que tienen asignados.
+        - Otros usuarios no ven ningún curso.
+        """
+        user = self.request.user
+
+        if user.is_superuser:
+            # Los superusuarios ven todos los cursos
+            return Course.objects.select_related('subject', 'teacher').all()
+        
+        try:
+            return Course.objects.filter(teacher=user.teacher).select_related('subject', 'teacher')
+        except Teacher.DoesNotExist:
+            return Course.objects.none()
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -256,7 +278,17 @@ class CourseDetailView(LoginRequiredMixin,DetailView):
     context_object_name = 'course'
 
     def get_queryset(self):
-        return Course.objects.select_related('subject', 'teacher').all()
+        """
+        Filtra el queryset para que los profesores solo puedan ver
+        los detalles de sus propios cursos. Los superusuarios pueden ver todos.
+        """
+        user = self.request.user
+        if user.is_superuser:
+            return Course.objects.select_related('subject', 'teacher').all()
+        try:
+            return Course.objects.filter(teacher=user.teacher).select_related('subject', 'teacher')
+        except Teacher.DoesNotExist:
+            return Course.objects.none()
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -264,7 +296,7 @@ class CourseDetailView(LoginRequiredMixin,DetailView):
         context['page_title'] = f"Detalle de Curso: {self.object}"
         return context
 
-class CourseCreateView(LoginRequiredMixin,CreateView):
+class CourseCreateView(LoginRequiredMixin, SuperuserRequiredMixin, CreateView):
     model = Course
     form_class = CourseForm
     template_name = 'academia/course_form.html'
@@ -278,7 +310,7 @@ class CourseCreateView(LoginRequiredMixin,CreateView):
         context['submit_button_text'] = 'Guardar Curso'
         return context
 
-class CourseUpdateView(LoginRequiredMixin,UpdateView):
+class CourseUpdateView(LoginRequiredMixin, SuperuserRequiredMixin, UpdateView):
     model = Course
     form_class = CourseForm
     template_name = 'academia/course_form.html'
@@ -292,7 +324,7 @@ class CourseUpdateView(LoginRequiredMixin,UpdateView):
         context['submit_button_text'] = 'Actualizar Curso'
         return context
 
-class CourseDeleteView(LoginRequiredMixin,DeleteView):
+class CourseDeleteView(LoginRequiredMixin, SuperuserRequiredMixin, DeleteView):
     model = Course
     template_name = 'academia/course_confirm_delete.html'
     success_url = reverse_lazy('academia:course-list')
@@ -312,9 +344,17 @@ class EnrollmentListView(LoginRequiredMixin,ListView):
     paginate_by = 10
 
     def get_queryset(self):
-        queryset = Enrollment.objects.select_related(
-            'student', 'course', 'course__subject', 'course__teacher'
-        ).order_by('-course__academic_period', 'course__subject__name', 'student__surname')
+        user = self.request.user
+        if user.is_superuser:
+            queryset = Enrollment.objects.select_related('student', 'course', 'course__subject', 'course__teacher')
+        else:
+            try:
+                # Profesores solo ven matrículas de sus cursos
+                queryset = Enrollment.objects.filter(course__teacher=user.teacher).select_related(
+                    'student', 'course', 'course__subject', 'course__teacher'
+                )
+            except Teacher.DoesNotExist:
+                queryset = Enrollment.objects.none()
 
         # Aplicar filtros desde los parámetros GET
         course_id = self.request.GET.get('course')
@@ -325,7 +365,7 @@ class EnrollmentListView(LoginRequiredMixin,ListView):
         if period:
             queryset = queryset.filter(course__academic_period=period)
 
-        return queryset
+        return queryset.order_by('-course__academic_period', 'course__subject__name', 'student__surname')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -344,9 +384,18 @@ class EnrollmentDetailView(LoginRequiredMixin,DetailView):
     context_object_name = 'enrollment'
 
     def get_queryset(self):
-        return Enrollment.objects.select_related(
+        user = self.request.user
+        base_queryset = Enrollment.objects.select_related(
             'student', 'course', 'course__subject', 'course__teacher'
         ).prefetch_related('attendance_logs')
+
+        if user.is_superuser:
+            return base_queryset
+        
+        try:
+            return base_queryset.filter(course__teacher=user.teacher)
+        except Teacher.DoesNotExist:
+            return Enrollment.objects.none()
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -354,7 +403,7 @@ class EnrollmentDetailView(LoginRequiredMixin,DetailView):
         context['page_title'] = f"Detalle de Inscripción: {self.object.student} - {self.object.course.subject}"
         return context
 
-class EnrollmentCreateView(LoginRequiredMixin,CreateView):
+class EnrollmentCreateView(LoginRequiredMixin, SuperuserRequiredMixin, CreateView):
     model = Enrollment
     form_class = EnrollmentForm
     template_name = 'academia/enrollment_form.html'
@@ -368,7 +417,7 @@ class EnrollmentCreateView(LoginRequiredMixin,CreateView):
         context['submit_button_text'] = 'Guardar Inscripción'
         return context
 
-class EnrollmentUpdateView(LoginRequiredMixin,UpdateView):
+class EnrollmentUpdateView(LoginRequiredMixin, SuperuserRequiredMixin, UpdateView):
     model = Enrollment
     form_class = EnrollmentForm
     template_name = 'academia/enrollment_form.html'
@@ -387,7 +436,7 @@ class EnrollmentUpdateView(LoginRequiredMixin,UpdateView):
         context['submit_button_text'] = 'Actualizar Inscripción'
         return context
 
-class EnrollmentDeleteView(LoginRequiredMixin,DeleteView):
+class EnrollmentDeleteView(LoginRequiredMixin, SuperuserRequiredMixin, DeleteView):
     model = Enrollment
     template_name = 'academia/enrollment_confirm_delete.html'
     success_url = reverse_lazy('academia:enrollment-list')
@@ -412,11 +461,23 @@ class AttendanceLogListView(LoginRequiredMixin,ListView):
     paginate_by = 15
 
     def get_queryset(self):
-        queryset = AttendanceLog.objects.select_related(
-            'enrollment__student',
-            'enrollment__course__subject',
-            'enrollment__course__teacher'
-        ).order_by('-lesson_date', 'enrollment__course__subject__name', 'enrollment__student__surname', 'lesson_number')
+        user = self.request.user
+        if user.is_superuser:
+            queryset = AttendanceLog.objects.select_related(
+                'enrollment__student',
+                'enrollment__course__subject',
+                'enrollment__course__teacher'
+            ).order_by('-lesson_date', 'enrollment__course__subject__name', 'enrollment__student__surname', 'lesson_number')
+        else:
+            try:
+                # Profesores solo ven registros de asistencia de sus cursos
+                queryset = AttendanceLog.objects.filter(enrollment__course__teacher=user.teacher).select_related(
+                    'enrollment__student',
+                    'enrollment__course__subject',
+                    'enrollment__course__teacher'
+                ).order_by('-lesson_date', 'enrollment__course__subject__name', 'enrollment__student__surname', 'lesson_number')
+            except Teacher.DoesNotExist:
+                queryset = AttendanceLog.objects.none()
 
         # Get filter parameters
         course_id = self.request.GET.get('course')
@@ -434,7 +495,17 @@ class AttendanceLogListView(LoginRequiredMixin,ListView):
         context = super().get_context_data(**kwargs)
         context['active_page'] = 'attendancelogs'
         context['page_title'] = 'Listado de Registros de Asistencia'
-        context['all_courses'] = Course.objects.select_related('subject').order_by('-academic_period', 'subject__name')
+
+        # Filtra los cursos disponibles en el dropdown de filtros
+        user = self.request.user
+        if user.is_superuser:
+            context['all_courses'] = Course.objects.select_related('subject').order_by('-academic_period', 'subject__name')
+        else:
+            try:
+                context['all_courses'] = Course.objects.filter(teacher=user.teacher).select_related('subject').order_by('-academic_period', 'subject__name')
+            except Teacher.DoesNotExist:
+                context['all_courses'] = Course.objects.none()
+
         context['current_course'] = self.request.GET.get('course', '')
         context['current_lesson_number'] = self.request.GET.get('lesson_number', '')
         return context
@@ -445,11 +516,18 @@ class AttendanceLogDetailView(LoginRequiredMixin,DetailView):
     context_object_name = 'attendancelog'
 
     def get_queryset(self):
-        return AttendanceLog.objects.select_related(
+        user = self.request.user
+        base_queryset = AttendanceLog.objects.select_related(
             'enrollment__student',
             'enrollment__course__subject',
             'enrollment__course__teacher'
         )
+        if user.is_superuser:
+            return base_queryset
+        try:
+            return base_queryset.filter(enrollment__course__teacher=user.teacher)
+        except Teacher.DoesNotExist:
+            return AttendanceLog.objects.none()
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -457,7 +535,7 @@ class AttendanceLogDetailView(LoginRequiredMixin,DetailView):
         context['page_title'] = f"Detalle de Asistencia: {self.object.enrollment.student} - L{self.object.lesson_number}"
         return context
 
-class AttendanceLogCreateView(LoginRequiredMixin,CreateView):
+class AttendanceLogCreateView(LoginRequiredMixin, SuperuserRequiredMixin, CreateView):
     model = AttendanceLog
     form_class = AttendanceLogForm
     template_name = 'academia/attendancelog_form.html'
@@ -471,17 +549,25 @@ class AttendanceLogCreateView(LoginRequiredMixin,CreateView):
         context['submit_button_text'] = 'Guardar Registro'
         return context
 
-class AttendanceLogUpdateView(LoginRequiredMixin,UpdateView):
+class AttendanceLogUpdateView(LoginRequiredMixin, UpdateView):
     model = AttendanceLog
     form_class = AttendanceLogForm
     template_name = 'academia/attendancelog_form.html'
     success_url = reverse_lazy('academia:attendancelog-list')
 
     def get_queryset(self):
-        return AttendanceLog.objects.select_related(
+        user = self.request.user
+        base_queryset = AttendanceLog.objects.select_related(
             'enrollment__student',
             'enrollment__course__subject'
         )
+        if user.is_superuser:
+            return base_queryset
+        try:
+            return base_queryset.filter(enrollment__course__teacher=user.teacher)
+        except Teacher.DoesNotExist:
+            return AttendanceLog.objects.none()
+        
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -491,11 +577,20 @@ class AttendanceLogUpdateView(LoginRequiredMixin,UpdateView):
         context['submit_button_text'] = 'Actualizar Registro'
         return context
 
-class AttendanceLogDeleteView(LoginRequiredMixin,DeleteView):
+class AttendanceLogDeleteView(LoginRequiredMixin, UpdateView):
     model = AttendanceLog
     template_name = 'academia/attendancelog_confirm_delete.html'
     success_url = reverse_lazy('academia:attendancelog-list')
     context_object_name = 'attendancelog'
+
+    def get_queryset(self):
+        user = self.request.user
+        if user.is_superuser:
+            return AttendanceLog.objects.all()
+        try:
+            return AttendanceLog.objects.filter(enrollment__course__teacher=user.teacher)
+        except Teacher.DoesNotExist:
+            return AttendanceLog.objects.none()
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -510,6 +605,16 @@ class TakeAttendanceView(LoginRequiredMixin,View):
 
     def get(self, request, *args, **kwargs):
         selection_form = self.selection_form_class(request.GET or None)
+
+        # Filtra el menú desplegable de cursos para profesores
+        if not request.user.is_superuser:
+            try:
+                teacher_courses = Course.objects.filter(teacher=request.user.teacher)
+                selection_form.fields['course'].queryset = teacher_courses
+            except (Teacher.DoesNotExist, KeyError):
+                # Si el usuario no es un profesor o el formulario no tiene el campo 'course'
+                selection_form.fields['course'].queryset = Course.objects.none()
+
         student_formset = None
         enrollments_with_forms = []
         course_obj = None
@@ -572,6 +677,16 @@ class TakeAttendanceView(LoginRequiredMixin,View):
 
         try:
             course_obj = get_object_or_404(Course.objects.select_related('subject'), pk=course_id)
+
+            # Verificación de permisos en el backend
+            if not request.user.is_superuser:
+                try:
+                    if course_obj.teacher != request.user.teacher:
+                        messages.error(request, _("You do not have permission to take attendance for this course."))
+                        return redirect(reverse_lazy('academia:take-attendance'))
+                except Teacher.DoesNotExist:
+                    messages.error(request, _("You are not registered as a teacher."))
+                    return redirect(reverse_lazy('academia:take-attendance'))
             lesson_date_val = date.fromisoformat(lesson_date_str)
             lesson_number_val = int(lesson_number_str)
         except (Course.DoesNotExist, ValueError, TypeError) as e:
@@ -627,6 +742,16 @@ class TakeGradesView(LoginRequiredMixin,View):
 
     def get(self, request, *args, **kwargs):
         selection_form = self.selection_form_class(request.GET or None)
+
+        # Filtra el menú desplegable de cursos para profesores
+        if not request.user.is_superuser:
+            try:
+                teacher_courses = Course.objects.filter(teacher=request.user.teacher)
+                selection_form.fields['course'].queryset = teacher_courses
+            except (Teacher.DoesNotExist, KeyError):
+                # Si el usuario no es un profesor o el formulario no tiene el campo 'course'
+                selection_form.fields['course'].queryset = Course.objects.none()
+
         student_formset = None
         enrollments_with_forms = []
         course_obj = None
@@ -686,6 +811,17 @@ class TakeGradesView(LoginRequiredMixin,View):
 
         try:
             course_obj = get_object_or_404(Course, pk=course_id)
+
+            # Verificación de permisos en el backend
+            if not request.user.is_superuser:
+                try:
+                    if course_obj.teacher != request.user.teacher:
+                        messages.error(request, _("You do not have permission to manage grades for this course."))
+                        return redirect(reverse_lazy('academia:take-grades'))
+                except Teacher.DoesNotExist:
+                    messages.error(request, _("You are not registered as a teacher."))
+                    return redirect(reverse_lazy('academia:take-grades'))
+
             lesson_number_val = int(lesson_number_str)
             grade_type_val = grade_type_str
         except (Course.DoesNotExist, ValueError, TypeError) as e:
@@ -742,7 +878,14 @@ class GradeListView(LoginRequiredMixin,ListView):
     paginate_by = 10
 
     def get_queryset(self):
-        return Grade.objects.select_related('enrollment__student', 'enrollment__course').order_by('enrollment__student__surname', 'enrollment__course__subject__name', 'lesson_number')
+        user = self.request.user
+        if user.is_superuser:
+            return Grade.objects.select_related('enrollment__student', 'enrollment__course').order_by('enrollment__student__surname', 'enrollment__course__subject__name', 'lesson_number')
+        
+        try:
+            return Grade.objects.filter(enrollment__course__teacher=user.teacher).select_related('enrollment__student', 'enrollment__course').order_by('enrollment__student__surname', 'enrollment__course__subject__name', 'lesson_number')
+        except Teacher.DoesNotExist:
+            return Grade.objects.none()
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -756,7 +899,14 @@ class GradeDetailView(LoginRequiredMixin,DetailView):
     context_object_name = 'grade'
 
     def get_queryset(self):
-        return Grade.objects.select_related('enrollment__student', 'enrollment__course')
+        user = self.request.user
+        if user.is_superuser:
+            return Grade.objects.select_related('enrollment__student', 'enrollment__course')
+        
+        try:
+            return Grade.objects.filter(enrollment__course__teacher=user.teacher).select_related('enrollment__student', 'enrollment__course')
+        except Teacher.DoesNotExist:
+            return Grade.objects.none()
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -764,7 +914,7 @@ class GradeDetailView(LoginRequiredMixin,DetailView):
         context['page_title'] = _('Grade Detail')
         return context
 
-class GradeCreateView(LoginRequiredMixin,CreateView):
+class GradeCreateView(LoginRequiredMixin, SuperuserRequiredMixin, CreateView):
     model = Grade
     form_class = GradeForm
     template_name = 'academia/grade_form.html'
@@ -778,14 +928,21 @@ class GradeCreateView(LoginRequiredMixin,CreateView):
         context['submit_button_text'] = _('Save Grade')
         return context
 
-class GradeUpdateView(LoginRequiredMixin,UpdateView):
+class GradeUpdateView(LoginRequiredMixin, UpdateView):
     model = Grade
     form_class = GradeForm
     template_name = 'academia/grade_form.html'
     success_url = reverse_lazy('academia:grade-list')
 
     def get_queryset(self):
-        return Grade.objects.select_related('enrollment__student', 'enrollment__course')
+        user = self.request.user
+        if user.is_superuser:
+            return Grade.objects.select_related('enrollment__student', 'enrollment__course')
+        
+        try:
+            return Grade.objects.filter(enrollment__course__teacher=user.teacher).select_related('enrollment__student', 'enrollment__course')
+        except Teacher.DoesNotExist:
+            return Grade.objects.none()
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -795,14 +952,21 @@ class GradeUpdateView(LoginRequiredMixin,UpdateView):
         context['submit_button_text'] = _('Update Grade')
         return context
 
-class GradeDeleteView(LoginRequiredMixin,DeleteView):
+class GradeDeleteView(LoginRequiredMixin, DeleteView):
     model = Grade
     template_name = 'academia/grade_confirm_delete.html'
     success_url = reverse_lazy('academia:grade-list')
     context_object_name = 'grade'
 
     def get_queryset(self):
-        return Grade.objects.select_related('enrollment__student', 'enrollment__course')
+        user = self.request.user
+        if user.is_superuser:
+            return Grade.objects.select_related('enrollment__student', 'enrollment__course')
+        
+        try:
+            return Grade.objects.filter(enrollment__course__teacher=user.teacher).select_related('enrollment__student', 'enrollment__course')
+        except Teacher.DoesNotExist:
+            return Grade.objects.none()
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -810,7 +974,7 @@ class GradeDeleteView(LoginRequiredMixin,DeleteView):
         context['page_title'] = _('Delete Grade')
         return context
 
-class ClosePeriodView(LoginRequiredMixin,View):
+class ClosePeriodView(LoginRequiredMixin, SuperuserRequiredMixin, View):
     template_name = 'academia/close_period_form.html'
     form_class = ClosePeriodForm
 
